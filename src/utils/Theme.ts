@@ -4,4 +4,5 @@ export const Theme = {
   primary: "#38a700",
   light: "#31d843",
   lightest: "#3eff8b",
+  success: "#4BB543",
 };

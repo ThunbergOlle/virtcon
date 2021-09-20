@@ -14,11 +14,19 @@ export const ValidateSession = async (
         plots {
           _id
           created
+          highest_bid
+          is_owned
+          created
+          max_tiles
+          total_revenue_generated
+          raw_material_available
           buildings {
-            perHour
+            generatesPerHour
             material_name
             hacked
             upgrades
+            consumes
+            consumesPerHour
           }
         }
         inventory {

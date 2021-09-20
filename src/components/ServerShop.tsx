@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, ListGroup, Table } from "react-bootstrap";
 import Draggable from "react-draggable";
 import { toast } from "react-toastify";
+import { HideStyle } from "../utils/HideStyle";
 import { IntrItem } from "../utils/interfaces";
 import WindowHeader from "./WindowHeader";
 export default function ServerShop(props: {
@@ -62,8 +63,8 @@ export default function ServerShop(props: {
       });
   };
   useEffect(() => {}, []);
-  if (props.isOpen) {
-    return (
+  return (
+    <div style={{ ...HideStyle(!props.isOpen) }}>
       <Draggable
         bounds="parent"
         axis="both"
@@ -75,41 +76,40 @@ export default function ServerShop(props: {
             title="Server shop"
             onChange={(hide: boolean) => setHideContent(hide)}
           />
-          {!hideContent && (
-            <Table hover>
-              <thead>
-                <th>Icon</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Action</th>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <img src={"./icons/plot.png"} height="25" />
-                  </td>
-                  <td>Plot</td>
-                  <td>1500</td>
-                  <td>
-                    <Button
-                      size="sm"
-                      style={{
-                        height: 22,
-                        margin: 0,
-                        padding: 0,
-                        width: "100%",
-                      }}
-                      onClick={() => buy("plot")}
-                    >
-                      Buy
-                    </Button>
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
-          )}
+
+          <Table hover style={HideStyle(hideContent)}>
+            <thead>
+              <th>Icon</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Action</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <img src={"./icons/plot.png"} height="25" />
+                </td>
+                <td>Plot</td>
+                <td>1500</td>
+                <td>
+                  <Button
+                    size="sm"
+                    style={{
+                      height: 22,
+                      margin: 0,
+                      padding: 0,
+                      width: "100%",
+                    }}
+                    onClick={() => buy("plot")}
+                  >
+                    Buy
+                  </Button>
+                </td>
+              </tr>
+            </tbody>
+          </Table>
         </Card>
       </Draggable>
-    );
-  } else return <></>;
+    </div>
+  );
 }

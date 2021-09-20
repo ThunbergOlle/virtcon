@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Card, ListGroup, Table } from "react-bootstrap";
 import Draggable from "react-draggable";
+import { HideStyle } from "../utils/HideStyle";
 export default function StatList(props: { balance: number }) {
   const [hideContent, setHideContent] = useState(false);
   return (
@@ -32,16 +33,15 @@ export default function StatList(props: { balance: number }) {
             </div>
           </div>
         </Card.Header>
-        {!hideContent && (
-          <Table hover>
-            <tbody>
-              <tr>
-                <td>Balance</td>
-                <td style={{ textAlign: "right" }}>{props.balance}</td>
-              </tr>
-            </tbody>
-          </Table>
-        )}
+
+        <Table hover style={HideStyle(hideContent)}>
+          <tbody>
+            <tr>
+              <td>Balance</td>
+              <td style={{ textAlign: "right" }}>{props.balance}</td>
+            </tr>
+          </tbody>
+        </Table>
       </Card>
     </Draggable>
   );

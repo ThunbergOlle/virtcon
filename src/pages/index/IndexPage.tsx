@@ -8,6 +8,7 @@ import Draggable from "react-draggable";
 import { toast } from "react-toastify";
 import ActionBar from "../../components/ActionBar";
 import ItemBrowser from "../../components/ItemBrowser";
+import PlotBrowser from "../../components/PlotBrowser";
 import ServerShop from "../../components/ServerShop";
 import StatList from "../../components/StatList";
 import { ValidateSession } from "../../functions/ValidateSession";
@@ -51,6 +52,7 @@ export default class IndexPage extends React.Component<
       });
   }
   render() {
+    console.log(this.state.openWindows.serverShop);
     return (
       <>
         <ActionBar
@@ -72,6 +74,10 @@ export default class IndexPage extends React.Component<
         >
           <StatList balance={this.state.player.balance} />
           <ItemBrowser isOpen={this.state.openWindows.itemBrowser} />
+          <PlotBrowser
+            isOpen={this.state.openWindows.plotBrowser}
+            plots={this.state.player.plots}
+          />
           <ServerShop
             isOpen={this.state.openWindows.serverShop}
             onPurchase={() => this.updatePlayer()}

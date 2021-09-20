@@ -47,6 +47,9 @@
 .handle {
   cursor: -webkit-grab;
 }
+.absolute {
+  position: absolute;
+}
 .handle:active {
   cursor: -webkit-grabbing;
 }

@@ -4,6 +4,7 @@ import Draggable from "react-draggable";
 export default function WindowHeader(props: {
   title: string;
   onChange: Function;
+  onClose?: Function;
 }) {
   const [hideContent, setHideContent] = useState(false);
 
@@ -29,6 +30,27 @@ export default function WindowHeader(props: {
           >
             {hideContent ? "<" : "_"}
           </Button>
+          {props.onClose !== undefined && (
+            <Button
+              size="sm"
+              style={{
+                width: 20,
+                height: 20,
+                textAlign: "center",
+                fontSize: 12,
+                padding: 0,
+                backgroundColor: "red",
+              }}
+              onClick={() => {
+                if (props.onClose !== undefined) {
+                  props.onClose();
+                  setHideContent(!hideContent);
+                }
+              }}
+            >
+              X
+            </Button>
+          )}
         </div>
       </div>
     </Card.Header>
