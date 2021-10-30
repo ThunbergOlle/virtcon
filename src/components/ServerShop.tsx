@@ -5,7 +5,7 @@ import { Button, Card, ListGroup, Table } from "react-bootstrap";
 import Draggable from "react-draggable";
 import { toast } from "react-toastify";
 import { HideStyle } from "../utils/HideStyle";
-import { IntrItem } from "../utils/interfaces";
+
 import WindowHeader from "./WindowHeader";
 export default function ServerShop(props: {
   isOpen: boolean;
@@ -17,7 +17,7 @@ export default function ServerShop(props: {
     const buyToast = toast.loading("Sending buy order...", { autoClose: 5000 });
     //do something else
     const mutation = gql`
-      mutation ServerShopPurchaseMutation($name: String!) {
+      mutation ServerShopPurchase($name: String!) {
         ServerShopPurchase(name: $name) {
           success
           balance_new
@@ -66,7 +66,6 @@ export default function ServerShop(props: {
   return (
     <div style={{ ...HideStyle(!props.isOpen) }}>
       <Draggable
-        bounds="parent"
         axis="both"
         handle=".handle"
         defaultPosition={{ x: 50, y: 10 }}

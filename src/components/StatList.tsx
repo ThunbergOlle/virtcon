@@ -6,7 +6,6 @@ export default function StatList(props: { balance: number }) {
   const [hideContent, setHideContent] = useState(false);
   return (
     <Draggable
-      bounds="parent"
       axis="both"
       handle=".handle"
       defaultPosition={{ x: window.innerWidth - 250, y: 10 }}

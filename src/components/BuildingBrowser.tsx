@@ -1,107 +1,153 @@
-import { useApolloClient } from "@apollo/client";
-import { gql } from "graphql-tag";
-import React, { useEffect, useState } from "react";
-import { Button, Card, ListGroup, Table } from "react-bootstrap";
+import { gql, useApolloClient } from "@apollo/client";
+import { useEffect, useState } from "react";
+import { Button, Card, Table } from "react-bootstrap";
+import { emitCustomEvent, useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
 import { HideStyle } from "../utils/HideStyle";
-import { IntrBuilding, IntrItem } from "../utils/interfaces";
-import NewBuildingModal from "./NewBuildingModal";
+import { Plot, PlotBuildings } from "../utils/interfaces";
 import WindowHeader from "./WindowHeader";
 export default function BuildingBrowser(props: {
   isOpen: boolean;
   onClose: Function;
-  buildings?: IntrBuilding[];
+  plot?: Plot;
 }) {
   const [hideContent, setHideContent] = useState(false);
-  const [buildings, setBuildings] = useState<IntrBuilding[]>([]);
-  const [isNewBuildingModalOpen, setIsNewBuildingModalOpen] =
-    useState<boolean>(false);
-
+  const [buildings, setBuildings] = useState<PlotBuildings[]>([]);
+  const client = useApolloClient();
+  const pickupBuilding = async (buildingId: number) => {
+    const query = gql`
+      mutation main($buildingId: Int!) {
+        PlotBuildingPickup(PlotBuildingId: $buildingId) {
+          id
+        }
+      }
+    `;
+    let data = await client.query({
+      query: query,
+      variables: { buildingId: buildingId },
+    });
+    // Reloada all data
+    fetchBuildingData();
+    emitCustomEvent("inventoryUpdate");
+    emitCustomEvent("plotUpdate");
+  };
+  const fetchBuildingData = async () => {
+    // Send PlotGRAPHQL Request
+    const query = gql`
+      query main($filter: PlotBuildingsFilter) {
+        PlotBuildings(filter: $filter) {
+          id
+          building {
+            id
+            name
+            consumes_amount
+            consumesItem {
+              name
+            }
+            outputItem {
+              name
+            }
+          }
+          occupiesResource {
+            resource {
+              name
+            }
+          }
+        }
+      }
+    `;
+    console.log(props.plot?.id);
+    let data = await client.query({
+      query: query,
+      variables: { filter: { plot: props.plot?.id } },
+    });
+    console.log(data.data.PlotBuildings);
+    setBuildings(data.data.PlotBuildings);
+    return data.data.PlotBuildings;
+  };
+  useCustomEventListener("plotBuildingsUpdate", async () => {
+    // När plot data har uppdaterats så ska vi hämta datan igen
+    fetchBuildingData();
+  });
   useEffect(() => {
-    setBuildings(props.buildings || []);
-  }, [props.buildings]);
-  if (!props.buildings) return <></>;
+    console.log(props.plot?.id);
+    fetchBuildingData();
+  }, [props.plot]);
   if (props.isOpen) {
     return (
-      <>
-        <Draggable
-          bounds="parent"
-          axis="both"
-          handle=".handle"
-          defaultPosition={{ x: 5, y: 10 }}
-        >
-          <Card style={{ width: 1000 }}>
-            <WindowHeader
-              title="Building viewer"
-              onChange={(hide: boolean) => setHideContent(hide)}
-              onClose={() => props.onClose()}
-            />
+      <Draggable axis="both" handle=".handle" defaultPosition={{ x: 5, y: 10 }}>
+        <Card style={{ width: 1000 }}>
+          <WindowHeader
+            title="Building viewer"
+            onChange={(hide: boolean) => setHideContent(hide)}
+            onClose={() => props.onClose()}
+          />
 
-            <div style={HideStyle(hideContent)}>
-              <div>
-                <Button
-                  size="sm"
-                  style={{
-                    height: 22,
-                    margin: 0,
-                    padding: 0,
-                    width: 150,
-                    float: "right",
-                  }}
-                  onClick={() => setIsNewBuildingModalOpen(true)}
-                >
-                  New Building
-                </Button>
-              </div>
-              <Table hover>
-                <thead>
-                  <th>Icon</th>
-                  <th>Name</th>
-                  <th>Consumes</th>
-                  <th>Genereates</th>
-                  <th>Takes resource</th>
-                  <th>Action</th>
-                </thead>
-                <tbody>
-                  {buildings.map((b) => (
-                    <tr id={b._id}>
-                      <td>
-                        <img src={`./icons/${b.building}.png`} height="25" />
-                      </td>
-                      <td>{b.building}</td>
-                      <td>
-                        {b.consumesPerHour} {b.consumes}
-                      </td>
-                      <td>
-                        {b.generatesPerHour} {b.generates}
-                      </td>
-                      <td>{b.material_name}</td>
-                      <td>
-                        <Button
-                          size="sm"
-                          style={{
-                            height: 22,
-                            margin: 0,
-                            padding: 0,
-                            width: "100%",
-                          }}
-                        >
-                          Pickup
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+          <div style={HideStyle(hideContent)}>
+            <div>
+              <Button
+                size="sm"
+                style={{
+                  height: 22,
+                  margin: 0,
+                  padding: 0,
+                  width: 150,
+                  float: "right",
+                }}
+                onClick={() => console.log(true)}
+              >
+                New Building
+              </Button>
             </div>
-          </Card>
-        </Draggable>
-        <NewBuildingModal
+            <Table hover>
+              <th>Icon</th>
+              <th>Name</th>
+              <th>Consumes</th>
+              <th>Genereates</th>
+              <th>Takes resource</th>
+              <th>Action</th>
+
+              <tbody>
+                {buildings?.map((b) => (
+                  <tr id={String(b.id)} key={b.id}>
+                    <td>
+                      <img src={`./icons/${b.building}.png`} height="25" />
+                    </td>
+                    <td>{b.building?.name}</td>
+                    <td>
+                      {b.building.consumesItem?.name} x
+                      {b.building?.consumes_amount}
+                    </td>
+                    <td>{b.building?.outputItem?.name}</td>
+                    <td>{b.occupiesResource?.resource?.name}</td>
+                    <td>
+                      <Button
+                        size="sm"
+                        style={{
+                          height: 22,
+                          margin: 0,
+                          padding: 0,
+                          width: "100%",
+                        }}
+                        onClick={() => pickupBuilding(b.id)}
+                      >
+                        Pickup
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        </Card>
+      </Draggable>
+    );
+  } else return null;
+}
+/*
+ <NewBuildingModal
           isOpen={isNewBuildingModalOpen}
           onClose={() => setIsNewBuildingModalOpen(false)}
           onPlace={() => console.log("tmp: placed")}
         />
-      </>
-    );
-  } else return <></>;
-}
+        */

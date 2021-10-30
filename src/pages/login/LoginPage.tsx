@@ -19,8 +19,10 @@ export default function Login(props: { onLogin: Function }) {
     // Skicka http request;
     try {
       const loginQuery = gql`
-        query main($email: String!, $password: String!) {
-          Login(email: $email, password: $password)
+        mutation main($email: String!, $password: String!) {
+          PlayerLogin(options: { email: $email, password: $password }) {
+            token
+          }
         }
       `;
       let data = await client.query({
@@ -28,8 +30,8 @@ export default function Login(props: { onLogin: Function }) {
         variables: { email: email, password: password },
       });
       console.dir(data);
-      if (data.data.Login) {
-        sessionStorage.setItem("token", data.data.Login);
+      if (data.data.PlayerLogin) {
+        sessionStorage.setItem("token", data.data.PlayerLogin.token);
         props.onLogin();
       } else {
         throw data.error;

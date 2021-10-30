@@ -1,5 +1,153 @@
 import { ObjectId } from "mongoose";
+export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  DateTime: any;
+};
 
+export type Query = {
+  __typename?: "Query";
+  Players: Array<Player>;
+  PlayerLoggedIn: Player;
+  Item: Array<Item>;
+};
+
+export type QueryItemArgs = {
+  filter?: Maybe<ItemFilter>;
+};
+
+export type Player = {
+  __typename?: "Player";
+  id: Scalars["Int"];
+  display_name: Scalars["String"];
+  email: Scalars["String"];
+  last_login?: Maybe<Scalars["DateTime"]>;
+  balance: Scalars["Int"];
+  inventory?: Maybe<Array<InventoryItem>>;
+  plot?: Maybe<Array<Plot>>;
+};
+
+export type InventoryItem = {
+  __typename?: "InventoryItem";
+  id: Scalars["Int"];
+  amount: Scalars["Int"];
+  item: Item;
+  building: Building;
+};
+
+export type Item = {
+  __typename?: "Item";
+  id: Scalars["Int"];
+  type: Scalars["String"];
+  spawn_rate: Scalars["Float"];
+  name: Scalars["String"];
+  market_name: Scalars["String"];
+  rarity: Scalars["String"];
+};
+
+export type Building = {
+  __typename?: "Building";
+  id: Scalars["Int"];
+  name: Scalars["String"];
+  consumesItem: Item;
+  consumes_amount: Scalars["Int"];
+  hacked: Scalars["Boolean"];
+  outputItem: Item;
+};
+
+export type Plot = {
+  __typename?: "Plot";
+  id: Scalars["Int"];
+  max_buildings: Scalars["Int"];
+  buildings: PlotBuildings[];
+  resources: PlotResources[];
+};
+
+export type PlotBuildings = {
+  __typename?: "PlotBuildings";
+  id: Scalars["Int"];
+  plot: Plot;
+  occupiesResource: PlotResources;
+  building: Building;
+};
+
+export type PlotResources = {
+  __typename?: "PlotResources";
+  id: Scalars["Int"];
+  plot: Plot;
+  resource: Item;
+  amount: Scalars["Int"];
+  isUsed: Scalars["Boolean"];
+};
+
+export type ItemFilter = {
+  id?: Maybe<Scalars["Int"]>;
+  name?: Maybe<Scalars["String"]>;
+  market_name?: Maybe<Scalars["String"]>;
+};
+
+export type Mutation = {
+  __typename?: "Mutation";
+  PlayerNew: Player;
+  PlayerLogin: LoginPlayerToken;
+  ServerShopPurchase: ServerShopResponse;
+};
+
+export type MutationPlayerNewArgs = {
+  options: PlayerNewInput;
+};
+
+export type MutationPlayerLoginArgs = {
+  options: PlayerLoginInput;
+};
+
+export type MutationServerShopPurchaseArgs = {
+  name: Scalars["String"];
+};
+
+export type PlayerNewInput = {
+  email: Scalars["String"];
+  password: Scalars["String"];
+  display_name: Scalars["String"];
+};
+
+export type PlayerLoginInput = {
+  email: Scalars["String"];
+  password: Scalars["String"];
+};
+
+export type LoginPlayerToken = {
+  __typename?: "LoginPlayerToken";
+  id: Scalars["Int"];
+  display_name: Scalars["String"];
+  email: Scalars["String"];
+  last_login?: Maybe<Scalars["DateTime"]>;
+  balance: Scalars["Int"];
+  inventory?: Maybe<Array<InventoryItem>>;
+  plot?: Maybe<Array<Plot>>;
+  token: Scalars["String"];
+};
+
+export type ServerShopResponse = {
+  __typename?: "ServerShopResponse";
+  success: Scalars["Boolean"];
+  balance_new: Scalars["Int"];
+};
+/*
 export interface IntrUser {
   email?: string;
   token?: string;
@@ -28,17 +176,17 @@ export interface IntrPlot {
   raw_material_available: String[];
   buildings: IntrBuilding[];
 }
-export interface IntrPlayerInventory {
+export interface PlayerInventory {
   _id: ObjectId;
   item: ObjectId;
   amount: number;
 }
-export interface IntrPlayer {
-  _id: ObjectId;
-  plots: IntrPlot[];
+export interface Player {
+  _id: ObjectId | undefined;
+  plots?: IntrPlot[];
   display_name: string;
   balance: number;
-  inventory: IntrPlayerInventory[];
+  inventory?: PlayerInventory[];
   last_login: Date;
   email: string;
   token: string;
@@ -47,7 +195,8 @@ export interface IntrItem {
   name: string;
   market_name: string;
   spawn_rate: number;
+  id: number;
   type: string;
-  _id: string;
-  __typename: string;
+  rarity: string;
 }
+*/

@@ -9,7 +9,7 @@ import {
 } from "@apollo/client";
 import "./App.css";
 import LoginPage from "./pages/login/LoginPage";
-import { IntrPlayer, IntrUser } from "./utils/interfaces";
+import { Player } from "./utils/interfaces";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ValidateSession } from "./functions/ValidateSession";
 import IndexPage from "./pages/index/IndexPage";
@@ -45,14 +45,14 @@ const client = new ApolloClient({
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [player, setPlayer] = useState<IntrPlayer>();
+  const [player, setPlayer] = useState<Player>();
   const CheckLoggedIn = () => {
     /* Hitta om det finns en kaka som sparar session */
     let data = sessionStorage.getItem("token");
 
     if (data) {
       ValidateSession(client)
-        .then((player: IntrPlayer) => {
+        .then((player: Player) => {
           console.log(player);
           if (player.email) {
             setPlayer(player);

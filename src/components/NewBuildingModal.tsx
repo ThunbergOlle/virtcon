@@ -4,25 +4,24 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, ListGroup, Table } from "react-bootstrap";
 import Draggable from "react-draggable";
 import { HideStyle } from "../utils/HideStyle";
-import { IntrBuilding, IntrItem } from "../utils/interfaces";
+import { Building, Item } from "../utils/interfaces";
 import { Theme } from "../utils/Theme";
+import SmallInventory from "./inventory/SmallInventory";
 import WindowHeader from "./WindowHeader";
 export default function NewBuildingModal(props: {
   isOpen: boolean;
-  onClose: Function;
+  onClose: () => void;
   onPlace: Function;
 }) {
   const [hideContent, setHideContent] = useState(false);
-  const [availableBuildings, setAvailableBuildings] = useState<IntrBuilding[]>(
-    []
-  );
+  const [showSmallInventory, setShowSmallInventory] = useState(false);
+  const [availableBuildings, setAvailableBuildings] = useState<Building[]>([]);
 
   useEffect(() => {}, []);
 
   return (
     <div style={HideStyle(!props.isOpen)}>
       <Draggable
-        bounds="parent"
         axis="both"
         defaultClassName=".absolute"
         handle=".handle"
@@ -48,9 +47,13 @@ export default function NewBuildingModal(props: {
                     display: "block",
                     width: 150,
                   }}
+                  onClick={() => setShowSmallInventory(!showSmallInventory)}
                 >
                   Select
                 </Button>
+                {showSmallInventory ? (
+                  <SmallInventory onSelect={() => console.log(123)} />
+                ) : null}
                 <Button
                   size="sm"
                   style={{
