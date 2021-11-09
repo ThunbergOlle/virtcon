@@ -67,6 +67,7 @@ export type Building = {
   consumes_amount: Scalars["Int"];
   hacked: Scalars["Boolean"];
   outputItem: Item;
+  output_amount: Scalars["Int"];
 };
 
 export type Plot = {
@@ -91,7 +92,7 @@ export type PlotResources = {
   plot: Plot;
   resource: Item;
   amount: Scalars["Int"];
-  isUsed: Scalars["Boolean"];
+  amountUsed: Scalars["Int"];
 };
 
 export type ItemFilter = {

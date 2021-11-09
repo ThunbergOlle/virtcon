@@ -8,9 +8,12 @@ import { useCustomEventListener } from "react-custom-events";
 import { gql, useApolloClient } from "@apollo/client";
 import { PlayerContext } from "../context/PlayerContext";
 import { UniqueArrayToString } from "../utils/UniqueArrayToString";
+import { WindowTypes } from "../pages/index/IndexPage";
 
 export default function PlotBrowser(props: {
   isOpen: boolean;
+  className: string;
+  onFocus: (windowType: WindowTypes) => void;
   onPlotClicked: Function;
 }) {
   const [hideContent, setHideContent] = useState(false);
@@ -58,22 +61,28 @@ export default function PlotBrowser(props: {
     fetchPlotData();
   }, []);
   return (
-    <Draggable axis="both" handle=".handle" defaultPosition={{ x: 100, y: 10 }}>
-      <Card style={{ width: 600, ...HideStyle(!props.isOpen) }}>
+    <Draggable
+      axis="both"
+      handle=".handle"
+      defaultPosition={{ x: 100, y: 10 }}
+      defaultClassName={props.className}
+      onMouseDown={() => props.onFocus("plotBrowser")}
+    >
+      <Card style={{ width: 850, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
-          title="Plot Browser"
+          title={"Plot Browser" + props.className}
           onChange={(hide: boolean) => setHideContent(hide)}
         />
 
         <Table hover style={HideStyle(hideContent)}>
-          <th>Id</th>
+          <th>#</th>
           <th>Buildings</th>
           <th>Materials</th>
-          <th>View buildings</th>
+          <th>View plot</th>
           <tbody>
             {plots.map((p, index) => (
               <tr id={String(p.id)} key={p.id}>
-                <td>{index}</td>
+                <td>{p.id}</td>
                 <td>
                   {UniqueArrayToString(
                     p.buildings,

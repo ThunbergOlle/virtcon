@@ -3,10 +3,15 @@ import { gql } from "graphql-tag";
 import React, { useEffect, useState } from "react";
 import { Button, Card, ListGroup, Table } from "react-bootstrap";
 import Draggable from "react-draggable";
+import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
 import { Item } from "../utils/interfaces";
 import WindowHeader from "./WindowHeader";
-export default function ItemBrowser(props: { isOpen: boolean }) {
+export default function ItemBrowser(props: {
+  isOpen: boolean;
+  className: string;
+  onFocus: (windowType: WindowTypes) => void;
+}) {
   const [hideContent, setHideContent] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
   const client = useApolloClient();
@@ -39,7 +44,13 @@ export default function ItemBrowser(props: { isOpen: boolean }) {
   }, []);
 
   return (
-    <Draggable axis="both" handle=".handle" defaultPosition={{ x: 40, y: 10 }}>
+    <Draggable
+      axis="both"
+      handle=".handle"
+      defaultPosition={{ x: 40, y: 10 }}
+      defaultClassName={props.className}
+      onMouseDown={() => props.onFocus("itemBrowser")}
+    >
       <Card style={{ width: 500, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
           title="Item Browser"

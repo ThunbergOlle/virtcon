@@ -11,12 +11,14 @@ import ActionBar from "../../components/ActionBar";
 import BuildingBrowser from "../../components/BuildingBrowser";
 import Inventory from "../../components/Inventory";
 import ItemBrowser from "../../components/ItemBrowser";
+import PlotViewer from "../../components/PlotViewer";
 import PlotBrowser from "../../components/PlotBrowser";
 import ServerShop from "../../components/ServerShop";
 import StatList from "../../components/StatList";
 import { PlayerContext } from "../../context/PlayerContext";
 import { ValidateSession } from "../../functions/ValidateSession";
 import { Player, Plot } from "../../utils/interfaces";
+import { WindowStack } from "../../functions/WindowStack";
 
 interface IndexPageProps {
   player: Player;
@@ -26,6 +28,7 @@ export type WindowTypes =
   | "itemBrowser"
   | "serverShop"
   | "plotBrowser"
+  | "plotViewer"
   | "buildingBrowser"
   | "inventory";
 interface IndexPageState {
@@ -33,7 +36,8 @@ interface IndexPageState {
   openWindows: {
     [key in WindowTypes]: boolean;
   };
-  buildingBrowserPlot?: Plot;
+  selectedPlot?: Plot;
+  windowStack: WindowStack;
 }
 
 export default class IndexPage extends React.Component<
@@ -50,8 +54,10 @@ export default class IndexPage extends React.Component<
         plotBrowser: false,
         buildingBrowser: false,
         inventory: false,
+        plotViewer: false,
       },
-      buildingBrowserPlot: undefined,
+      windowStack: new WindowStack(),
+      selectedPlot: undefined,
     };
   }
   updatePlayer() {
@@ -64,8 +70,9 @@ export default class IndexPage extends React.Component<
         toast("Error fetching user", { type: "error" });
       });
   }
+
   render() {
-    console.log(this.state.openWindows.serverShop);
+    console.log("class:" + this.state.windowStack.getClass("inventory"));
     return (
       <>
         <PlayerContext.Provider value={this.state.player}>
@@ -87,35 +94,52 @@ export default class IndexPage extends React.Component<
             }}
           >
             <StatList balance={this.state.player.balance} />
-            <ItemBrowser isOpen={this.state.openWindows.itemBrowser} />
-            <Inventory isOpen={this.state.openWindows.inventory} />
+            <ItemBrowser
+              isOpen={this.state.openWindows.itemBrowser}
+              onFocus={() => {
+                this.state.windowStack.selectWindow("itemBrowser");
+                this.forceUpdate();
+              }}
+              className={this.state.windowStack.getClass("itemBrowser")}
+            />
+            <Inventory
+              isOpen={this.state.openWindows.inventory}
+              onFocus={() => {
+                this.state.windowStack.selectWindow("inventory");
+                this.forceUpdate();
+              }}
+              className={this.state.windowStack.getClass("inventory")}
+            />
             <PlotBrowser
+              onFocus={() => {
+                this.state.windowStack.selectWindow("plotBrowser");
+                this.forceUpdate();
+              }}
+              className={this.state.windowStack.getClass("plotBrowser")}
               isOpen={this.state.openWindows.plotBrowser}
               onPlotClicked={(p: Plot) =>
                 this.setState({
-                  buildingBrowserPlot: p,
+                  selectedPlot: p,
                   openWindows: {
                     ...this.state.openWindows,
-                    buildingBrowser: true,
+                    plotViewer: true,
                   },
                 })
               }
             />
-            <BuildingBrowser
-              isOpen={
-                this.state.openWindows.buildingBrowser &&
-                this.state.buildingBrowserPlot !== undefined
-              }
+            <PlotViewer
               onClose={() =>
                 this.setState({
                   openWindows: {
                     ...this.state.openWindows,
-                    buildingBrowser: false,
+                    plotViewer: false,
                   },
                 })
               }
-              plot={this.state.buildingBrowserPlot}
+              isOpen={this.state.openWindows.plotViewer}
+              selectedPlotId={this.state.selectedPlot?.id}
             />
+
             <ServerShop
               isOpen={this.state.openWindows.serverShop}
               onPurchase={() => emitCustomEvent("plotUpdate")}

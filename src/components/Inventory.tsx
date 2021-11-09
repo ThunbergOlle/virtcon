@@ -4,10 +4,15 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, ListGroup, Table } from "react-bootstrap";
 import { useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
+import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
 import { InventoryItem, Item } from "../utils/interfaces";
 import WindowHeader from "./WindowHeader";
-export default function Inventory(props: { isOpen: boolean }) {
+export default function Inventory(props: {
+  isOpen: boolean;
+  onFocus: (windowType: WindowTypes) => void;
+  className: string;
+}) {
   const [hideContent, setHideContent] = useState(false);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const client = useApolloClient();
@@ -49,10 +54,16 @@ export default function Inventory(props: { isOpen: boolean }) {
   }, []);
 
   return (
-    <Draggable axis="both" handle=".handle" defaultPosition={{ x: 40, y: 10 }}>
+    <Draggable
+      axis="both"
+      handle=".handle"
+      defaultPosition={{ x: 40, y: 10 }}
+      defaultClassName={props.className}
+      onMouseDown={() => props.onFocus("inventory")}
+    >
       <Card style={{ width: 800, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
-          title="Inventory"
+          title={"Inventory" + props.className}
           onChange={(hide: boolean) => setHideContent(hide)}
         />
 

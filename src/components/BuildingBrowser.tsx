@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button, Card, Table } from "react-bootstrap";
 import { emitCustomEvent, useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
+import { pickupBuilding } from "../functions/PickupBuilding";
 import { HideStyle } from "../utils/HideStyle";
 import { Plot, PlotBuildings } from "../utils/interfaces";
 import WindowHeader from "./WindowHeader";
@@ -14,23 +15,7 @@ export default function BuildingBrowser(props: {
   const [hideContent, setHideContent] = useState(false);
   const [buildings, setBuildings] = useState<PlotBuildings[]>([]);
   const client = useApolloClient();
-  const pickupBuilding = async (buildingId: number) => {
-    const query = gql`
-      mutation main($buildingId: Int!) {
-        PlotBuildingPickup(PlotBuildingId: $buildingId) {
-          id
-        }
-      }
-    `;
-    let data = await client.query({
-      query: query,
-      variables: { buildingId: buildingId },
-    });
-    // Reloada all data
-    fetchBuildingData();
-    emitCustomEvent("inventoryUpdate");
-    emitCustomEvent("plotUpdate");
-  };
+
   const fetchBuildingData = async () => {
     // Send PlotGRAPHQL Request
     const query = gql`
@@ -129,7 +114,9 @@ export default function BuildingBrowser(props: {
                           padding: 0,
                           width: "100%",
                         }}
-                        onClick={() => pickupBuilding(b.id)}
+                        onClick={() => {
+                          pickupBuilding(b.id).then(() => fetchBuildingData());
+                        }}
                       >
                         Pickup
                       </Button>

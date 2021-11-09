@@ -7,7 +7,6 @@ export default function WindowHeader(props: {
   onClose?: Function;
 }) {
   const [hideContent, setHideContent] = useState(false);
-
   return (
     <Card.Header className="handle">
       <div style={{ display: "flex" }}>
