@@ -100,8 +100,8 @@ export default function BuildingBrowser(props: {
                     </td>
                     <td>{b.building?.name}</td>
                     <td>
-                      {b.building.consumesItem?.name} x
-                      {b.building?.consumes_amount}
+                      {/** b.building.consumesItem?.name*/} x
+                      {/** b.building?.consumes_amount*/}
                     </td>
                     <td>{b.building?.outputItem?.name}</td>
                     <td>{b.occupiesResource?.resource?.name}</td>

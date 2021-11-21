@@ -91,3 +91,8 @@
 .z10 {
   z-index: 10;
 }
+
+.browser-container {
+  position: absolute;
+  top: 0px;
+}

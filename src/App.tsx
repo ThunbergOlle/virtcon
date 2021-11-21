@@ -18,6 +18,7 @@ import { Config } from "./utils/Config";
 import TopBar from "./components/TopBar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { socket, SocketContext } from "./context/SocketContext";
 
 const httpLink = new HttpLink({ uri: Config.baseUrl + "/graphql" });
 const authLink = setContext(async (_, { headers }) => {
@@ -72,27 +73,29 @@ function App() {
   }, []);
   return (
     <ApolloProvider client={client}>
-      <Router>
-        <div>
-          {isLoggedIn && player ? (
-            <>
-              <TopBar display_name={player?.display_name} />
-              <Switch>
-                <Route path="/about">
-                  <p>About</p>
-                </Route>
+      <SocketContext.Provider value={socket}>
+        <Router>
+          <div>
+            {isLoggedIn && player ? (
+              <>
+                <TopBar display_name={player?.display_name} />
+                <Switch>
+                  <Route path="/about">
+                    <p>About</p>
+                  </Route>
 
-                <Route path="/">
-                  <IndexPage client={client} player={player} />
-                </Route>
-              </Switch>
-            </>
-          ) : (
-            <LoginPage onLogin={() => CheckLoggedIn()} />
-          )}
-        </div>
-      </Router>
-      <ToastContainer autoClose={5000} hideProgressBar={false} />
+                  <Route path="/">
+                    <IndexPage client={client} player={player} />
+                  </Route>
+                </Switch>
+              </>
+            ) : (
+              <LoginPage onLogin={() => CheckLoggedIn()} />
+            )}
+          </div>
+        </Router>
+        <ToastContainer autoClose={5000} hideProgressBar={false} />
+      </SocketContext.Provider>
     </ApolloProvider>
   );
 }

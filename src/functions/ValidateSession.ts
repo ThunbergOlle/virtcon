@@ -8,6 +8,7 @@ export const ValidateSession = async (
   const query = gql`
     query {
       PlayerLoggedIn {
+        id
         email
         display_name
         balance

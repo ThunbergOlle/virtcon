@@ -52,19 +52,23 @@ export type InventoryItem = {
 export type Item = {
   __typename?: "Item";
   id: Scalars["Int"];
+  price: Scalars["Int"];
   type: Scalars["String"];
   spawn_rate: Scalars["Float"];
   name: Scalars["String"];
   market_name: Scalars["String"];
   rarity: Scalars["String"];
 };
-
+export type BuildingConsumesItem = {
+  id: Scalars["Int"];
+  item: Item;
+  amount: Scalars["Int"];
+};
 export type Building = {
   __typename?: "Building";
   id: Scalars["Int"];
   name: Scalars["String"];
-  consumesItem: Item;
-  consumes_amount: Scalars["Int"];
+  consumes_items: BuildingConsumesItem[];
   hacked: Scalars["Boolean"];
   outputItem: Item;
   output_amount: Scalars["Int"];
@@ -147,6 +151,14 @@ export type ServerShopResponse = {
   __typename?: "ServerShopResponse";
   success: Scalars["Boolean"];
   balance_new: Scalars["Int"];
+};
+export type MarketListing = {
+  id?: number;
+  amount?: number;
+  price?: number;
+  isSellOrder?: boolean;
+  executed?: string;
+  player?: Player;
 };
 /*
 export interface IntrUser {

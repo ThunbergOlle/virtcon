@@ -15,6 +15,9 @@ export default function ActionBar(props: {
         <Button size="sm" onClick={() => props.onWindowOpened("itemBrowser")}>
           Item Browser
         </Button>
+        <Button size="sm" onClick={() => props.onWindowOpened("marketBrowser")}>
+          Marketplace
+        </Button>
         <Button size="sm" onClick={() => props.onWindowOpened("serverShop")}>
           Server shop
         </Button>

@@ -6,6 +6,7 @@ import { useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
 import { BuildingAddToPlot } from "../functions/BuildingAddToPlot";
 import { pickupBuilding } from "../functions/PickupBuilding";
+import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
 import { InventoryItem, Item, Plot } from "../utils/interfaces";
 import BuildingSelect from "./BuildingSelect";
@@ -14,6 +15,8 @@ export default function Inventory(props: {
   isOpen: boolean;
   onClose: Function;
   selectedPlotId?: number;
+  onFocus: (windowType: WindowTypes) => void;
+  className: string;
 }) {
   const [hideContent, setHideContent] = useState(false);
   const [plot, setPlot] = useState<Plot>();
@@ -30,16 +33,20 @@ export default function Inventory(props: {
             id
             building {
               name
-              consumesItem {
-                name
-                rarity
+              consumes_items {
+                id
+                amount
+                item {
+                  name
+                  price
+                  market_name
+                }
               }
               outputItem {
                 name
                 rarity
               }
               output_amount
-              consumes_amount
             }
             occupiesResource {
               resource {
@@ -75,15 +82,17 @@ export default function Inventory(props: {
   }, [props.selectedPlotId]);
 
   return (
-    <Draggable axis="both" handle=".handle" defaultPosition={{ x: 40, y: 10 }}>
+    <Draggable
+      axis="both"
+      handle=".handle"
+      defaultPosition={{ x: 40, y: 10 }}
+      defaultClassName={props.className}
+      onMouseDown={() => props.onFocus("plotViewer")}
+    >
       <Card
         style={{ width: 800, ...HideStyle(!props.isOpen), display: "flex" }}
       >
-        <WindowHeader
-          title="Plot viewer"
-          onChange={(hide: boolean) => setHideContent(hide)}
-          onClose={() => props.onClose()}
-        />
+        <WindowHeader title="Plot viewer" onClose={() => props.onClose()} />
         <div
           style={{
             width: "100%",
@@ -153,8 +162,12 @@ export default function Inventory(props: {
                           <>{b.occupiesResource.resource?.name} (Occupied)</>
                         ) : (
                           <>
-                            {b.building?.consumesItem?.name || "-"} (-
-                            {b.building?.consumes_amount})
+                            {b.building?.consumes_items?.map((i) => (
+                              <>
+                                {i.item.name || "-"} (-
+                                {i.amount}){" "}
+                              </>
+                            ))}
                           </>
                         )}
                       </td>

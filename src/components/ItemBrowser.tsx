@@ -56,42 +56,55 @@ export default function ItemBrowser(props: {
           title="Item Browser"
           onChange={(hide: boolean) => setHideContent(hide)}
         />
-
-        <Table hover style={HideStyle(hideContent)}>
-          <thead>
-            <th>Icon</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Rarity</th>
-            <th>View on Market</th>
-          </thead>
-          <tbody>
-            {items.map((i) => (
-              <tr id={String(i.id)} key={i.id}>
-                <td>
-                  <img src={`./icons/${i.market_name}.png`} height="25" />
-                </td>
-                <td>{i.name}</td>
-                <td>{i.type}</td>
-                <td>{i.rarity}</td>
-                <td>
-                  <Button
-                    size="sm"
-                    style={{
-                      height: 22,
-                      margin: 0,
-                      padding: 0,
-                      width: "100%",
-                    }}
-                    disabled={i.type === "currency"}
-                  >
-                    View
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <div
+          style={{
+            overflowY: "scroll",
+            display: "flex",
+            flexDirection: "column",
+            height: 400,
+          }}
+        >
+          <Table
+            hover
+            style={{
+              ...HideStyle(hideContent),
+            }}
+          >
+            <thead>
+              <th>Icon</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Rarity</th>
+              <th>Market</th>
+            </thead>
+            <tbody>
+              {items.map((i) => (
+                <tr id={String(i.id)} key={i.id}>
+                  <td>
+                    <img src={`./icons/${i.market_name}.png`} height="25" />
+                  </td>
+                  <td>{i.name}</td>
+                  <td>{i.type}</td>
+                  <td>{i.rarity}</td>
+                  <td>
+                    <Button
+                      size="sm"
+                      style={{
+                        height: 22,
+                        margin: 0,
+                        padding: 0,
+                        width: "100%",
+                      }}
+                      disabled={i.type === "currency"}
+                    >
+                      View
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       </Card>
     </Draggable>
   );
