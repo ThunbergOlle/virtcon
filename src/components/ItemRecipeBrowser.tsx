@@ -48,9 +48,9 @@ export default function ItemRecipeBrowser(props: {
       defaultClassName={props.className}
       onMouseDown={() => props.onFocus("recipeBrowser")}
     >
-      <Card style={{ width: 500, ...HideStyle(!props.isOpen) }}>
+      <Card style={{ width: 1000, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
-          title="Item Browser"
+          title="Recipe Browser"
           onChange={(hide: boolean) => setHideContent(hide)}
         />
         <div

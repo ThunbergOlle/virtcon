@@ -19,6 +19,7 @@ import TopBar from "./components/TopBar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { socket, SocketContext } from "./context/SocketContext";
+import { emitCustomEvent } from "react-custom-events";
 
 const httpLink = new HttpLink({ uri: Config.baseUrl + "/graphql" });
 const authLink = setContext(async (_, { headers }) => {
@@ -68,8 +69,31 @@ function App() {
         });
     }
   };
+  const fetchAllNewData = () => {
+    toast("New production month! Updating inventory...", {
+      type: "info",
+      autoClose: 5000,
+    });
+    emitCustomEvent("inventoryUpdate");
+    emitCustomEvent("statListUpdate");
+  };
   useEffect(() => {
+    // Make a request and check when it was last updated.
+    let timerInterval: NodeJS.Timeout;
+    fetch(Config.baseUrl + "/timer")
+      .then((res) => res.json())
+      .then((res: { lastTimerExecuted: number; interval: number }) => {
+        //Starta timern
+        setTimeout(() => {
+          fetchAllNewData();
+          timerInterval = setInterval(() => {
+            fetchAllNewData();
+          }, res.interval);
+        }, res.lastTimerExecuted + res.interval - Number(new Date()));
+      });
+
     CheckLoggedIn();
+    return () => clearInterval(timerInterval);
   }, []);
   return (
     <ApolloProvider client={client}>

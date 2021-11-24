@@ -128,7 +128,7 @@ export default function MarketBrowser(props: {
       .query({
         query: query,
         variables: {
-          inventoryFilter: { player: getPlayer!.id },
+          inventoryFilter: { player: getPlayer!.id, item: itemId },
           itemFilter: { id: itemId },
         },
       })
