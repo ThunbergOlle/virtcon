@@ -25,8 +25,6 @@ export default function ItemRecipeBrowser(props: {
       fetch(Config.baseUrl + "/recipe?ItemID=" + recipeItemID)
         .then((response) => response.json())
         .then((data) => {
-          console.log("DATA");
-          console.log(data);
           setRecipe(data);
         });
     } catch (e) {
@@ -83,6 +81,8 @@ interface NodeType {
 
   madeFrom: { item: NodeType; amount: number }[];
 
+  msrp: number;
+
   amount: number;
 }
 function Node(props: { item: NodeType; amount: number }) {
@@ -91,7 +91,14 @@ function Node(props: { item: NodeType; amount: number }) {
       label={
         <div>
           <em style={{ color: "GrayText" }}>{props.item.madeIn?.name}</em>
-          <p>{props.amount + "x " + (props.item.item.name || "")}</p>
+          <p style={{ paddingBottom: 0, marginBottom: 0 }}>
+            {props.amount + "x " + (props.item.item.name || "") + " "}
+            <em
+              style={{ color: "GrayText", fontSize: 12, margin: 0, padding: 0 }}
+            >
+              (${props.item.msrp || "?"})
+            </em>
+          </p>
         </div>
       }
     >

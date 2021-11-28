@@ -55,7 +55,6 @@ function App() {
     if (data) {
       ValidateSession(client)
         .then((player: Player) => {
-          console.log(player);
           if (player.email) {
             setPlayer(player);
             setIsLoggedIn(true);

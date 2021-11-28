@@ -29,7 +29,6 @@ export default function ItemBrowser(props: {
         }
       }
     `;
-    console.log(query);
     client
       .query({
         query: query,

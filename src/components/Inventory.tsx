@@ -11,6 +11,7 @@ import WindowHeader from "./WindowHeader";
 export default function Inventory(props: {
   isOpen: boolean;
   onFocus: (windowType: WindowTypes) => void;
+  onItemClick: (itemId: number) => void;
   className: string;
 }) {
   const [hideContent, setHideContent] = useState(false);
@@ -25,9 +26,12 @@ export default function Inventory(props: {
           inventory {
             id
             item {
+              id
               name
               rarity
               type
+              market_name
+              price
             }
             amount
             building {
@@ -73,7 +77,8 @@ export default function Inventory(props: {
             <th>Name</th>
             <th>Type</th>
             <th>Rarity</th>
-            <th>Amount</th>
+            <th style={{ textAlign: "right" }}>Amount</th>
+            <th style={{ textAlign: "right" }}>Value</th>
             <th>Action</th>
           </thead>
           <tbody>
@@ -84,12 +89,13 @@ export default function Inventory(props: {
                 return (
                   <tr id={String(i.id)} key={i.id}>
                     <td>
-                      <img src={`./icons/${i.building.name}.png`} height="25" />
+                      <img src={`./icons/${"factory"}.png`} height="25" />
                     </td>
                     <td>{i.building.name}</td>
                     <td>Building</td>
                     <td>-</td>
-                    <td>{i.amount}</td>
+                    <td style={{ textAlign: "right" }}>{i.amount}</td>
+                    <td style={{ textAlign: "right" }}>-</td>
                     <td>
                       <Button
                         size="sm"
@@ -117,7 +123,10 @@ export default function Inventory(props: {
                     <td>{i.item.name}</td>
                     <td>{i.item.type}</td>
                     <td>{i.item.rarity}</td>
-                    <td>{i.amount}</td>
+                    <td style={{ textAlign: "right" }}>{i.amount}</td>
+                    <td style={{ textAlign: "right" }}>
+                      ${i.item.price * i.amount}
+                    </td>
                     <td>
                       <Button
                         size="sm"
@@ -127,9 +136,10 @@ export default function Inventory(props: {
                           padding: 0,
                           width: "100%",
                         }}
+                        onClick={() => props.onItemClick(i.item.id)}
                         disabled={i.item.type === "currency"}
                       >
-                        View
+                        Trade
                       </Button>
                     </td>
                   </tr>

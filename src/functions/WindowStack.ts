@@ -33,7 +33,6 @@ export class WindowStack {
         biggestVal = this.stack[i].stackIndex;
       }
     }
-    console.log(oldVal);
     if (oldVal !== undefined) {
       this.stack = this.stack.map((i) =>
         i.stackIndex >= oldVal
@@ -47,12 +46,9 @@ export class WindowStack {
       stackIndex: oldVal === undefined ? biggestVal + 1 : biggestVal,
       type: window,
     });
-
-    console.log(this.stack);
   }
   getClass(window: WindowTypes) {
     const item = this.stack.find((i) => i.type === window)?.stackIndex;
-    console.log(this.stack);
     return item ? "z" + item : "z1";
   }
 }

@@ -64,14 +64,22 @@ export type BuildingConsumesItem = {
   item: Item;
   amount: Scalars["Int"];
 };
+export type BuildingRecipe = {
+  id: number;
+  building: Building;
+  item: Item;
+  amount: number;
+};
 export type Building = {
   __typename?: "Building";
   id: Scalars["Int"];
+  total_amount_placed: Scalars["Int"];
   name: Scalars["String"];
   consumes_items: BuildingConsumesItem[];
   hacked: Scalars["Boolean"];
   outputItem: Item;
   output_amount: Scalars["Int"];
+  recipe: BuildingRecipe[];
 };
 
 export type Plot = {

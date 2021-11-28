@@ -45,9 +45,8 @@ export default function PlotBrowser(props: {
     if (getPlayer) {
       let data = await client.query({
         query: query,
-        variables: { owner: getPlayer.id },
+        variables: { filter: { owner: getPlayer.id } },
       });
-      console.log(data.data.Plot);
       setPlots(data.data.Plot);
       return data.data.Plot;
     }

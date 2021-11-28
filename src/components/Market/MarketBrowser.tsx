@@ -42,6 +42,7 @@ export default function MarketBrowser(props: {
   onFocus: (windowType: WindowTypes) => void;
   className: string;
   onRecipeClick: (ItemID: number) => void;
+  selectedMarketItem?: number;
 }) {
   let timer: any;
   const socket = useContext(SocketContext);
@@ -110,7 +111,6 @@ export default function MarketBrowser(props: {
   const onItemPressed = (itemId: number) => {
     // Hämta inventory data om vad vi har för sak
     // Vi vill joina ett rum med den item:en i.
-    console.log(getPlayer.id, itemId);
     const query = gql`
       query main($inventoryFilter: InventoryFilter, $itemFilter: ItemFilter) {
         Inventory(filter: $inventoryFilter) {
@@ -184,15 +184,15 @@ export default function MarketBrowser(props: {
           });
       }, 3000);
   };
-  const load = async () => {
-    //Här ska vi ha en funktion som fetchar de nya priserna en gång per sekund.
-
-    console.log("laoding");
-  };
   useEffect(() => {
     marketFetcher();
     return () => clearInterval(timer);
   }, []);
+  useEffect(() => {
+    if (props.selectedMarketItem) {
+      onItemPressed(props.selectedMarketItem);
+    }
+  }, [props.selectedMarketItem]);
   useEffect(() => {
     socket.on(
       "marketData",
@@ -231,7 +231,9 @@ export default function MarketBrowser(props: {
         >
           <Card style={{ minWidth: "30%", flex: 1, minHeight: 500 }}>
             <Card.Body>
-              <Card.Title>Items on the market</Card.Title>
+              <Card.Title>
+                Items on the market {props.selectedMarketItem}
+              </Card.Title>
               <div className="marketItemContainer">
                 {items.map((i) => (
                   <div

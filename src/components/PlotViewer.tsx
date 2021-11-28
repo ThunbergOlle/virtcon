@@ -149,7 +149,7 @@ export default function Inventory(props: {
                   <tr>
                     <th>Name</th>
                     <th>Consuming</th>
-                    <th>Generates</th>
+                    <th>Generates (10 min)</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -172,8 +172,10 @@ export default function Inventory(props: {
                         )}
                       </td>
                       <td>
-                        {b.building.outputItem?.name || "-"} (+
-                        {b.building.output_amount})
+                        {b.building.outputItem?.name
+                          ? b.building.outputItem?.name + " x"
+                          : "$"}
+                        {b.building.output_amount}
                       </td>
 
                       <td>
@@ -199,7 +201,6 @@ export default function Inventory(props: {
               {plot?.id ? (
                 <BuildingSelect
                   onSelect={(buildingId) => {
-                    console.log(buildingId);
                     BuildingAddToPlot(buildingId, plot!.id!);
                   }}
                 />

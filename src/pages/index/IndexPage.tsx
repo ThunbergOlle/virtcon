@@ -21,6 +21,7 @@ import { Player, Plot } from "../../utils/interfaces";
 import { WindowStack } from "../../functions/WindowStack";
 import MarketBrowser from "../../components/Market/MarketBrowser";
 import ItemRecipeBrowser from "../../components/ItemRecipeBrowser";
+import BuildingCrafter from "../../components/BuildingCrafter";
 
 interface IndexPageProps {
   player: Player;
@@ -34,13 +35,15 @@ export type WindowTypes =
   | "buildingBrowser"
   | "inventory"
   | "recipeBrowser"
-  | "marketBrowser";
+  | "marketBrowser"
+  | "buildingCrafter";
 interface IndexPageState {
   player: Player;
   openWindows: {
     [key in WindowTypes]: boolean;
   };
   selectedPlot?: Plot;
+  selectedMarketItem?: number;
   RecipeItemID?: number;
   windowStack: WindowStack;
 }
@@ -62,9 +65,11 @@ export default class IndexPage extends React.Component<
         plotViewer: false,
         marketBrowser: false,
         recipeBrowser: false,
+        buildingCrafter: false,
       },
       windowStack: new WindowStack(),
       selectedPlot: undefined,
+      selectedMarketItem: undefined,
     };
   }
   updatePlayer() {
@@ -119,6 +124,18 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow("inventory");
                   this.forceUpdate();
                 }}
+                onItemClick={(itemId) => {
+                  this.setState(
+                    {
+                      openWindows: {
+                        ...this.state.openWindows,
+                        marketBrowser: true,
+                      },
+                      selectedMarketItem: itemId,
+                    },
+                    () => this.state.windowStack.selectWindow("marketBrowser")
+                  );
+                }}
                 className={this.state.windowStack.getClass("inventory")}
               />
             </div>
@@ -138,6 +155,7 @@ export default class IndexPage extends React.Component<
                     },
                   });
                 }}
+                selectedMarketItem={this.state.selectedMarketItem}
                 className={this.state.windowStack.getClass("marketBrowser")}
               />
             </div>
@@ -183,6 +201,11 @@ export default class IndexPage extends React.Component<
               <ServerShop
                 isOpen={this.state.openWindows.serverShop}
                 onPurchase={() => emitCustomEvent("plotUpdate")}
+                onFocus={(p) => {
+                  this.state.windowStack.selectWindow(p);
+                  this.forceUpdate();
+                }}
+                className={this.state.windowStack.getClass("serverShop")}
               />
             </div>
             <div className="browser-container">
@@ -194,6 +217,24 @@ export default class IndexPage extends React.Component<
                 }}
                 recipeItemID={this.state.RecipeItemID}
                 className={this.state.windowStack.getClass("recipeBrowser")}
+              />{" "}
+            </div>
+            <div className="browser-container">
+              <BuildingCrafter
+                isOpen={this.state.openWindows.buildingCrafter}
+                onClose={() =>
+                  this.setState({
+                    openWindows: {
+                      ...this.state.openWindows,
+                      buildingCrafter: false,
+                    },
+                  })
+                }
+                onFocus={() => {
+                  this.state.windowStack.selectWindow("buildingCrafter");
+                  this.forceUpdate();
+                }}
+                className={this.state.windowStack.getClass("buildingCrafter")}
               />{" "}
             </div>
           </div>
