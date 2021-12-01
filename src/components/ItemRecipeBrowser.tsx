@@ -14,9 +14,9 @@ export default function ItemRecipeBrowser(props: {
   isOpen: boolean;
   className: string;
   recipeItemID?: number;
+  onClose: () => void;
   onFocus: (windowType: WindowTypes) => void;
 }) {
-  const [hideContent, setHideContent] = useState(false);
   const [recipe, setRecipe] = useState<NodeType | undefined>(undefined);
   const client = useApolloClient();
 
@@ -32,7 +32,6 @@ export default function ItemRecipeBrowser(props: {
     }
   };
   useEffect(() => {
-    // Make fethc requestf
     if (props.recipeItemID) {
       fetchRecipe(props.recipeItemID);
     }
@@ -47,10 +46,7 @@ export default function ItemRecipeBrowser(props: {
       onMouseDown={() => props.onFocus("recipeBrowser")}
     >
       <Card style={{ width: 1000, ...HideStyle(!props.isOpen) }}>
-        <WindowHeader
-          title="Recipe Browser"
-          onChange={(hide: boolean) => setHideContent(hide)}
-        />
+        <WindowHeader title="Recipe Browser" onClose={() => props.onClose()} />
         <div
           style={{
             overflowY: "scroll",

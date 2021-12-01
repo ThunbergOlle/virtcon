@@ -96,3 +96,9 @@
   position: absolute;
   top: 0px;
 }
+td,
+th {
+  margin: 0px !important;
+  padding: 0px !important;
+  padding-right: 5px !important;
+}

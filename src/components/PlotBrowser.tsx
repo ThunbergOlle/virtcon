@@ -69,11 +69,11 @@ export default function PlotBrowser(props: {
     >
       <Card style={{ width: 850, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
-          title={"Plot Browser" + props.className}
+          title={"Plot Browser"}
           onChange={(hide: boolean) => setHideContent(hide)}
         />
 
-        <Table hover style={HideStyle(hideContent)}>
+        <Table hover striped style={HideStyle(hideContent)}>
           <th>#</th>
           <th>Buildings</th>
           <th>Materials</th>

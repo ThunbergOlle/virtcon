@@ -67,11 +67,11 @@ export default function Inventory(props: {
     >
       <Card style={{ width: 800, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
-          title={"Inventory" + props.className}
+          title={"Inventory"}
           onChange={(hide: boolean) => setHideContent(hide)}
         />
 
-        <Table hover style={HideStyle(hideContent)}>
+        <Table hover striped style={HideStyle(hideContent)}>
           <thead>
             <th>Icon</th>
             <th>Name</th>

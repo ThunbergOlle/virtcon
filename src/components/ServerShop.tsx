@@ -12,6 +12,7 @@ export default function ServerShop(props: {
   isOpen: boolean;
   onPurchase: Function;
   className: string;
+  onClose: () => void;
   onFocus: (windowType: WindowTypes) => void;
 }) {
   const [hideContent, setHideContent] = useState(false);
@@ -72,14 +73,12 @@ export default function ServerShop(props: {
       handle=".handle"
       defaultClassName={props.className}
       onMouseDown={() => props.onFocus("serverShop")}
+      defaultPosition={{ x: 40, y: 10 }}
     >
-      <Card style={{ width: 600 }}>
-        <WindowHeader
-          title="Server shop"
-          onChange={(hide: boolean) => setHideContent(hide)}
-        />
+      <Card style={{ width: 600, ...HideStyle(!props.isOpen) }}>
+        <WindowHeader title="Server shop" onClose={() => props.onClose()} />
 
-        <Table hover style={HideStyle(hideContent)}>
+        <Table hover striped style={HideStyle(hideContent)}>
           <thead>
             <th>Icon</th>
             <th>Name</th>

@@ -66,7 +66,7 @@ export default function StatList(props: any) {
           </div>
         </Card.Header>
 
-        <Table hover style={HideStyle(hideContent)}>
+        <Table hover striped style={HideStyle(hideContent)}>
           <tbody>
             <tr>
               <td>Balance</td>

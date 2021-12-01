@@ -84,7 +84,7 @@ export default function BuildingBrowser(props: {
                 New Building
               </Button>
             </div>
-            <Table hover>
+            <Table hover striped>
               <th>Icon</th>
               <th>Name</th>
               <th>Consumes</th>

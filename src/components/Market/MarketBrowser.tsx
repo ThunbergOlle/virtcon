@@ -404,9 +404,10 @@ export default function MarketBrowser(props: {
                   <Button
                     style={{ marginTop: 30, width: "90%" }}
                     size="sm"
-                    onClick={() =>
-                      props.onRecipeClick(listedItem.item?.id || 0)
-                    }
+                    onClick={() => {
+                      console.log("CLICKED VIEW RECIPE", listedItem.item?.id);
+                      props.onRecipeClick(listedItem.item?.id || 0);
+                    }}
                   >
                     View recipe
                   </Button>

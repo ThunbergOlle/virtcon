@@ -2,7 +2,7 @@ import { useApolloClient } from "@apollo/client";
 import { gql } from "graphql-tag";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Form, ListGroup, Table } from "react-bootstrap";
-import { useCustomEventListener } from "react-custom-events";
+import { emitCustomEvent, useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
 import { BuildingAddToPlot } from "../functions/BuildingAddToPlot";
 import { pickupBuilding } from "../functions/PickupBuilding";
@@ -188,7 +188,10 @@ export default function Inventory(props: {
                             width: "100%",
                           }}
                           onClick={() => {
-                            pickupBuilding(b.id).then(() => fetchPlotData());
+                            pickupBuilding(b.id).then(() => {
+                              fetchPlotData();
+                              emitCustomEvent("productionOverviewUpdate");
+                            });
                           }}
                         >
                           Pickup

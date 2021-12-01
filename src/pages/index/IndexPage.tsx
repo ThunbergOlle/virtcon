@@ -22,6 +22,7 @@ import { WindowStack } from "../../functions/WindowStack";
 import MarketBrowser from "../../components/Market/MarketBrowser";
 import ItemRecipeBrowser from "../../components/ItemRecipeBrowser";
 import BuildingCrafter from "../../components/BuildingCrafter";
+import ProductionOverview from "../../components/ProductionOverview";
 
 interface IndexPageProps {
   player: Player;
@@ -35,6 +36,7 @@ export type WindowTypes =
   | "buildingBrowser"
   | "inventory"
   | "recipeBrowser"
+  | "productionOverview"
   | "marketBrowser"
   | "buildingCrafter";
 interface IndexPageState {
@@ -59,6 +61,7 @@ export default class IndexPage extends React.Component<
       openWindows: {
         itemBrowser: false,
         serverShop: false,
+        productionOverview: false,
         plotBrowser: false,
         buildingBrowser: false,
         inventory: false,
@@ -205,11 +208,27 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow(p);
                   this.forceUpdate();
                 }}
+                onClose={() =>
+                  this.setState({
+                    openWindows: {
+                      ...this.state.openWindows,
+                      serverShop: false,
+                    },
+                  })
+                }
                 className={this.state.windowStack.getClass("serverShop")}
               />
             </div>
             <div className="browser-container">
               <ItemRecipeBrowser
+                onClose={() =>
+                  this.setState({
+                    openWindows: {
+                      ...this.state.openWindows,
+                      recipeBrowser: false,
+                    },
+                  })
+                }
                 isOpen={this.state.openWindows.recipeBrowser}
                 onFocus={() => {
                   this.state.windowStack.selectWindow("recipeBrowser");
@@ -235,6 +254,26 @@ export default class IndexPage extends React.Component<
                   this.forceUpdate();
                 }}
                 className={this.state.windowStack.getClass("buildingCrafter")}
+              />{" "}
+            </div>
+            <div className="browser-container">
+              <ProductionOverview
+                isOpen={this.state.openWindows.productionOverview}
+                onClose={() =>
+                  this.setState({
+                    openWindows: {
+                      ...this.state.openWindows,
+                      productionOverview: false,
+                    },
+                  })
+                }
+                onFocus={() => {
+                  this.state.windowStack.selectWindow("productionOverview");
+                  this.forceUpdate();
+                }}
+                className={this.state.windowStack.getClass(
+                  "productionOverview"
+                )}
               />{" "}
             </div>
           </div>

@@ -19,4 +19,5 @@ export const BuildingAddToPlot = async (buildingId: number, plotId: number) => {
   emitCustomEvent("inventoryUpdate");
   emitCustomEvent("plotUpdate");
   emitCustomEvent("selectedPlotUpdate");
+  emitCustomEvent("productionOverviewUpdate");
 };

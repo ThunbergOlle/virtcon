@@ -81,7 +81,13 @@ export type Building = {
   output_amount: Scalars["Int"];
   recipe: BuildingRecipe[];
 };
+export type ProductionOverviewItem = {
+  item: Item;
 
+  producing: number;
+
+  consuming: number;
+};
 export type Plot = {
   __typename?: "Plot";
   id: Scalars["Int"];
