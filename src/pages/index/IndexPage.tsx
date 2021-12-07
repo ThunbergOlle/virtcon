@@ -23,6 +23,7 @@ import MarketBrowser from "../../components/Market/MarketBrowser";
 import ItemRecipeBrowser from "../../components/ItemRecipeBrowser";
 import BuildingCrafter from "../../components/BuildingCrafter";
 import ProductionOverview from "../../components/ProductionOverview";
+import PlayerScoreboard from "../../components/PlayerScoreboard";
 
 interface IndexPageProps {
   player: Player;
@@ -38,6 +39,7 @@ export type WindowTypes =
   | "recipeBrowser"
   | "productionOverview"
   | "marketBrowser"
+  | "playerScoreboard"
   | "buildingCrafter";
 interface IndexPageState {
   player: Player;
@@ -48,6 +50,8 @@ interface IndexPageState {
   selectedMarketItem?: number;
   RecipeItemID?: number;
   windowStack: WindowStack;
+  viewPlayerInventoryId: number | undefined;
+  viewPlayerOverviewId: number | undefined;
 }
 
 export default class IndexPage extends React.Component<
@@ -61,6 +65,7 @@ export default class IndexPage extends React.Component<
       openWindows: {
         itemBrowser: false,
         serverShop: false,
+        playerScoreboard: false,
         productionOverview: false,
         plotBrowser: false,
         buildingBrowser: false,
@@ -73,6 +78,8 @@ export default class IndexPage extends React.Component<
       windowStack: new WindowStack(),
       selectedPlot: undefined,
       selectedMarketItem: undefined,
+      viewPlayerInventoryId: undefined,
+      viewPlayerOverviewId: undefined,
     };
   }
   updatePlayer() {
@@ -123,6 +130,7 @@ export default class IndexPage extends React.Component<
             <div className="browser-container">
               <Inventory
                 isOpen={this.state.openWindows.inventory}
+                playerId={this.state.viewPlayerInventoryId}
                 onFocus={() => {
                   this.state.windowStack.selectWindow("inventory");
                   this.forceUpdate();
@@ -267,6 +275,7 @@ export default class IndexPage extends React.Component<
                     },
                   })
                 }
+                playerId={this.state.viewPlayerOverviewId}
                 onFocus={() => {
                   this.state.windowStack.selectWindow("productionOverview");
                   this.forceUpdate();
@@ -274,6 +283,44 @@ export default class IndexPage extends React.Component<
                 className={this.state.windowStack.getClass(
                   "productionOverview"
                 )}
+              />{" "}
+            </div>
+            <div className="browser-container">
+              <PlayerScoreboard
+                isOpen={this.state.openWindows.playerScoreboard}
+                onClose={() =>
+                  this.setState({
+                    openWindows: {
+                      ...this.state.openWindows,
+                      playerScoreboard: false,
+                    },
+                  })
+                }
+                onViewPlayerInventory={(playerId) => {
+                  this.state.windowStack.selectWindow("inventory");
+                  this.setState({
+                    viewPlayerInventoryId: playerId,
+                    openWindows: {
+                      ...this.state.openWindows,
+                      inventory: true,
+                    },
+                  });
+                }}
+                onViewPlayerOverview={(playerId) => {
+                  this.state.windowStack.selectWindow("productionOverview");
+                  this.setState({
+                    viewPlayerOverviewId: playerId,
+                    openWindows: {
+                      ...this.state.openWindows,
+                      productionOverview: true,
+                    },
+                  });
+                }}
+                onFocus={() => {
+                  this.state.windowStack.selectWindow("playerScoreboard");
+                  this.forceUpdate();
+                }}
+                className={this.state.windowStack.getClass("playerScoreboard")}
               />{" "}
             </div>
           </div>

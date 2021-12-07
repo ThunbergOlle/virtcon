@@ -1,9 +1,10 @@
 import { useApolloClient } from "@apollo/client";
 import { gql } from "graphql-tag";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Card, ListGroup, Table } from "react-bootstrap";
 import { useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
+import { PlayerContext } from "../context/PlayerContext";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
 import { InventoryItem, Item } from "../utils/interfaces";
@@ -13,16 +14,25 @@ export default function Inventory(props: {
   onFocus: (windowType: WindowTypes) => void;
   onItemClick: (itemId: number) => void;
   className: string;
+  playerId?: number;
 }) {
   const [hideContent, setHideContent] = useState(false);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const getPlayer = useContext(PlayerContext);
+  const [currentPlayerName, setCurrentPlayerName] = useState<string>(
+    getPlayer ? getPlayer.display_name! : ""
+  );
+  const [currentPlayerId, setCurrentPlayerId] = useState<number>(
+    getPlayer ? getPlayer.id! : 0
+  );
   const client = useApolloClient();
 
-  const fetchInventoryData = async () => {
+  const fetchInventoryData = async (playerId: number) => {
     const query = gql`
-      query {
-        PlayerLoggedIn {
+      query main($playerId: Int) {
+        Players(filter: { id: $playerId }) {
           display_name
+          id
           inventory {
             id
             item {
@@ -45,18 +55,30 @@ export default function Inventory(props: {
 
     let data = await client.query({
       query: query,
+      variables: { playerId: playerId },
     });
     console.dir(data);
-    setInventory(data.data.PlayerLoggedIn.inventory);
+    setInventory(data.data.Players[0].inventory);
+    setCurrentPlayerId(data.data.Players[0].id);
+    setCurrentPlayerName(data.data.Players[0].display_name);
   };
   useCustomEventListener("inventoryUpdate", async (data) => {
     // När inventoryt har uppdaterats så ska vi hämta datan igen
-    fetchInventoryData();
+    if (currentPlayerId === getPlayer.id) {
+      fetchInventoryData(getPlayer.id);
+    }
   });
   useEffect(() => {
-    fetchInventoryData();
+    console.log(getPlayer.id);
+    if (getPlayer.id) {
+      fetchInventoryData(getPlayer.id);
+    }
   }, []);
-
+  useEffect(() => {
+    if (props.playerId !== undefined) {
+      fetchInventoryData(props.playerId);
+    }
+  }, [props.playerId]);
   return (
     <Draggable
       axis="both"
@@ -67,10 +89,20 @@ export default function Inventory(props: {
     >
       <Card style={{ width: 800, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
-          title={"Inventory"}
+          title={"Inventory of " + currentPlayerName}
           onChange={(hide: boolean) => setHideContent(hide)}
         />
-
+        {getPlayer.id && currentPlayerId !== getPlayer.id ? (
+          <Button
+            size="sm"
+            onClick={() => {
+              fetchInventoryData(getPlayer!.id!);
+            }}
+            style={{ backgroundColor: "orange", borderColor: "orange" }}
+          >
+            View my inventory instead
+          </Button>
+        ) : null}
         <Table hover striped style={HideStyle(hideContent)}>
           <thead>
             <th>Icon</th>
@@ -96,19 +128,7 @@ export default function Inventory(props: {
                     <td>-</td>
                     <td style={{ textAlign: "right" }}>{i.amount}</td>
                     <td style={{ textAlign: "right" }}>-</td>
-                    <td>
-                      <Button
-                        size="sm"
-                        style={{
-                          height: 22,
-                          margin: 0,
-                          padding: 0,
-                          width: "100%",
-                        }}
-                      >
-                        Place
-                      </Button>
-                    </td>
+                    <td></td>
                   </tr>
                 );
               } else if (i.item !== null) {

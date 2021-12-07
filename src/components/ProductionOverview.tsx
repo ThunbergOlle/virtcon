@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { PlayerContext } from "../context/PlayerContext";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
-import { ProductionOverviewItem } from "../utils/interfaces";
+import { Player, ProductionOverviewItem } from "../utils/interfaces";
 
 import WindowHeader from "./WindowHeader";
 export default function ProductionOverview(props: {
@@ -16,14 +16,16 @@ export default function ProductionOverview(props: {
   className: string;
   onClose: () => void;
   onFocus: (windowType: WindowTypes) => void;
+  playerId?: number;
 }) {
   const getPlayer = useContext(PlayerContext);
   const [overview, setOverview] = useState<ProductionOverviewItem[]>([]);
+  const [currentPlayer, setCurrentPlayer] = useState<Player>();
   const client = useApolloClient();
-  const load = () => {
+  const load = (playerId: number) => {
     const query = gql`
-      query ProductionOverviewPurchase($filter: ProductionOverviewFilter) {
-        ProductionOverview(filter: $filter) {
+      query ProductionOverviewPurchase($playerId: Int) {
+        ProductionOverview(filter: { playerId: $playerId }) {
           item {
             id
             name
@@ -33,13 +35,17 @@ export default function ProductionOverview(props: {
           consuming
           producing
         }
+        Players(filter: { id: $playerId }) {
+          display_name
+          id
+        }
       }
     `;
 
     client
       .query({
         query: query,
-        variables: { filter: { playerId: getPlayer.id } },
+        variables: { playerId: playerId },
       })
       .then((res) => {
         console.log(res.data);
@@ -49,6 +55,7 @@ export default function ProductionOverview(props: {
         );
         console.log(sorted);
         setOverview(sorted);
+        setCurrentPlayer(res.data.Players[0]);
       })
       .catch((e) => {
         console.log(e);
@@ -56,13 +63,21 @@ export default function ProductionOverview(props: {
   };
 
   useCustomEventListener("productionOverviewUpdate", async (data) => {
-    load();
+    if (currentPlayer && currentPlayer.id === getPlayer.id) {
+      load(currentPlayer.id);
+    }
   });
   useEffect(() => {
-    if (getPlayer) {
-      load();
+    if (getPlayer && getPlayer.id) {
+      load(getPlayer.id);
     }
   }, [getPlayer]);
+
+  useEffect(() => {
+    if (props.playerId !== undefined) {
+      load(props.playerId);
+    }
+  }, [props.playerId]);
   return (
     <Draggable
       axis="both"
@@ -73,10 +88,20 @@ export default function ProductionOverview(props: {
     >
       <Card style={{ width: 600, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
-          title="Production Overview"
+          title={"Production Overview of " + currentPlayer?.display_name}
           onClose={() => props.onClose()}
         />
-
+        {getPlayer.id && currentPlayer?.id !== getPlayer.id ? (
+          <Button
+            size="sm"
+            onClick={() => {
+              load(getPlayer!.id!);
+            }}
+            style={{ backgroundColor: "orange", borderColor: "orange" }}
+          >
+            View my inventory instead
+          </Button>
+        ) : null}
         <Table hover striped>
           <thead>
             <th>Icon</th>
