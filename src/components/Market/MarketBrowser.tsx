@@ -8,16 +8,17 @@ import {
   FormGroup,
   FormLabel,
   Table,
-  Tooltip,
 } from "react-bootstrap";
 import Draggable from "react-draggable";
 import socketIOClient, { Socket } from "socket.io-client";
 
 import {
   CartesianGrid,
+  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
@@ -230,7 +231,7 @@ export default function MarketBrowser(props: {
             flexDirection: "row",
           }}
         >
-          <Card style={{ minWidth: "30%", flex: 1, minHeight: 500 }}>
+          <Card style={{ minWidth: "32%", flex: 1, minHeight: 500 }}>
             <Card.Body>
               <Card.Title>
                 Items on the market {props.selectedMarketItem}
@@ -241,6 +242,12 @@ export default function MarketBrowser(props: {
                     className="marketItemSmall"
                     key={i.id}
                     onClick={() => onItemPressed(i.id)}
+                    style={{
+                      backgroundColor:
+                        listedItem && i.id === listedItem?.item?.id
+                          ? "lightgrey"
+                          : "white",
+                    }}
                   >
                     <img
                       src={"./icons/" + i.market_name + ".png"}
@@ -254,192 +261,199 @@ export default function MarketBrowser(props: {
               </div>
             </Card.Body>
           </Card>
-          <Card style={{ minWidth: "70%", flex: 2, minHeight: 180 }}>
-            <Card.Body>
-              <ResponsiveContainer height="60%" width="100%">
-                <LineChart
-                  height={400}
-                  data={listedItemHistory}
-                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-                >
-                  <CartesianGrid stroke="#f5f5f5" />
-                  <XAxis dataKey="executed" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="uv"
-                    stroke="#ff7300"
-                    yAxisId={0}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="price"
-                    stroke="#387908"
-                    yAxisId={0}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-
-              <div style={{ display: "flex", width: "100%" }}>
-                <div style={{ flex: 3 }}>
-                  <h5>Sell orders</h5>
-                  <Table striped bordered hover style={{ fontSize: 12 }}>
-                    <thead>
-                      <tr>
-                        <th>Player</th>
-                        <th style={{ textAlign: "right" }}>Amount</th>
-                        <th style={{ textAlign: "right" }}>Price</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {marketListings
-                        .filter((l) => l.isSellOrder)
-                        .map((l: MarketListing) => (
-                          <tr id={String(l.id)} key={l.id}>
-                            <td>{l.player!.display_name}</td>
-                            <td style={{ textAlign: "right" }}>{l.amount}</td>
-                            <td style={{ textAlign: "right" }}>{l.price}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </Table>
-                </div>
-                <div style={{ flex: 1, textAlign: "center" }}>
-                  <Popup
-                    trigger={
-                      <Button
-                        style={{
-                          marginTop: 32,
-                          width: "90%",
-                          backgroundColor: "green",
-                        }}
-                        size="sm"
-                      >
-                        New order
-                      </Button>
-                    }
+          <Card style={{ minWidth: "68%", flex: 2, minHeight: 180 }}>
+            {listedItem.item ? (
+              <Card.Body>
+                <Card.Title style={{ textAlign: "center" }}>
+                  {listedItem.item.name}
+                </Card.Title>
+                <ResponsiveContainer height="60%" width="100%">
+                  <LineChart
+                    height={400}
+                    data={listedItemHistory}
+                    margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                   >
-                    <Card style={{ width: 400 }}>
-                      <Card.Body>
-                        <Card.Title>Place new order</Card.Title>
-                        <FormGroup>
-                          <FormLabel>Type</FormLabel>
-                          <Form.Control
-                            as="select"
-                            size="sm"
-                            value={Number(newMarketListing?.isSellOrder)}
-                            onChange={(e) => {
-                              setNewMarketListing({
-                                ...newMarketListing,
-                                isSellOrder: Boolean(Number(e.target.value)),
-                              });
-                            }}
-                          >
-                            <option value={0}>Buy order</option>
-                            <option
-                              value={1}
-                              disabled={!listedItem.maxAmountSellable}
-                            >
-                              Sell order
-                            </option>
-                          </Form.Control>
-                        </FormGroup>
-                        <FormGroup>
-                          <FormLabel>
-                            Amount - you have:{" "}
-                            {listedItem.maxAmountSellable || "?"}
-                          </FormLabel>
-                          <Form.Control
-                            as="input"
-                            type={"number"}
-                            step={1}
-                            size="sm"
-                            value={newMarketListing?.amount || ""}
-                            onChange={(e) => {
-                              if (Number(e.target.value) < 0) return;
-                              if (!newMarketListing.isSellOrder) {
-                                setNewMarketListing({
-                                  ...newMarketListing,
-                                  amount: Number(e.target.value!),
-                                });
-                              } else {
-                                setNewMarketListing({
-                                  ...newMarketListing,
-                                  amount:
-                                    listedItem!.maxAmountSellable! >=
-                                    Number(e.target.value)
-                                      ? Number(e.target.value)
-                                      : listedItem.maxAmountSellable,
-                                });
-                              }
-                            }}
-                          ></Form.Control>
-                        </FormGroup>
-                        <FormGroup>
-                          <FormLabel>Price</FormLabel>
-                          <Form.Control
-                            as="input"
-                            type={"number"}
-                            step={1}
-                            size="sm"
-                            value={newMarketListing?.price || ""}
-                            onChange={(e) => {
-                              if (Number(e.target.value) < 0) return;
-                              setNewMarketListing({
-                                ...newMarketListing,
-                                price: Number(e.target.value || 0),
-                              });
-                            }}
-                          ></Form.Control>
-                        </FormGroup>
+                    <CartesianGrid stroke="#f5f5f5" />
+                    <XAxis dataKey="executed" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="price"
+                      name="Price"
+                      stroke="#387908"
+                      yAxisId={0}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+
+                <div style={{ display: "flex", width: "100%" }}>
+                  <div style={{ flex: 3 }}>
+                    <h5>Sell orders</h5>
+                    <Table striped bordered hover style={{ fontSize: 12 }}>
+                      <thead>
+                        <tr>
+                          <th>Player</th>
+                          <th style={{ textAlign: "right" }}>Amount</th>
+                          <th style={{ textAlign: "right" }}>Price</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {marketListings
+                          .filter((l) => l.isSellOrder)
+                          .map((l: MarketListing) => (
+                            <tr id={String(l.id)} key={l.id}>
+                              <td>{l.player!.display_name}</td>
+                              <td style={{ textAlign: "right" }}>{l.amount}</td>
+                              <td style={{ textAlign: "right" }}>{l.price}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                  <div style={{ flex: 1, textAlign: "center" }}>
+                    <Popup
+                      trigger={
                         <Button
+                          style={{
+                            marginTop: 32,
+                            width: "90%",
+                            backgroundColor: "green",
+                          }}
                           size="sm"
-                          style={{ marginTop: 15, float: "right" }}
-                          onClick={() => onSendOrderPressed()}
                         >
-                          Send order
+                          New order
                         </Button>
-                      </Card.Body>
-                    </Card>
-                  </Popup>
-                  <Button
-                    style={{ marginTop: 30, width: "90%" }}
-                    size="sm"
-                    onClick={() => {
-                      console.log("CLICKED VIEW RECIPE", listedItem.item?.id);
-                      props.onRecipeClick(listedItem.item?.id || 0);
-                    }}
-                  >
-                    View recipe
-                  </Button>
+                      }
+                    >
+                      <Card style={{ width: 400 }}>
+                        <Card.Body>
+                          <Card.Title>Place new order</Card.Title>
+                          <FormGroup>
+                            <FormLabel>Type</FormLabel>
+                            <Form.Control
+                              as="select"
+                              size="sm"
+                              value={Number(newMarketListing?.isSellOrder)}
+                              onChange={(e) => {
+                                setNewMarketListing({
+                                  ...newMarketListing,
+                                  isSellOrder: Boolean(Number(e.target.value)),
+                                });
+                              }}
+                            >
+                              <option value={0}>Buy order</option>
+                              <option
+                                value={1}
+                                disabled={!listedItem.maxAmountSellable}
+                              >
+                                Sell order
+                              </option>
+                            </Form.Control>
+                          </FormGroup>
+                          <FormGroup>
+                            <FormLabel>
+                              Amount - you have:{" "}
+                              {listedItem.maxAmountSellable || "?"}
+                            </FormLabel>
+                            <Form.Control
+                              as="input"
+                              type={"number"}
+                              step={1}
+                              size="sm"
+                              value={newMarketListing?.amount || ""}
+                              onChange={(e) => {
+                                if (Number(e.target.value) < 0) return;
+                                if (!newMarketListing.isSellOrder) {
+                                  setNewMarketListing({
+                                    ...newMarketListing,
+                                    amount: Number(e.target.value!),
+                                  });
+                                } else {
+                                  setNewMarketListing({
+                                    ...newMarketListing,
+                                    amount:
+                                      listedItem!.maxAmountSellable! >=
+                                      Number(e.target.value)
+                                        ? Number(e.target.value)
+                                        : listedItem.maxAmountSellable,
+                                  });
+                                }
+                              }}
+                            ></Form.Control>
+                          </FormGroup>
+                          <FormGroup>
+                            <FormLabel>Price</FormLabel>
+                            <Form.Control
+                              as="input"
+                              type={"number"}
+                              step={1}
+                              size="sm"
+                              value={newMarketListing?.price || ""}
+                              onChange={(e) => {
+                                if (Number(e.target.value) < 0) return;
+                                setNewMarketListing({
+                                  ...newMarketListing,
+                                  price: Number(e.target.value || 0),
+                                });
+                              }}
+                            ></Form.Control>
+                          </FormGroup>
+                          <Button
+                            size="sm"
+                            style={{ marginTop: 15, float: "right" }}
+                            onClick={() => onSendOrderPressed()}
+                          >
+                            Send order
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </Popup>
+                    <Button
+                      style={{ marginTop: 30, width: "90%" }}
+                      size="sm"
+                      onClick={() => {
+                        console.log("CLICKED VIEW RECIPE", listedItem.item?.id);
+                        props.onRecipeClick(listedItem.item?.id || 0);
+                      }}
+                    >
+                      View recipe
+                    </Button>
+                  </div>
+                  <div style={{ flex: 3 }}>
+                    <h5>Buy orders</h5>
+                    <Table striped bordered hover style={{ fontSize: 12 }}>
+                      <thead>
+                        <tr>
+                          <th>Player</th>
+                          <th style={{ textAlign: "right" }}>Amount</th>
+                          <th style={{ textAlign: "right" }}>Price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {marketListings
+                          .filter((l) => !l.isSellOrder)
+                          .map((l: MarketListing) => (
+                            <tr id={String(l.id)} key={l.id}>
+                              <td>{l.player!.display_name}</td>
+                              <td style={{ textAlign: "right" }}>{l.amount}</td>
+                              <td style={{ textAlign: "right" }}>{l.price}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </Table>
+                  </div>
                 </div>
-                <div style={{ flex: 3 }}>
-                  <h5>Buy orders</h5>
-                  <Table striped bordered hover style={{ fontSize: 12 }}>
-                    <thead>
-                      <tr>
-                        <th>Player</th>
-                        <th style={{ textAlign: "right" }}>Amount</th>
-                        <th style={{ textAlign: "right" }}>Price</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {marketListings
-                        .filter((l) => !l.isSellOrder)
-                        .map((l: MarketListing) => (
-                          <tr id={String(l.id)} key={l.id}>
-                            <td>{l.player!.display_name}</td>
-                            <td style={{ textAlign: "right" }}>{l.amount}</td>
-                            <td style={{ textAlign: "right" }}>{l.price}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </Table>
-                </div>
-              </div>
-            </Card.Body>
+              </Card.Body>
+            ) : (
+              <Card.Body>
+                <h3 style={{ textAlign: "center" }}>
+                  Select an item to view its market data
+                </h3>
+              </Card.Body>
+            )}
           </Card>
         </div>
       </Card>

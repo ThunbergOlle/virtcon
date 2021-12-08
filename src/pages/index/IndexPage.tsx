@@ -190,6 +190,7 @@ export default class IndexPage extends React.Component<
                       recipeBrowser: true,
                     },
                   });
+                  this.state.windowStack.selectWindow("recipeBrowser");
                 }}
                 selectedMarketItem={this.state.selectedMarketItem}
                 className={this.state.windowStack.getClass("marketBrowser")}

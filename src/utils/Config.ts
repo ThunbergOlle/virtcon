@@ -1,3 +1,3 @@
 export const Config = {
-  baseUrl: "https://virtcon-api.quizera.se",
+  baseUrl: "http://localhost:4000",
 };
