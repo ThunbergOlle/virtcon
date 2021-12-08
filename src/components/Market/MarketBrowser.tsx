@@ -40,6 +40,7 @@ interface ExtendedItemPriceUpdate extends Item {
 export default function MarketBrowser(props: {
   isOpen: boolean;
   onFocus: (windowType: WindowTypes) => void;
+  onClose: () => void;
   className: string;
   onRecipeClick: (ItemID: number) => void;
   selectedMarketItem?: number;
@@ -220,7 +221,7 @@ export default function MarketBrowser(props: {
       <Card
         style={{ width: 1200, ...HideStyle(!props.isOpen), display: "flex" }}
       >
-        <WindowHeader title="Market viewer" />
+        <WindowHeader title="Market viewer" onClose={() => props.onClose()} />
         <div
           style={{
             width: "100%",
@@ -357,6 +358,7 @@ export default function MarketBrowser(props: {
                             size="sm"
                             value={newMarketListing?.amount || ""}
                             onChange={(e) => {
+                              if (Number(e.target.value) < 0) return;
                               if (!newMarketListing.isSellOrder) {
                                 setNewMarketListing({
                                   ...newMarketListing,
@@ -383,12 +385,13 @@ export default function MarketBrowser(props: {
                             step={1}
                             size="sm"
                             value={newMarketListing?.price || ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              if (Number(e.target.value) < 0) return;
                               setNewMarketListing({
                                 ...newMarketListing,
                                 price: Number(e.target.value || 0),
-                              })
-                            }
+                              });
+                            }}
                           ></Form.Control>
                         </FormGroup>
                         <Button
