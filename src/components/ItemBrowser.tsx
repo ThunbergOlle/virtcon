@@ -11,6 +11,7 @@ export default function ItemBrowser(props: {
   isOpen: boolean;
   className: string;
   onFocus: (windowType: WindowTypes) => void;
+  onClose: (windowType: WindowTypes) => void;
 }) {
   const [hideContent, setHideContent] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
@@ -53,7 +54,7 @@ export default function ItemBrowser(props: {
       <Card style={{ width: 500, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
           title="Item Browser"
-          onChange={(hide: boolean) => setHideContent(hide)}
+          onClose={() => props.onClose("itemBrowser")}
         />
         <div
           style={{
@@ -74,7 +75,6 @@ export default function ItemBrowser(props: {
               <th>Name</th>
               <th>Type</th>
               <th>Rarity</th>
-              <th>Market</th>
             </thead>
             <tbody>
               {items.map((i) => (
@@ -85,20 +85,6 @@ export default function ItemBrowser(props: {
                   <td>{i.name}</td>
                   <td>{i.type}</td>
                   <td>{i.rarity}</td>
-                  <td>
-                    <Button
-                      size="sm"
-                      style={{
-                        height: 22,
-                        margin: 0,
-                        padding: 0,
-                        width: "100%",
-                      }}
-                      disabled={i.type === "currency"}
-                    >
-                      View
-                    </Button>
-                  </td>
                 </tr>
               ))}
             </tbody>

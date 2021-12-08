@@ -12,9 +12,11 @@ import { HideStyle } from "../utils/HideStyle";
 import { Player } from "../utils/interfaces";
 export default function StatList(props: any) {
   const [hideContent, setHideContent] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<Player>();
   const client = useApolloClient();
   const UpdateStats = async () => {
+    setLoading(true);
     const query = gql`
       query {
         PlayerLoggedIn {
@@ -29,10 +31,17 @@ export default function StatList(props: any) {
       query: query,
     });
     setUser(data.data.PlayerLoggedIn);
+    setLoading(false);
   };
   useCustomEventListener("statListUpdate", async (data: any) => {
     // När inventoryt har uppdaterats så ska vi hämta datan igen
-    UpdateStats();
+    try {
+      await UpdateStats();
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
   });
   useEffect(() => {
     UpdateStats();
@@ -47,33 +56,24 @@ export default function StatList(props: any) {
         <Card.Header className="handle">
           <div style={{ display: "flex" }}>
             <p style={{ flex: 1 }}>My statistics</p>
-            <div style={{ textAlign: "right" }}>
-              <Button
-                size="sm"
-                style={{
-                  width: 20,
-                  height: 20,
-                  textAlign: "center",
-                  fontSize: 12,
-                  padding: 0,
-                  backgroundColor: "gray",
-                }}
-                onClick={() => setHideContent(!hideContent)}
-              >
-                {hideContent ? "<" : "x"}
-              </Button>
-            </div>
+            <div style={{ textAlign: "right" }}></div>
           </div>
         </Card.Header>
-
-        <Table hover striped style={HideStyle(hideContent)}>
-          <tbody>
-            <tr>
-              <td>Balance</td>
-              <td style={{ textAlign: "right" }}>{user?.balance}</td>
-            </tr>
-          </tbody>
-        </Table>
+        {loading ? (
+          <p>Loading..</p>
+        ) : (
+          <Table hover striped style={HideStyle(hideContent)}>
+            <tbody>
+              <tr>
+                <td>Balance</td>
+                <td style={{ textAlign: "right" }}>{user?.balance}</td>
+              </tr>
+            </tbody>
+          </Table>
+        )}
+        <Button onClick={() => UpdateStats()} size="sm">
+          Refresh
+        </Button>
       </Card>
     </Draggable>
   );

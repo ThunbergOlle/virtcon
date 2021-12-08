@@ -64,7 +64,6 @@ export default function BuildingBrowser(props: {
         <Card style={{ width: 1000 }}>
           <WindowHeader
             title="Building viewer"
-            onChange={(hide: boolean) => setHideContent(hide)}
             onClose={() => props.onClose()}
           />
 

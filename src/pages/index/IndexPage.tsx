@@ -105,6 +105,7 @@ export default class IndexPage extends React.Component<
                   [window]: !this.state.openWindows[window],
                 },
               });
+              this.state.windowStack.selectWindow(window);
             }}
           />
           <div
@@ -124,6 +125,14 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow("itemBrowser");
                   this.forceUpdate();
                 }}
+                onClose={() =>
+                  this.setState({
+                    openWindows: {
+                      ...this.state.openWindows,
+                      itemBrowser: false,
+                    },
+                  })
+                }
                 className={this.state.windowStack.getClass("itemBrowser")}
               />{" "}
             </div>
@@ -135,6 +144,14 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow("inventory");
                   this.forceUpdate();
                 }}
+                onClose={() =>
+                  this.setState({
+                    openWindows: {
+                      ...this.state.openWindows,
+                      inventory: false,
+                    },
+                  })
+                }
                 onItemClick={(itemId) => {
                   this.setState(
                     {
@@ -157,6 +174,14 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow("marketBrowser");
                   this.forceUpdate();
                 }}
+                onClose={() =>
+                  this.setState({
+                    openWindows: {
+                      ...this.state.openWindows,
+                      marketBrowser: false,
+                    },
+                  })
+                }
                 onRecipeClick={(ItemID) => {
                   this.setState({
                     RecipeItemID: ItemID,
@@ -176,6 +201,14 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow("plotBrowser");
                   this.forceUpdate();
                 }}
+                onClose={() =>
+                  this.setState({
+                    openWindows: {
+                      ...this.state.openWindows,
+                      plotBrowser: false,
+                    },
+                  })
+                }
                 className={this.state.windowStack.getClass("plotBrowser")}
                 isOpen={this.state.openWindows.plotBrowser}
                 onPlotClicked={(p: Plot) =>

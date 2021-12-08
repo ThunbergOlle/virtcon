@@ -14,6 +14,7 @@ export default function PlotBrowser(props: {
   isOpen: boolean;
   className: string;
   onFocus: (windowType: WindowTypes) => void;
+  onClose: () => void;
   onPlotClicked: Function;
 }) {
   const [hideContent, setHideContent] = useState(false);
@@ -68,10 +69,7 @@ export default function PlotBrowser(props: {
       onMouseDown={() => props.onFocus("plotBrowser")}
     >
       <Card style={{ width: 850, ...HideStyle(!props.isOpen) }}>
-        <WindowHeader
-          title={"Plot Browser"}
-          onChange={(hide: boolean) => setHideContent(hide)}
-        />
+        <WindowHeader title={"Plot Browser"} onClose={() => props.onClose()} />
 
         <Table hover striped style={HideStyle(hideContent)}>
           <th>#</th>

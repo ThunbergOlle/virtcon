@@ -12,6 +12,7 @@ import WindowHeader from "./WindowHeader";
 export default function Inventory(props: {
   isOpen: boolean;
   onFocus: (windowType: WindowTypes) => void;
+  onClose: () => void;
   onItemClick: (itemId: number) => void;
   className: string;
   playerId?: number;
@@ -90,7 +91,7 @@ export default function Inventory(props: {
       <Card style={{ width: 800, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
           title={"Inventory of " + currentPlayerName}
-          onChange={(hide: boolean) => setHideContent(hide)}
+          onClose={() => props.onClose()}
         />
         {getPlayer.id && currentPlayerId !== getPlayer.id ? (
           <Button
