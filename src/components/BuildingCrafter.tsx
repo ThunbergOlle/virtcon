@@ -97,17 +97,9 @@ export default function BuildingCrafter(props: {
     });
     setBuildings(data.data.Building);
     setInventory(data.data.PlayerLoggedIn.inventory);
-    console.dir(data);
+    selectBuilding(selectedBuilding);
   };
-  useCustomEventListener("inventoryUpdate", async (data) => {
-    // När plot data har uppdaterats så ska vi hämta datan igen
-    fetchBuildings();
-  });
-  useEffect(() => {
-    fetchBuildings();
-  }, []);
-
-  useEffect(() => {
+  const selectBuilding = (selectedBuilding?: Building) => {
     if (selectedBuilding?.recipe && selectedBuilding?.recipe.length !== 0) {
       let isCraftable = true;
 
@@ -120,6 +112,17 @@ export default function BuildingCrafter(props: {
       }
       setIsCraftable(isCraftable);
     } else setIsCraftable(false);
+  };
+  useCustomEventListener("inventoryUpdate", async (data) => {
+    // När plot data har uppdaterats så ska vi hämta datan igen
+    fetchBuildings();
+  });
+  useEffect(() => {
+    fetchBuildings();
+  }, []);
+
+  useEffect(() => {
+    selectBuilding(selectedBuilding);
   }, [selectedBuilding]);
   return (
     <Draggable
