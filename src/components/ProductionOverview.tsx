@@ -147,6 +147,10 @@ export default function ProductionOverview(props: {
             .map((i) => i.producing)
             .reduce((p, c) => p + c, 0)}
         </p>
+        <p style={{ marginLeft: 10 }}>
+          These items will be produced every production month. One production
+          month is 10 real-life minutes.
+        </p>
       </Card>
     </Draggable>
   );

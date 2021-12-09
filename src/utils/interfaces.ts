@@ -174,6 +174,10 @@ export type MarketListing = {
   executed?: string;
   player?: Player;
 };
+export type ServerShopPrices = {
+  name: string;
+  price: number;
+};
 /*
 export interface IntrUser {
   email?: string;
