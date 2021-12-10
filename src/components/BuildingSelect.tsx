@@ -5,6 +5,7 @@ import { useCustomEventListener } from "react-custom-events";
 import { Building, InventoryItem } from "../utils/interfaces";
 export default function BuildingSelect(props: {
   onSelect: (id: number) => void;
+  placedBuildingTypes?: string[];
 }) {
   const client = useApolloClient();
   const [buildings, setBuildings] = useState<InventoryItem[]>([]);
@@ -37,7 +38,7 @@ export default function BuildingSelect(props: {
   useCustomEventListener("inventoryUpdate", async (data) => {
     // När plot data har uppdaterats så ska vi hämta datan igen
     loadBuildings();
-  });
+  }); // Array.from https://stackoverflow.com/a/64709518
   return (
     <div>
       <Form.Control
@@ -46,15 +47,31 @@ export default function BuildingSelect(props: {
         onChange={(e) => setSelected(Number(e.target.value!))}
       >
         <option>Select building</option>
-        {buildings?.map((b) => {
-          if (!b.building) return null;
-          else
-            return (
-              <option key={b.id} value={b.id}>
-                {b.building?.name} ({b.amount})
-              </option>
-            );
-        })}
+        {props.placedBuildingTypes && props.placedBuildingTypes.length === 2
+          ? buildings
+              ?.filter(
+                (b) =>
+                  b.building &&
+                  props.placedBuildingTypes?.includes(b.building.name)
+              )
+              .map((b) => {
+                if (!b.building) return null;
+                else
+                  return (
+                    <option key={b.id} value={b.id}>
+                      {b.building?.name} ({b.amount})
+                    </option>
+                  );
+              })
+          : buildings?.map((b) => {
+              if (!b.building) return null;
+              else
+                return (
+                  <option key={b.id} value={b.id}>
+                    {b.building?.name} ({b.amount})
+                  </option>
+                );
+            })}
       </Form.Control>
       <Button
         size="sm"

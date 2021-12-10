@@ -115,6 +115,10 @@ export default function Inventory(props: {
                   .map((r) => r.amount)
                   ?.reduce((previous, current) => previous + current) || 0}
               </Card.Text>
+              <Card.Text style={{ fontStyle: "italic" }}>
+                Note: You can have a maximum of 2 building types (names) on one
+                plot.
+              </Card.Text>
             </Card.Body>
           </Card>
           <Card style={{ minWidth: "50%", flex: 1, minHeight: 180 }}>
@@ -203,6 +207,9 @@ export default function Inventory(props: {
               </Table>
               {plot?.id ? (
                 <BuildingSelect
+                  placedBuildingTypes={Array.from(
+                    new Set(plot.buildings.map((b) => b.building.name))
+                  )}
                   onSelect={(buildingId) => {
                     BuildingAddToPlot(buildingId, plot!.id!);
                   }}

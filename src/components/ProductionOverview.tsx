@@ -99,7 +99,7 @@ export default function ProductionOverview(props: {
             }}
             style={{ backgroundColor: "orange", borderColor: "orange" }}
           >
-            View my inventory instead
+            View my production overview instead
           </Button>
         ) : null}
         <Table hover striped>
