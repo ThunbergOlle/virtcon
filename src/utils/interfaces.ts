@@ -34,6 +34,7 @@ export type Player = {
   __typename?: "Player";
   id: Scalars["Int"];
   display_name: Scalars["String"];
+  backgroundURL: Scalars["String"];
   email: Scalars["String"];
   last_login?: Maybe<Scalars["DateTime"]>;
   balance: Scalars["Int"];

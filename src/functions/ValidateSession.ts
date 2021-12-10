@@ -12,6 +12,7 @@ export const ValidateSession = async (
         email
         display_name
         balance
+        backgroundURL
       }
     }
   `;

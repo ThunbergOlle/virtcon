@@ -8,13 +8,40 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, ListGroup, Table } from "react-bootstrap";
 import { useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
+import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
 import { Player } from "../utils/interfaces";
-export default function StatList(props: any) {
+import WindowHeader from "./WindowHeader";
+export default function StatList(props: {
+  onClose: () => void;
+  onFocus: (window: WindowTypes) => void;
+  onUpdate: () => void;
+  isOpen: boolean;
+  className: string;
+}) {
   const [hideContent, setHideContent] = useState(false);
+  const [isEditable, setIsEditable] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [backgroundURL, setBackgroundURL] = useState<string>("");
   const [user, setUser] = useState<Player>();
   const client = useApolloClient();
+  const saveUserData = async () => {
+    setLoading(true);
+    const mutation = gql`
+      mutation main($url: String!) {
+        PlayerUpdateBackground(url: $url) {
+          success
+        }
+      }
+    `;
+    let data = await client.mutate({
+      mutation: mutation,
+      variables: { url: backgroundURL },
+    });
+    setLoading(false);
+    setIsEditable(false);
+    props.onUpdate();
+  };
   const UpdateStats = async () => {
     setLoading(true);
     const query = gql`
@@ -24,6 +51,7 @@ export default function StatList(props: any) {
           email
           display_name
           balance
+          backgroundURL
         }
       }
     `;
@@ -31,6 +59,7 @@ export default function StatList(props: any) {
       query: query,
     });
     setUser(data.data.PlayerLoggedIn);
+    setBackgroundURL(data.data.PlayerLoggedIn.backgroundURL);
     setLoading(false);
   };
   useCustomEventListener("statListUpdate", async (data: any) => {
@@ -51,14 +80,11 @@ export default function StatList(props: any) {
       axis="both"
       handle=".handle"
       defaultPosition={{ x: window.innerWidth - 250, y: 10 }}
+      defaultClassName={props.className}
+      onMouseDown={() => props.onFocus("statList")}
     >
       <Card style={{ width: 200 }}>
-        <Card.Header className="handle">
-          <div style={{ display: "flex" }}>
-            <p style={{ flex: 1 }}>My statistics</p>
-            <div style={{ textAlign: "right" }}></div>
-          </div>
-        </Card.Header>
+        <WindowHeader title={"My stats"} />
         {loading ? (
           <p>Loading..</p>
         ) : (
@@ -71,9 +97,29 @@ export default function StatList(props: any) {
             </tbody>
           </Table>
         )}
-        <Button onClick={() => UpdateStats()} size="sm">
-          Refresh
-        </Button>
+        {isEditable ? (
+          <>
+            <p>Background URL</p>
+            <input
+              value={backgroundURL}
+              onChange={(e) => setBackgroundURL(e.target.value)}
+            />
+            <Button onClick={() => saveUserData()}>Save</Button>
+          </>
+        ) : (
+          <>
+            <Button onClick={() => UpdateStats()} size="sm">
+              Refresh
+            </Button>
+            <Button
+              style={{ marginTop: 5 }}
+              onClick={() => setIsEditable(true)}
+              size="sm"
+            >
+              Edit user data
+            </Button>
+          </>
+        )}
       </Card>
     </Draggable>
   );

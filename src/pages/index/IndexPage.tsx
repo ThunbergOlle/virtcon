@@ -42,7 +42,8 @@ export type WindowTypes =
   | "marketBrowser"
   | "playerScoreboard"
   | "buildingCrafter"
-  | "myMarketListings";
+  | "myMarketListings"
+  | "statList";
 interface IndexPageState {
   player: Player;
   openWindows: {
@@ -77,6 +78,7 @@ export default class IndexPage extends React.Component<
         marketBrowser: false,
         recipeBrowser: false,
         buildingCrafter: false,
+        statList: false,
       },
       windowStack: new WindowStack(),
       selectedPlot: undefined,
@@ -95,6 +97,7 @@ export default class IndexPage extends React.Component<
         toast("Error fetching user", { type: "error" });
       });
   }
+
   closeWindow(window: WindowTypes) {
     this.setState({
       openWindows: {
@@ -122,10 +125,21 @@ export default class IndexPage extends React.Component<
               position: "relative",
               width: window.innerWidth - 10,
               height: window.innerHeight,
+              backgroundImage: this.state.player.backgroundURL
+                ? `url("${this.state.player.backgroundURL}")`
+                : undefined,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
             }}
           >
             <div className="browser-container">
-              <StatList balance={this.state.player.balance} />{" "}
+              <StatList
+                isOpen={this.state.openWindows.statList}
+                onClose={() => this.closeWindow("statList")}
+                onFocus={(window) => this.selectWindow(window)}
+                onUpdate={() => this.updatePlayer()}
+                className={this.state.windowStack.getClass("statList")}
+              />{" "}
             </div>
             <div className="browser-container">
               <ItemBrowser
