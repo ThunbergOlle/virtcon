@@ -173,6 +173,7 @@ export type MarketListing = {
   isSellOrder?: boolean;
   executed?: string;
   player?: Player;
+  item?: Item;
 };
 export type ServerShopPrices = {
   name: string;

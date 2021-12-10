@@ -24,6 +24,7 @@ import ItemRecipeBrowser from "../../components/ItemRecipeBrowser";
 import BuildingCrafter from "../../components/BuildingCrafter";
 import ProductionOverview from "../../components/ProductionOverview";
 import PlayerScoreboard from "../../components/PlayerScoreboard";
+import MyMarketListings from "../../components/MyMarketListings";
 
 interface IndexPageProps {
   player: Player;
@@ -40,7 +41,8 @@ export type WindowTypes =
   | "productionOverview"
   | "marketBrowser"
   | "playerScoreboard"
-  | "buildingCrafter";
+  | "buildingCrafter"
+  | "myMarketListings";
 interface IndexPageState {
   player: Player;
   openWindows: {
@@ -68,6 +70,7 @@ export default class IndexPage extends React.Component<
         playerScoreboard: false,
         productionOverview: false,
         plotBrowser: false,
+        myMarketListings: false,
         buildingBrowser: false,
         inventory: false,
         plotViewer: false,
@@ -92,22 +95,28 @@ export default class IndexPage extends React.Component<
         toast("Error fetching user", { type: "error" });
       });
   }
-
+  closeWindow(window: WindowTypes) {
+    this.setState({
+      openWindows: {
+        ...this.state.openWindows,
+        [window]: false,
+      },
+    });
+  }
+  selectWindow(window: WindowTypes) {
+    this.setState({
+      openWindows: {
+        ...this.state.openWindows,
+        [window]: !this.state.openWindows[window],
+      },
+    });
+    this.state.windowStack.selectWindow(window);
+  }
   render() {
     return (
       <>
         <PlayerContext.Provider value={this.state.player}>
-          <ActionBar
-            onWindowOpened={(window) => {
-              this.setState({
-                openWindows: {
-                  ...this.state.openWindows,
-                  [window]: !this.state.openWindows[window],
-                },
-              });
-              this.state.windowStack.selectWindow(window);
-            }}
-          />
+          <ActionBar onWindowOpened={(window) => this.selectWindow(window)} />
           <div
             style={{
               position: "relative",
@@ -125,14 +134,7 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow("itemBrowser");
                   this.forceUpdate();
                 }}
-                onClose={() =>
-                  this.setState({
-                    openWindows: {
-                      ...this.state.openWindows,
-                      itemBrowser: false,
-                    },
-                  })
-                }
+                onClose={() => this.closeWindow("itemBrowser")}
                 className={this.state.windowStack.getClass("itemBrowser")}
               />{" "}
             </div>
@@ -144,14 +146,10 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow("inventory");
                   this.forceUpdate();
                 }}
-                onClose={() =>
-                  this.setState({
-                    openWindows: {
-                      ...this.state.openWindows,
-                      inventory: false,
-                    },
-                  })
+                onMarketOffersClick={() =>
+                  this.selectWindow("myMarketListings")
                 }
+                onClose={() => this.closeWindow("inventory")}
                 onItemClick={(itemId) => {
                   this.setState(
                     {
@@ -174,14 +172,7 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow("marketBrowser");
                   this.forceUpdate();
                 }}
-                onClose={() =>
-                  this.setState({
-                    openWindows: {
-                      ...this.state.openWindows,
-                      marketBrowser: false,
-                    },
-                  })
-                }
+                onClose={() => this.closeWindow("marketBrowser")}
                 onRecipeClick={(ItemID) => {
                   this.setState({
                     RecipeItemID: ItemID,
@@ -250,27 +241,13 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow(p);
                   this.forceUpdate();
                 }}
-                onClose={() =>
-                  this.setState({
-                    openWindows: {
-                      ...this.state.openWindows,
-                      serverShop: false,
-                    },
-                  })
-                }
+                onClose={() => this.closeWindow("serverShop")}
                 className={this.state.windowStack.getClass("serverShop")}
               />
             </div>
             <div className="browser-container">
               <ItemRecipeBrowser
-                onClose={() =>
-                  this.setState({
-                    openWindows: {
-                      ...this.state.openWindows,
-                      recipeBrowser: false,
-                    },
-                  })
-                }
+                onClose={() => this.closeWindow("recipeBrowser")}
                 isOpen={this.state.openWindows.recipeBrowser}
                 onFocus={() => {
                   this.state.windowStack.selectWindow("recipeBrowser");
@@ -283,14 +260,7 @@ export default class IndexPage extends React.Component<
             <div className="browser-container">
               <BuildingCrafter
                 isOpen={this.state.openWindows.buildingCrafter}
-                onClose={() =>
-                  this.setState({
-                    openWindows: {
-                      ...this.state.openWindows,
-                      buildingCrafter: false,
-                    },
-                  })
-                }
+                onClose={() => this.closeWindow("buildingCrafter")}
                 onFocus={() => {
                   this.state.windowStack.selectWindow("buildingCrafter");
                   this.forceUpdate();
@@ -301,14 +271,7 @@ export default class IndexPage extends React.Component<
             <div className="browser-container">
               <ProductionOverview
                 isOpen={this.state.openWindows.productionOverview}
-                onClose={() =>
-                  this.setState({
-                    openWindows: {
-                      ...this.state.openWindows,
-                      productionOverview: false,
-                    },
-                  })
-                }
+                onClose={() => this.closeWindow("productionOverview")}
                 playerId={this.state.viewPlayerOverviewId}
                 onFocus={() => {
                   this.state.windowStack.selectWindow("productionOverview");
@@ -355,6 +318,17 @@ export default class IndexPage extends React.Component<
                   this.forceUpdate();
                 }}
                 className={this.state.windowStack.getClass("playerScoreboard")}
+              />{" "}
+            </div>
+            <div className="browser-container">
+              <MyMarketListings
+                isOpen={this.state.openWindows.myMarketListings}
+                onClose={() => this.closeWindow("myMarketListings")}
+                onFocus={() => {
+                  this.state.windowStack.selectWindow("myMarketListings");
+                  this.forceUpdate();
+                }}
+                className={this.state.windowStack.getClass("myMarketListings")}
               />{" "}
             </div>
           </div>

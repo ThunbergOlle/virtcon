@@ -205,6 +205,7 @@ export default function MarketBrowser(props: {
         setListedItemHistory(data.history);
         emitCustomEvent("inventoryUpdate");
         emitCustomEvent("statListUpdate");
+        emitCustomEvent("myMarketListingsUpdate");
       }
     );
 
