@@ -304,6 +304,7 @@ export default function MarketBrowser(props: {
                       <tbody>
                         {marketListings
                           .filter((l) => l.isSellOrder)
+                          .sort((a, b) => (a.price! - b.price! ? -1 : 1))
                           .map((l: MarketListing) => (
                             <tr id={String(l.id)} key={l.id}>
                               <td>{l.player!.display_name}</td>
