@@ -14,6 +14,8 @@ export default function Login(props: { onLogin: Function }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [errorText, setErrorText] = useState("");
+  const [awaitingCode, setAwaitingCode] = useState(false);
+  const [confirmationCode, setConfirmationCode] = useState("");
   const client = useApolloClient();
 
   function validateForm() {
@@ -42,15 +44,40 @@ export default function Login(props: { onLogin: Function }) {
           },
         },
       });
-      if (data.data.PlayerNew) {
+      if (data.data && data.data.PlayerNew) {
+        toast.success("Email confirmation sent!", { autoClose: 5000 });
+        setAwaitingCode(true);
+      } else if (data.errors) {
+        console.log(data.errors);
+        throw data.errors;
+      } else throw "Someone has already signed up with this email.";
+    } catch (e) {
+      console.log(e);
+      setErrorText(String(e));
+    }
+  };
+  const checkConfirmationCode = async () => {
+    try {
+      const mutation = gql`
+        mutation main($email: String!, $code: String!) {
+          PlayerConfirmCode(email: $email, code: $code)
+        }
+      `;
+      let data = await client.mutate({
+        mutation: mutation,
+        variables: { email: email, code: confirmationCode },
+      });
+      console.dir(data);
+      if (data.data.PlayerConfirmCode) {
         setMode("login");
         setEmail("");
         setPassword("");
         setConfirmPassword("");
         setDisplayName("");
         toast.success("Successfully created account!", { autoClose: 5000 });
-      } else if (data.errors) {
-        throw data.errors;
+        setAwaitingCode(false);
+      } else {
+        throw "Felaktig kod.";
       }
     } catch (e) {
       console.log(e);
@@ -88,61 +115,93 @@ export default function Login(props: { onLogin: Function }) {
     <div className="Login">
       <Form>
         <h1>{mode === "login" ? "Login" : "Create account"}</h1>
-        <Button
-          size="sm"
-          onClick={() => setMode(mode === "signup" ? "login" : "signup")}
-        >
-          {mode === "login"
-            ? "Create account instead"
-            : "I already have an account"}
-        </Button>
-        <p style={{ color: "red" }}>{errorText}</p>
-        {mode === "signup" ? (
-          <Form.Group controlId="displayname">
-            <Form.Label>Display name</Form.Label>
-            <Form.Control
-              type="text"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-            />
-          </Form.Group>
-        ) : null}
-        <Form.Group controlId="email">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            autoFocus
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Group>
-        {mode === "signup" ? (
-          <Form.Group controlId="password-confirm">
-            <Form.Label>Confirm Password</Form.Label>
-            <Form.Control
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </Form.Group>
-        ) : null}
-        <Button
-          size="lg"
-          disabled={!validateForm()}
-          onClick={() => {
-            mode === "signup" ? onSignupPressed() : onLoginPressed();
-          }}
-        >
-          Submit
-        </Button>
+        {awaitingCode ? (
+          <>
+            <Form.Group controlId="email">
+              <Form.Label>Confirmation Code</Form.Label>
+              <Form.Control
+                autoFocus
+                type="text"
+                value={confirmationCode}
+                onChange={(e) => setConfirmationCode(e.target.value)}
+              />
+            </Form.Group>
+            <p style={{ color: "red" }}>{errorText}</p>
+
+            <Button
+              size="lg"
+              onClick={() => {
+                checkConfirmationCode();
+                setErrorText("");
+              }}
+            >
+              Submit
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              size="sm"
+              onClick={() => {
+                setMode(mode === "signup" ? "login" : "signup");
+                setErrorText("");
+              }}
+            >
+              {mode === "login"
+                ? "Create account instead"
+                : "I already have an account"}
+            </Button>
+            <p style={{ color: "red" }}>{errorText}</p>
+            {mode === "signup" ? (
+              <Form.Group controlId="displayname">
+                <Form.Label>Display name</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                />
+              </Form.Group>
+            ) : null}
+            <Form.Group controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                autoFocus
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group controlId="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Form.Group>
+            {mode === "signup" ? (
+              <Form.Group controlId="password-confirm">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </Form.Group>
+            ) : null}
+
+            <Button
+              size="lg"
+              disabled={!validateForm()}
+              onClick={() => {
+                mode === "signup" ? onSignupPressed() : onLoginPressed();
+                setErrorText("");
+              }}
+            >
+              Submit
+            </Button>
+          </>
+        )}
       </Form>
     </div>
   );
