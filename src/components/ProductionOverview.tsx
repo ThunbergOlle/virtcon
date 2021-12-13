@@ -8,7 +8,11 @@ import { toast } from "react-toastify";
 import { PlayerContext } from "../context/PlayerContext";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
-import { Player, ProductionOverviewItem } from "../utils/interfaces";
+import {
+  ElectricalPriceOverviewItem,
+  Player,
+  ProductionOverviewItem,
+} from "../utils/interfaces";
 
 import WindowHeader from "./WindowHeader";
 export default function ProductionOverview(props: {
@@ -20,6 +24,8 @@ export default function ProductionOverview(props: {
 }) {
   const getPlayer = useContext(PlayerContext);
   const [overview, setOverview] = useState<ProductionOverviewItem[]>([]);
+  const [electricalOverview, setElectricalOverview] =
+    useState<ElectricalPriceOverviewItem>();
   const [currentPlayer, setCurrentPlayer] = useState<Player>();
   const client = useApolloClient();
   const load = (playerId: number) => {
@@ -39,6 +45,11 @@ export default function ProductionOverview(props: {
           display_name
           id
         }
+        ElectricalPriceOverview(playerId: 10) {
+          producing
+          consuming
+          price
+        }
       }
     `;
 
@@ -48,14 +59,13 @@ export default function ProductionOverview(props: {
         variables: { playerId: playerId },
       })
       .then((res) => {
-        console.log(res.data);
         let sorted = [...res.data.ProductionOverview];
         sorted.sort((a: ProductionOverviewItem, b: ProductionOverviewItem) =>
           a.item?.name.toUpperCase() < b.item?.name.toUpperCase() ? -1 : 1
         );
-        console.log(sorted);
         setOverview(sorted);
         setCurrentPlayer(res.data.Players[0]);
+        setElectricalOverview(res.data.ElectricalPriceOverview);
       })
       .catch((e) => {
         console.log(e);
@@ -141,12 +151,41 @@ export default function ProductionOverview(props: {
           </tbody>
         </Table>
         <p style={{ marginLeft: 10 }}>
-          Total money generation: $
+          Money generation from structures: $
           {overview
             .filter((i) => i.item === null)
             .map((i) => i.producing)
             .reduce((p, c) => p + c, 0)}
         </p>
+        {electricalOverview && (
+          <>
+            <p style={{ marginLeft: 10, color: "darkgreen" }}>
+              Electricity produced: {electricalOverview.producing} MW ($
+              {electricalOverview.producing * electricalOverview.price})
+            </p>
+            <p style={{ marginLeft: 10, color: "darkred" }}>
+              Electricity consumed: {electricalOverview.consuming} MW (-$
+              {electricalOverview.consuming * electricalOverview.price})
+            </p>
+            <p
+              style={{
+                marginLeft: 10,
+                color:
+                  (electricalOverview.producing -
+                    electricalOverview.consuming) *
+                    electricalOverview.price >
+                  0
+                    ? "darkgreen"
+                    : "darkred",
+              }}
+            >
+              Net electricity bill: ($
+              {(electricalOverview.producing - electricalOverview.consuming) *
+                electricalOverview.price}
+              )
+            </p>
+          </>
+        )}
         <p style={{ marginLeft: 10 }}>
           These items will be produced every production month. One production
           month is 10 real-life minutes.

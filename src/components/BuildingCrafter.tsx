@@ -18,6 +18,7 @@ export default function BuildingCrafter(props: {
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [selectedBuilding, setSelectedBuilding] = useState<Building>();
+  const [electricalPrice, setElectricalPrice] = useState<number>();
   const [isCraftable, setIsCraftable] = useState<boolean>(false);
   const client = useApolloClient();
 
@@ -78,6 +79,8 @@ export default function BuildingCrafter(props: {
           }
           name
           total_amount_placed
+          electricityUsed
+          electricityGenerated
         }
         PlayerLoggedIn {
           inventory {
@@ -89,6 +92,10 @@ export default function BuildingCrafter(props: {
             }
           }
         }
+        ServerShopPrices(playerId: 7, name: "Electricity") {
+          name
+          price
+        }
       }
     `;
 
@@ -98,6 +105,7 @@ export default function BuildingCrafter(props: {
     setBuildings(data.data.Building);
     setInventory(data.data.PlayerLoggedIn.inventory);
     selectBuilding(selectedBuilding);
+    setElectricalPrice(data.data.ServerShopPrices[0].price);
   };
   const selectBuilding = (selectedBuilding?: Building) => {
     if (selectedBuilding?.recipe && selectedBuilding?.recipe.length !== 0) {
@@ -187,6 +195,29 @@ export default function BuildingCrafter(props: {
                         selectedBuilding.outputItem.name
                       : "$" + selectedBuilding.output_amount}{" "}
                     / 10 min
+                  </p>
+                  <p
+                    style={{
+                      color: selectedBuilding.electricityGenerated
+                        ? "darkgreen"
+                        : "darkred",
+                    }}
+                  >
+                    Electricity{" "}
+                    {selectedBuilding.electricityGenerated
+                      ? "production"
+                      : "consumtion"}
+                    :
+                    {selectedBuilding.electricityGenerated
+                      ? ` ${selectedBuilding.electricityGenerated}`
+                      : ` ${selectedBuilding.electricityUsed}`}{" "}
+                    MW (price: ${electricalPrice || "?"} / MW) {"Cost: "}
+                    {" $"}
+                    {(electricalPrice || 0) *
+                      (selectedBuilding.electricityGenerated ||
+                        selectedBuilding.electricityUsed ||
+                        0) +
+                      " / 10 min"}
                   </p>
                   <p>Total active: {selectedBuilding.total_amount_placed}</p>
                 </div>

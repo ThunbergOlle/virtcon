@@ -19,6 +19,7 @@ export default function Inventory(props: {
   className: string;
 }) {
   const [hideContent, setHideContent] = useState(false);
+  const [electricityPrice, setElectricityPrice] = useState<number>(0);
   const [plot, setPlot] = useState<Plot>();
   const client = useApolloClient();
 
@@ -47,6 +48,8 @@ export default function Inventory(props: {
                 rarity
               }
               output_amount
+              electricityUsed
+              electricityGenerated
             }
             occupiesResource {
               resource {
@@ -63,6 +66,10 @@ export default function Inventory(props: {
             amount
           }
         }
+        ServerShopPrices(playerId: 7, name: "Electricity") {
+          name
+          price
+        }
       }
     `;
 
@@ -72,6 +79,7 @@ export default function Inventory(props: {
     });
     console.dir(data);
     setPlot(data.data.Plot[0]);
+    setElectricityPrice(data.data.ServerShopPrices[0].price);
   };
   useCustomEventListener("selectedPlotUpdate", async (data) => {
     // När inventoryt har uppdaterats så ska vi hämta datan igen
@@ -175,13 +183,19 @@ export default function Inventory(props: {
                           </>
                         )}
                       </td>
-                      <td>
-                        {b.building.outputItem?.name
-                          ? b.building.outputItem?.name + " x"
-                          : "$"}
-                        {b.building.output_amount}
-                      </td>
-
+                      {b.building.electricityGenerated ? (
+                        <td>
+                          {b.building.electricityGenerated} MW ($
+                          {b.building.electricityGenerated * electricityPrice})
+                        </td>
+                      ) : (
+                        <td>
+                          {b.building.outputItem?.name
+                            ? b.building.outputItem?.name + " x"
+                            : "$"}
+                          {b.building.output_amount}
+                        </td>
+                      )}
                       <td>
                         <Button
                           size="sm"

@@ -80,6 +80,9 @@ export type Building = {
   hacked: Scalars["Boolean"];
   outputItem: Item;
   output_amount: Scalars["Int"];
+  electricityUsed?: Scalars["Int"];
+  electricityGenerated?: Scalars["Int"];
+
   recipe: BuildingRecipe[];
 };
 export type ProductionOverviewItem = {
@@ -88,6 +91,13 @@ export type ProductionOverviewItem = {
   producing: number;
 
   consuming: number;
+};
+
+export type ElectricalPriceOverviewItem = {
+  producing: number;
+
+  consuming: number;
+  price: number;
 };
 export type Plot = {
   __typename?: "Plot";
