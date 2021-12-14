@@ -45,7 +45,7 @@ export default function ProductionOverview(props: {
           display_name
           id
         }
-        ElectricalPriceOverview(playerId: 10) {
+        ElectricalPriceOverview(playerId: $playerId) {
           producing
           consuming
           price
