@@ -77,6 +77,14 @@ export default function BuildingCrafter(props: {
             }
             amount
           }
+          consumes_items {
+            item {
+              name
+              market_name
+            }
+            id
+            amount
+          }
           name
           total_amount_placed
           electricityUsed
@@ -155,7 +163,7 @@ export default function BuildingCrafter(props: {
             flexDirection: "row",
           }}
         >
-          <Card style={{ minWidth: "50%", flex: 1, minHeight: 180 }}>
+          <Card style={{ minWidth: "100%", flex: 1, minHeight: 180 }}>
             <Card.Body>
               <Card.Title>Overview</Card.Title>
               <Form.Control
@@ -187,15 +195,6 @@ export default function BuildingCrafter(props: {
               </Form.Control>
               {selectedBuilding ? (
                 <div>
-                  <p>
-                    Output:{" "}
-                    {selectedBuilding.outputItem
-                      ? selectedBuilding.output_amount +
-                        "x " +
-                        selectedBuilding.outputItem.name
-                      : "$" + selectedBuilding.output_amount}{" "}
-                    / 10 min
-                  </p>
                   <p
                     style={{
                       color: selectedBuilding.electricityGenerated
@@ -210,8 +209,11 @@ export default function BuildingCrafter(props: {
                     :
                     {selectedBuilding.electricityGenerated
                       ? ` ${selectedBuilding.electricityGenerated}`
-                      : ` ${selectedBuilding.electricityUsed}`}{" "}
-                    MW (price: ${electricalPrice || "?"} / MW) {"Cost: "}
+                      : ` ${selectedBuilding.electricityUsed}`}
+                    MW (${electricalPrice || "?"} / MW) <br />
+                    {selectedBuilding.electricityGenerated
+                      ? "Generates"
+                      : "Cost: "}
                     {" $"}
                     {(electricalPrice || 0) *
                       (selectedBuilding.electricityGenerated ||
@@ -222,6 +224,70 @@ export default function BuildingCrafter(props: {
                   <p>Total active: {selectedBuilding.total_amount_placed}</p>
                 </div>
               ) : null}
+            </Card.Body>
+          </Card>
+          <Card style={{ minWidth: "50%", flex: 1, minHeight: 180 }}>
+            <Card.Body>
+              {selectedBuilding ? (
+                <>
+                  {selectedBuilding.consumes_items &&
+                  selectedBuilding.consumes_items.length > 0 ? (
+                    <>
+                      <Card.Title>Consumtion</Card.Title>
+                      <Table>
+                        <thead>
+                          <tr>
+                            <th>Item</th>
+                            <th style={{ textAlign: "right" }}>Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedBuilding.consumes_items?.map((ci) => {
+                            return (
+                              <tr key={ci.id}>
+                                <td>
+                                  {" "}
+                                  <img
+                                    style={{ marginRight: 10 }}
+                                    height={18}
+                                    src={
+                                      "./icons/" + ci.item.market_name + ".png"
+                                    }
+                                  />
+                                  {ci.item.name}
+                                </td>
+                                <td
+                                  style={{
+                                    textAlign: "right",
+                                  }}
+                                >
+                                  {ci.amount}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </Table>
+                    </>
+                  ) : (
+                    <p>
+                      <em>Building doesn't consume materials.</em>
+                    </p>
+                  )}
+                  <h5>Output</h5>
+                  <b>
+                    {selectedBuilding.outputItem
+                      ? selectedBuilding.output_amount +
+                        "x " +
+                        selectedBuilding.outputItem.name
+                      : "$" + selectedBuilding.output_amount}{" "}
+                  </b>
+                </>
+              ) : (
+                <p>
+                  <em>Building doesnt consume any items.</em>
+                </p>
+              )}
             </Card.Body>
           </Card>
           <Card style={{ minWidth: "50%", flex: 1, minHeight: 180 }}>
@@ -264,7 +330,7 @@ export default function BuildingCrafter(props: {
                     disabled={!isCraftable}
                     onClick={() => craftItem(selectedBuilding.id)}
                   >
-                    Craft
+                    Craft building
                   </Button>
                 </>
               ) : (

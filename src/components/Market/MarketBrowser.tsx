@@ -202,7 +202,7 @@ export default function MarketBrowser(props: {
         console.log("RECEIVED MARKET DATA");
         data.listings.splice(50, data.listings.length);
         setMarketListings(data.listings);
-        setListedItemHistory(data.history);
+        setListedItemHistory(data.history.reverse());
         emitCustomEvent("inventoryUpdate");
         emitCustomEvent("statListUpdate");
         emitCustomEvent("myMarketListingsUpdate");
