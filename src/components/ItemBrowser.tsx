@@ -54,7 +54,7 @@ export default function ItemBrowser(props: {
       defaultClassName={props.className}
       onMouseDown={() => props.onFocus("itemBrowser")}
     >
-      <Card style={{ width: 700, ...HideStyle(!props.isOpen) }}>
+      <Card style={{ width: 850, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
           title="Item Browser"
           onClose={() => props.onClose("itemBrowser")}
@@ -73,6 +73,7 @@ export default function ItemBrowser(props: {
               <th>Name</th>
               <th>Type</th>
               <th>Rarity</th>
+              <th style={{ textAlign: "right" }}>Spawn rate</th>
               <th style={{ textAlign: "right" }}>Actions</th>
             </thead>
             <tbody>
@@ -90,6 +91,11 @@ export default function ItemBrowser(props: {
                   <td>{i.name}</td>
                   <td>{i.type}</td>
                   <td>{i.rarity}</td>
+                  <td style={{ textAlign: "right" }}>
+                    {i.spawn_rate > 0
+                      ? (i.spawn_rate * 100).toFixed(2) + "%"
+                      : "-"}
+                  </td>
                   <td style={{ textAlign: "right" }}>
                     <Button
                       size="sm"
