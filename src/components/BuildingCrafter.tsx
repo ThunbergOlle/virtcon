@@ -7,8 +7,9 @@ import Draggable from "react-draggable";
 import { toast } from "react-toastify";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
-import { Building, InventoryItem } from "../utils/interfaces";
+import { Building, InventoryItem, Item } from "../utils/interfaces";
 import WindowHeader from "./WindowHeader";
+
 export default function BuildingCrafter(props: {
   isOpen: boolean;
   onClose: Function;
@@ -16,6 +17,7 @@ export default function BuildingCrafter(props: {
   className: string;
 }) {
   const [buildings, setBuildings] = useState<Building[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [selectedBuilding, setSelectedBuilding] = useState<Building>();
   const [electricalPrice, setElectricalPrice] = useState<number>();
@@ -42,7 +44,7 @@ export default function BuildingCrafter(props: {
       })
       .then((res) => {
         if (res.data) {
-          fetchBuildings();
+          load();
           emitCustomEvent("inventoryUpdate");
           toast.success("Successfully built item!", { autoClose: 5000 });
 
@@ -57,10 +59,11 @@ export default function BuildingCrafter(props: {
         console.log(e);
       });
   };
-  const fetchBuildings = async () => {
+
+  const load = async (outputItemId?: number) => {
     const query = gql`
-      query main {
-        Building {
+      query main($outputItemId: Int) {
+        Building(filter: { outputItem: $outputItemId }) {
           id
           outputItem {
             id
@@ -90,6 +93,14 @@ export default function BuildingCrafter(props: {
           electricityUsed
           electricityGenerated
         }
+        Item {
+          name
+          market_name
+          spawn_rate
+          type
+          id
+          rarity
+        }
         PlayerLoggedIn {
           inventory {
             id
@@ -109,11 +120,13 @@ export default function BuildingCrafter(props: {
 
     let data = await client.query({
       query: query,
+      variables: { outputItemId: outputItemId },
     });
     setBuildings(data.data.Building);
     setInventory(data.data.PlayerLoggedIn.inventory);
-    selectBuilding(selectedBuilding);
+    setItems(data.data.Item);
     setElectricalPrice(data.data.ServerShopPrices[0].price);
+    setSelectedBuilding(data.data.Building[0]);
   };
   const selectBuilding = (selectedBuilding?: Building) => {
     if (selectedBuilding?.recipe && selectedBuilding?.recipe.length !== 0) {
@@ -131,12 +144,11 @@ export default function BuildingCrafter(props: {
   };
   useCustomEventListener("inventoryUpdate", async (data) => {
     // När plot data har uppdaterats så ska vi hämta datan igen
-    fetchBuildings();
+    load();
   });
   useEffect(() => {
-    fetchBuildings();
+    load();
   }, []);
-
   useEffect(() => {
     selectBuilding(selectedBuilding);
   }, [selectedBuilding]);
@@ -165,21 +177,54 @@ export default function BuildingCrafter(props: {
         >
           <Card style={{ minWidth: "100%", flex: 1, minHeight: 180 }}>
             <Card.Body>
-              <Card.Title>Overview</Card.Title>
-              <Form.Control
-                as="select"
-                size="sm"
-                onChange={(e) =>
-                  setSelectedBuilding(
-                    buildings.find((b) => b.id === Number(e.target.value!))
-                  )
-                }
-              >
-                <option>Select building</option>
-                {buildings &&
-                  buildings.map((b) => {
-                    if (!b.name) return null;
-                    else
+              <Card.Title>Find building</Card.Title>
+
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Output item</Form.Label>
+                <Form.Control
+                  as="select"
+                  size="sm"
+                  onChange={(e) => {
+                    load(Number(e.target.value));
+                  }}
+                >
+                  <option value={undefined}>Select output item</option>
+                  <option value={-2} style={{ color: "yellow" }}>
+                    Electricity
+                  </option>
+                  <option value={-3} style={{ color: "darkgreen" }}>
+                    Money
+                  </option>
+                  {items &&
+                    items.map((i) => {
+                      if (!i.name) return null;
+                      else
+                        return (
+                          <option key={i.id} value={i.id}>
+                            {i.name}
+                          </option>
+                        );
+                    })}
+                </Form.Control>
+                <Form.Text className="text-muted">
+                  Select then item you want to produce
+                </Form.Text>
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Building name</Form.Label>
+                <Form.Control
+                  as="select"
+                  size="sm"
+                  value={selectedBuilding?.id || undefined}
+                  onChange={(e) =>
+                    setSelectedBuilding(
+                      buildings.find((b) => b.id === Number(e.target.value!))
+                    )
+                  }
+                >
+                  <option>Select building</option>
+                  {buildings &&
+                    buildings.map((b) => {
                       return (
                         <option key={b.id} value={b.id}>
                           {b.name} (
@@ -191,9 +236,19 @@ export default function BuildingCrafter(props: {
                           )
                         </option>
                       );
-                  })}
-              </Form.Control>
-              {selectedBuilding ? (
+                    })}
+                </Form.Control>
+                <Form.Text className="text-muted">
+                  Select the building you want to produce the item with
+                </Form.Text>
+              </Form.Group>
+            </Card.Body>
+          </Card>
+          {selectedBuilding ? (
+            <Card style={{ minWidth: "100%", flex: 1, minHeight: 50 }}>
+              <Card.Body>
+                <Card.Title>Building Statistics</Card.Title>
+
                 <div>
                   <p
                     style={{
@@ -223,9 +278,9 @@ export default function BuildingCrafter(props: {
                   </p>
                   <p>Total active: {selectedBuilding.total_amount_placed}</p>
                 </div>
-              ) : null}
-            </Card.Body>
-          </Card>
+              </Card.Body>
+            </Card>
+          ) : null}
           <Card style={{ minWidth: "50%", flex: 1, minHeight: 180 }}>
             <Card.Body>
               {selectedBuilding ? (
