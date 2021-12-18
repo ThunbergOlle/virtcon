@@ -7,7 +7,7 @@ export default function ActionBar(props: {
   onWindowOpened: (types: WindowTypes) => void;
 }) {
   return (
-    <Navbar bg="secondary" variant="dark">
+    <Navbar style={{ backgroundColor: "darkgray" }} variant="dark">
       <Container style={{ height: 25 }}>
         <Button size="sm" onClick={() => props.onWindowOpened("plotBrowser")}>
           My plots
