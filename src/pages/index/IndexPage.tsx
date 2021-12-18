@@ -106,6 +106,26 @@ export default class IndexPage extends React.Component<
       },
     });
   }
+  onRecipeClicked(ItemID: number) {
+    this.setState({
+      RecipeItemID: ItemID,
+      openWindows: {
+        ...this.state.openWindows,
+        recipeBrowser: true,
+      },
+    });
+    this.state.windowStack.selectWindow("recipeBrowser");
+  }
+  onMarketClicked(ItemID: number) {
+    this.setState({
+      openWindows: {
+        ...this.state.openWindows,
+        marketBrowser: true,
+      },
+      selectedMarketItem: ItemID,
+    });
+    this.state.windowStack.selectWindow("marketBrowser");
+  }
   selectWindow(window: WindowTypes) {
     this.setState({
       openWindows: {
@@ -148,6 +168,8 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow("itemBrowser");
                   this.forceUpdate();
                 }}
+                onViewMarketClicked={(ItemId) => this.onMarketClicked(ItemId)}
+                onRecipeClicked={(ItemId) => this.onRecipeClicked(ItemId)}
                 onClose={() => this.closeWindow("itemBrowser")}
                 className={this.state.windowStack.getClass("itemBrowser")}
               />{" "}
@@ -164,18 +186,7 @@ export default class IndexPage extends React.Component<
                   this.selectWindow("myMarketListings")
                 }
                 onClose={() => this.closeWindow("inventory")}
-                onItemClick={(itemId) => {
-                  this.setState(
-                    {
-                      openWindows: {
-                        ...this.state.openWindows,
-                        marketBrowser: true,
-                      },
-                      selectedMarketItem: itemId,
-                    },
-                    () => this.state.windowStack.selectWindow("marketBrowser")
-                  );
-                }}
+                onItemClick={(itemId) => this.onMarketClicked(itemId)}
                 className={this.state.windowStack.getClass("inventory")}
               />
             </div>
@@ -187,16 +198,7 @@ export default class IndexPage extends React.Component<
                   this.forceUpdate();
                 }}
                 onClose={() => this.closeWindow("marketBrowser")}
-                onRecipeClick={(ItemID) => {
-                  this.setState({
-                    RecipeItemID: ItemID,
-                    openWindows: {
-                      ...this.state.openWindows,
-                      recipeBrowser: true,
-                    },
-                  });
-                  this.state.windowStack.selectWindow("recipeBrowser");
-                }}
+                onRecipeClick={(ItemID) => this.onRecipeClicked(ItemID)}
                 selectedMarketItem={this.state.selectedMarketItem}
                 className={this.state.windowStack.getClass("marketBrowser")}
               />
