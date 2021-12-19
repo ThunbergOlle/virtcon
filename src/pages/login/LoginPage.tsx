@@ -91,6 +91,8 @@ export default function Login(props: { onLogin: Function }) {
         mutation main($email: String!, $password: String!) {
           PlayerLogin(options: { email: $email, password: $password }) {
             token
+            success
+            message
           }
         }
       `;
@@ -100,8 +102,13 @@ export default function Login(props: { onLogin: Function }) {
       });
       console.dir(data);
       if (data.data.PlayerLogin) {
-        sessionStorage.setItem("token", data.data.PlayerLogin.token);
-        props.onLogin();
+        if (data.data.PlayerLogin.success) {
+          console.log("SUCCESS");
+          sessionStorage.setItem("token", data.data.PlayerLogin.token);
+          props.onLogin();
+        } else {
+          throw data.data.PlayerLogin.message;
+        }
       } else {
         throw data.error;
       }
