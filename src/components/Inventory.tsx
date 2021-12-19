@@ -14,7 +14,6 @@ export default function Inventory(props: {
   onFocus: (windowType: WindowTypes) => void;
   onClose: () => void;
   onItemClick: (itemId: number) => void;
-  onMarketOffersClick: () => void;
   className: string;
   playerId?: number;
 }) {
@@ -170,9 +169,6 @@ export default function Inventory(props: {
             })}
           </tbody>
         </Table>
-        <Button size="sm" onClick={() => props.onMarketOffersClick()}>
-          View my market offers
-        </Button>
       </Card>
     </Draggable>
   );

@@ -88,7 +88,7 @@ function App() {
           timerInterval = setInterval(() => {
             fetchAllNewData();
           }, res.interval);
-        }, res.lastTimerExecuted + res.interval - Number(new Date()) + Math.floor(Math.random() * (5000 - 10000) + 5000));
+        }, res.lastTimerExecuted + res.interval - Number(new Date()) + Math.floor(Math.random() * (10000 - 20000) + 10000));
       });
 
     CheckLoggedIn();

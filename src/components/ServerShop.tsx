@@ -109,29 +109,36 @@ export default function ServerShop(props: {
             <th>Icon</th>
             <th>Name</th>
             <th>Price</th>
-            <th>Action</th>
+            <th style={{ width: 160 }}>Action</th>
           </thead>
           <tbody>
             {shopItems.map((s) => (
               <tr>
                 <td>
-                  <img src={"./icons/plot.png"} height="25" />
+                  <img
+                    src={"./icons/" + s.name.toLowerCase() + ".png"}
+                    height="25"
+                  />
                 </td>
                 <td>{s.name}</td>
                 <td>{s.price}</td>
                 <td>
-                  <Button
-                    size="sm"
-                    style={{
-                      height: 22,
-                      margin: 0,
-                      padding: 0,
-                      width: "100%",
-                    }}
-                    onClick={() => buy("plot")}
-                  >
-                    Buy
-                  </Button>
+                  {s.name === "Plot" ? (
+                    <Button
+                      size="sm"
+                      style={{
+                        height: 22,
+                        margin: 0,
+                        padding: 0,
+                        width: "100%",
+                      }}
+                      onClick={() => buy("plot")}
+                    >
+                      Buy
+                    </Button>
+                  ) : (
+                    <em style={{ width: "100%" }}>Automatically buying</em>
+                  )}
                 </td>
               </tr>
             ))}

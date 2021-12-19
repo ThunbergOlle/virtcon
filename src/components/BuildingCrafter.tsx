@@ -22,6 +22,8 @@ export default function BuildingCrafter(props: {
   const [selectedBuilding, setSelectedBuilding] = useState<Building>();
   const [electricalPrice, setElectricalPrice] = useState<number>();
   const [isCraftable, setIsCraftable] = useState<boolean>(false);
+  const [nameFilter, setNameFilter] = useState<string>("");
+
   const client = useApolloClient();
 
   const craftItem = (BuildingId: number) => {
@@ -178,39 +180,67 @@ export default function BuildingCrafter(props: {
           <Card style={{ minWidth: "100%", flex: 1, minHeight: 180 }}>
             <Card.Body>
               <Card.Title>Find building</Card.Title>
-
-              <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Output item</Form.Label>
+              <Form.Group>
+                <Form.Label>Item name</Form.Label>
                 <Form.Control
-                  as="select"
                   size="sm"
-                  onChange={(e) => {
-                    load(Number(e.target.value));
-                  }}
-                >
-                  <option value={undefined}>Select output item</option>
-                  <option value={-2} style={{ color: "yellow" }}>
-                    Electricity
-                  </option>
-                  <option value={-3} style={{ color: "darkgreen" }}>
-                    Money
-                  </option>
-                  {items &&
-                    items.map((i) => {
-                      if (!i.name) return null;
-                      else
-                        return (
-                          <option key={i.id} value={i.id}>
-                            {i.name}
-                          </option>
-                        );
-                    })}
-                </Form.Control>
+                  type="text"
+                  onChange={(e) => setNameFilter(e.target.value.toUpperCase())}
+                ></Form.Control>
                 <Form.Text className="text-muted">
-                  Select then item you want to produce
+                  Search and select the item you want to produce
                 </Form.Text>
               </Form.Group>
-              <Form.Group>
+              <div
+                style={{
+                  overflowY: "scroll",
+                  display: "flex",
+                  flexDirection: "column",
+                  height: 150,
+                  marginLeft: 5,
+                }}
+              >
+                <Table hover>
+                  <thead>
+                    <th>Icon</th>
+                    <th>Name</th>
+                  </thead>
+                  <tbody>
+                    <tr style={{ cursor: "pointer" }} onClick={() => load(-2)}>
+                      <td>
+                        <img src={`./icons/electricity.png`} height="25" />
+                      </td>
+                      <td>Electricity</td>
+                    </tr>
+                    <tr style={{ cursor: "pointer" }} onClick={() => load(-3)}>
+                      <td>
+                        <img src={`./icons/money.png`} height="25" />
+                      </td>
+                      <td>Money</td>
+                    </tr>
+                    {items.map((i) =>
+                      i.name.toUpperCase().includes(nameFilter) ? (
+                        <tr
+                          id={String(i.id)}
+                          key={i.id}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => load(i.id)}
+                        >
+                          <td>
+                            <img
+                              src={`./icons/${i.market_name}.png`}
+                              height="25"
+                            />
+                          </td>
+                          <td>{i.name}</td>
+                        </tr>
+                      ) : null
+                    )}
+                  </tbody>
+                </Table>
+              </div>
+
+              <Form.Group style={{ marginTop: 10 }}>
                 <Form.Label>Building name</Form.Label>
                 <Form.Control
                   as="select"
@@ -238,7 +268,7 @@ export default function BuildingCrafter(props: {
                       );
                     })}
                 </Form.Control>
-                <Form.Text className="text-muted">
+                <Form.Text>
                   Select the building you want to produce the item with
                 </Form.Text>
               </Form.Group>

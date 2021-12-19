@@ -42,6 +42,12 @@ export default function ActionBar(props: {
         >
           Scoreboard
         </Button>
+        <Button
+          size="sm"
+          onClick={() => props.onWindowOpened("myMarketListings")}
+        >
+          Market listings
+        </Button>
       </Container>
     </Navbar>
   );

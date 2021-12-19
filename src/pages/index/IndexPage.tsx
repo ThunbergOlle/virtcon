@@ -182,9 +182,6 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow("inventory");
                   this.forceUpdate();
                 }}
-                onMarketOffersClick={() =>
-                  this.selectWindow("myMarketListings")
-                }
                 onClose={() => this.closeWindow("inventory")}
                 onItemClick={(itemId) => this.onMarketClicked(itemId)}
                 className={this.state.windowStack.getClass("inventory")}

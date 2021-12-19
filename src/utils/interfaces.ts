@@ -29,7 +29,19 @@ export type Query = {
 export type QueryItemArgs = {
   filter?: Maybe<ItemFilter>;
 };
-
+export type Award = {
+  id: Scalars["Int"];
+  name: string;
+  color: string;
+  descr: string;
+};
+export type PlayerAward = {
+  id: Scalars["Int"];
+  amount: Scalars["Int"];
+  timestamp: Date;
+  award: Award;
+  player: Player;
+};
 export type Player = {
   __typename?: "Player";
   id: Scalars["Int"];
@@ -40,6 +52,7 @@ export type Player = {
   balance: Scalars["Int"];
   inventory?: Maybe<Array<InventoryItem>>;
   plot?: Maybe<Array<Plot>>;
+  awards?: PlayerAward[];
 };
 
 export type InventoryItem = {

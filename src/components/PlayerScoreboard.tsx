@@ -7,6 +7,9 @@ import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
 import { Player } from "../utils/interfaces";
 import WindowHeader from "./WindowHeader";
+import { RiVipCrownFill } from "react-icons/ri";
+import AwardDisplayer from "./AwardDisplayer";
+
 export default function PlayerScoreboard(props: {
   isOpen: boolean;
   onClose: Function;
@@ -31,6 +34,15 @@ export default function PlayerScoreboard(props: {
           id
           display_name
           balance
+          awards {
+            id
+            award {
+              id
+              name
+              color
+            }
+            amount
+          }
         }
       }
     `;
@@ -89,7 +101,19 @@ export default function PlayerScoreboard(props: {
                   {players.map((p) => {
                     return (
                       <tr key={p.id}>
-                        <td>{p.display_name}</td>
+                        <td>
+                          {p.display_name}
+                          <p
+                            style={{
+                              display: "inline-block",
+                              marginLeft: 10,
+                              margin: 0,
+                              padding: 0,
+                            }}
+                          >
+                            <AwardDisplayer awards={p.awards} useBrackets />
+                          </p>
+                        </td>
                         <td style={{ textAlign: "right" }}>{p.balance}</td>
                         <td style={{ textAlign: "right" }}>
                           <Button

@@ -52,6 +52,9 @@ export default function StatList(props: {
           display_name
           balance
           backgroundURL
+          plot {
+            id
+          }
         }
       }
     `;
@@ -84,7 +87,7 @@ export default function StatList(props: {
       onMouseDown={() => props.onFocus("statList")}
     >
       <Card style={{ width: 200 }}>
-        <WindowHeader title={"My stats"} />
+        <WindowHeader title={"Player statistics"} />
         {loading ? (
           <p>Loading..</p>
         ) : (
@@ -93,6 +96,10 @@ export default function StatList(props: {
               <tr>
                 <td>Balance</td>
                 <td style={{ textAlign: "right" }}>{user?.balance}</td>
+              </tr>
+              <tr>
+                <td>Plots</td>
+                <td style={{ textAlign: "right" }}>{user?.plot?.length}</td>
               </tr>
             </tbody>
           </Table>
@@ -116,7 +123,7 @@ export default function StatList(props: {
               onClick={() => setIsEditable(true)}
               size="sm"
             >
-              Edit user data
+              Change background
             </Button>
           </>
         )}

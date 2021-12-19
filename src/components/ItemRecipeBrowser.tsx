@@ -62,7 +62,7 @@ export default function ItemRecipeBrowser(props: {
               lineBorderRadius={"10px"}
               label={recipe.item.name}
             >
-              <Node item={recipe} amount={recipe.madeIn?.output_amount | 0} />
+              <Node item={recipe} amount={1} />
             </Tree>
           )}
         </div>
@@ -88,7 +88,10 @@ function Node(props: { item: NodeType; amount: number }) {
         <div>
           <em style={{ color: "GrayText" }}>{props.item.madeIn?.name}</em>
           <p style={{ paddingBottom: 0, marginBottom: 0 }}>
-            {props.amount + "x " + (props.item.item.name || "") + " "}
+            {props.amount.toFixed(2) +
+              "x " +
+              (props.item.item.name || "") +
+              " "}
             <em
               style={{ color: "GrayText", fontSize: 12, margin: 0, padding: 0 }}
             >
