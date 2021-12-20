@@ -206,18 +206,28 @@ export default function BuildingCrafter(props: {
                     <th>Name</th>
                   </thead>
                   <tbody>
-                    <tr style={{ cursor: "pointer" }} onClick={() => load(-2)}>
-                      <td>
-                        <img src={`./icons/electricity.png`} height="25" />
-                      </td>
-                      <td>Electricity</td>
-                    </tr>
-                    <tr style={{ cursor: "pointer" }} onClick={() => load(-3)}>
-                      <td>
-                        <img src={`./icons/money.png`} height="25" />
-                      </td>
-                      <td>Money</td>
-                    </tr>
+                    {"electricity".toUpperCase().includes(nameFilter) ? (
+                      <tr
+                        style={{ cursor: "pointer" }}
+                        onClick={() => load(-2)}
+                      >
+                        <td>
+                          <img src={`./icons/electricity.png`} height="25" />
+                        </td>
+                        <td>Electricity</td>
+                      </tr>
+                    ) : null}
+                    {"money".toUpperCase().includes(nameFilter) ? (
+                      <tr
+                        style={{ cursor: "pointer" }}
+                        onClick={() => load(-3)}
+                      >
+                        <td>
+                          <img src={`./icons/money.png`} height="25" />
+                        </td>
+                        <td>Money</td>
+                      </tr>
+                    ) : null}
                     {items.map((i) =>
                       i.name.toUpperCase().includes(nameFilter) ? (
                         <tr
