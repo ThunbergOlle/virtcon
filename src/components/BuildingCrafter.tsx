@@ -128,7 +128,11 @@ export default function BuildingCrafter(props: {
     setInventory(data.data.PlayerLoggedIn.inventory);
     setItems(data.data.Item);
     setElectricalPrice(data.data.ServerShopPrices[0].price);
-    setSelectedBuilding(data.data.Building[0]);
+    if (
+      !data.data.Building.find((b: Building) => b.id === selectedBuilding?.id)
+    ) {
+      setSelectedBuilding(data.data.Building[0]);
+    }
   };
   const selectBuilding = (selectedBuilding?: Building) => {
     if (selectedBuilding?.recipe && selectedBuilding?.recipe.length !== 0) {
