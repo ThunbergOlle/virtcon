@@ -2,20 +2,27 @@ import { gql } from "@apollo/client";
 import { emitCustomEvent } from "react-custom-events";
 import { toast } from "react-toastify";
 import { client } from "../App";
-import { Plot } from "../utils/interfaces";
 
-export const BuildingAddToPlot = async (buildingId: number, plotId: number) => {
+export const BuildingAddToPlot = async (
+  buildingId: number,
+  plotId: number,
+  tileId: number
+) => {
   try {
     const query = gql`
-      mutation main($buildingId: Int!, $plotId: Int!) {
-        BuildingAddToPlot(InventoryBuildingId: $buildingId, PlotId: $plotId) {
+      mutation main($buildingId: Int!, $plotId: Int!, $tileId: Int!) {
+        BuildingAddToPlot(
+          InventoryBuildingId: $buildingId
+          PlotId: $plotId
+          TileId: $tileId
+        ) {
           id
         }
       }
     `;
     let data = await client.query({
       query: query,
-      variables: { buildingId: buildingId, plotId: plotId },
+      variables: { buildingId: buildingId, plotId: plotId, tileId: tileId },
     });
     // Reloada all data
     emitCustomEvent("inventoryUpdate");

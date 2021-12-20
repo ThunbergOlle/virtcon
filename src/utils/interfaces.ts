@@ -55,6 +55,20 @@ export type Player = {
   awards?: PlayerAward[];
 };
 
+export type PlotGrid = {
+  id: number;
+
+  plot: Plot;
+
+  x: number;
+
+  y: number;
+
+  building?: PlotBuildings;
+
+  resource?: PlotResources;
+};
+
 export type InventoryItem = {
   __typename?: "InventoryItem";
   id: Scalars["Int"];
@@ -118,6 +132,7 @@ export type Plot = {
   max_buildings: Scalars["Int"];
   buildings: PlotBuildings[];
   resources: PlotResources[];
+  grid: PlotGrid[];
 };
 
 export type PlotBuildings = {
