@@ -113,7 +113,7 @@ export default function ServerShop(props: {
           </thead>
           <tbody>
             {shopItems.map((s) => (
-              <tr>
+              <tr key={s.name}>
                 <td>
                   <img
                     src={"./icons/" + s.name.toLowerCase() + ".png"}

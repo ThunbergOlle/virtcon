@@ -111,7 +111,12 @@ export default function PlayerScoreboard(props: {
                               padding: 0,
                             }}
                           >
-                            <AwardDisplayer awards={p.awards} useBrackets />
+                            <AwardDisplayer
+                              key={p.id + "awardDisplayer"}
+                              keyId={String(p.id)}
+                              awards={p.awards}
+                              useBrackets
+                            />
                           </p>
                         </td>
                         <td style={{ textAlign: "right" }}>{p.balance}</td>
