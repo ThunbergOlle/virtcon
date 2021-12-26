@@ -1,5 +1,11 @@
 import React from "react";
-import { Button, Container, Navbar } from "react-bootstrap";
+import {
+  Button,
+  Container,
+  Dropdown,
+  DropdownButton,
+  Navbar,
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { WindowTypes } from "../pages/index/IndexPage";
 
@@ -9,45 +15,71 @@ export default function ActionBar(props: {
   return (
     <Navbar style={{ backgroundColor: "darkgray" }} variant="dark">
       <Container style={{ height: 25 }}>
-        <Button size="sm" onClick={() => props.onWindowOpened("plotBrowser")}>
-          My plots
-        </Button>
-        <Button size="sm" onClick={() => props.onWindowOpened("itemBrowser")}>
-          Item Browser
-        </Button>
-        <Button
+        <DropdownButton title="Economy" id="bg-vertical-dropdown-1" size="sm">
+          <Dropdown.Item
+            eventKey="1"
+            onClick={() => props.onWindowOpened("marketBrowser")}
+          >
+            Resource Marketplace
+          </Dropdown.Item>
+          <Dropdown.Item
+            eventKey="2"
+            onClick={() => props.onWindowOpened("serverShop")}
+          >
+            Plot Shop
+          </Dropdown.Item>
+
+          <Dropdown.Item
+            eventKey="3"
+            onClick={() => props.onWindowOpened("playerScoreboard")}
+          >
+            Scoreboard
+          </Dropdown.Item>
+        </DropdownButton>
+        <DropdownButton
+          title="Production"
+          id="bg-vertical-dropdown-1"
           size="sm"
-          onClick={() => props.onWindowOpened("buildingCrafter")}
         >
-          Building Crafter
-        </Button>
-        <Button size="sm" onClick={() => props.onWindowOpened("marketBrowser")}>
-          Marketplace
-        </Button>
-        <Button
-          size="sm"
-          onClick={() => props.onWindowOpened("productionOverview")}
-        >
-          Production Overview
-        </Button>
-        <Button size="sm" onClick={() => props.onWindowOpened("serverShop")}>
-          Server shop
-        </Button>
-        <Button size="sm" onClick={() => props.onWindowOpened("inventory")}>
-          Inventory
-        </Button>
-        <Button
-          size="sm"
-          onClick={() => props.onWindowOpened("playerScoreboard")}
-        >
-          Scoreboard
-        </Button>
-        <Button
-          size="sm"
-          onClick={() => props.onWindowOpened("myMarketListings")}
-        >
-          Market listings
-        </Button>
+          <Dropdown.Item
+            eventKey="1"
+            onClick={() => props.onWindowOpened("productionOverview")}
+          >
+            Production Overview
+          </Dropdown.Item>
+          <Dropdown.Item
+            eventKey="2"
+            onClick={() => props.onWindowOpened("buildingCrafter")}
+          >
+            Building Crafter
+          </Dropdown.Item>
+          <Dropdown.Item
+            eventKey="3"
+            onClick={() => props.onWindowOpened("itemBrowser")}
+          >
+            Building Crafter
+          </Dropdown.Item>
+        </DropdownButton>
+        <DropdownButton title="Me" id="bg-vertical-dropdown-1" size="sm">
+          <Dropdown.Item
+            eventKey="1"
+            onClick={() => props.onWindowOpened("plotBrowser")}
+          >
+            My Plots
+          </Dropdown.Item>
+          <Dropdown.Item
+            eventKey="2"
+            onClick={() => props.onWindowOpened("inventory")}
+          >
+            Inventory
+          </Dropdown.Item>
+          <Dropdown.Item
+            eventKey="3"
+            onClick={() => props.onWindowOpened("myMarketListings")}
+          >
+            Current listings
+          </Dropdown.Item>
+        </DropdownButton>
       </Container>
     </Navbar>
   );
