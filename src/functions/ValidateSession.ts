@@ -13,6 +13,7 @@ export const ValidateSession = async (
         display_name
         balance
         backgroundURL
+        hasBlackMarketAccess
       }
     }
   `;

@@ -40,7 +40,8 @@ export default function WindowHeader(props: {
                 textAlign: "center",
                 fontSize: 12,
                 padding: 0,
-                backgroundColor: "red",
+                backgroundColor: "darkred",
+                borderColor: "darkred",
               }}
               onClick={() => {
                 if (props.onClose !== undefined) {

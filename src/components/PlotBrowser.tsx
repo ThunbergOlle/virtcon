@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Button, Card, Table } from "react-bootstrap";
 import Draggable from "react-draggable";
 import { HideStyle } from "../utils/HideStyle";
-import { Plot } from "../utils/interfaces";
+import { Player, Plot } from "../utils/interfaces";
 import WindowHeader from "./WindowHeader";
 import { useCustomEventListener } from "react-custom-events";
 import { gql, useApolloClient } from "@apollo/client";
@@ -15,18 +15,20 @@ export default function PlotBrowser(props: {
   className: string;
   onFocus: (windowType: WindowTypes) => void;
   onClose: () => void;
+  playerId?: number;
   onPlotClicked: Function;
 }) {
   const [hideContent, setHideContent] = useState(false);
   const [plots, setPlots] = useState<Plot[]>([]);
   const client = useApolloClient();
+  const [loadedPlayer, setLoadedPlayer] = useState<Player>();
   const getPlayer = useContext(PlayerContext);
 
-  const fetchPlotData = async () => {
+  const load = async (playerId: number) => {
     // Send PlotGRAPHQL Request
     const query = gql`
-      query main($filter: PlotFilter) {
-        Plot(filter: $filter) {
+      query main($playerId: Int!) {
+        Plot(filter: { owner: $playerId }) {
           id
           max_buildings
           buildings {
@@ -40,25 +42,38 @@ export default function PlotBrowser(props: {
             }
           }
         }
+        Players(filter: { id: $playerId }) {
+          display_name
+          id
+        }
       }
     `;
-    console.log(getPlayer);
     if (getPlayer) {
       let data = await client.query({
         query: query,
-        variables: { filter: { owner: getPlayer.id } },
+        variables: { playerId: playerId },
       });
       setPlots(data.data.Plot);
+      setLoadedPlayer(data.data.Players[0]);
       return data.data.Plot;
     }
   };
 
   useCustomEventListener("plotUpdate", async (data) => {
     // När plot data har uppdaterats så ska vi hämta datan igen
-    fetchPlotData();
+    if (getPlayer.id && loadedPlayer?.id && loadedPlayer?.id === getPlayer.id) {
+      load(getPlayer.id);
+    }
   });
   useEffect(() => {
-    fetchPlotData();
+    if (props.playerId) {
+      load(props.playerId);
+    }
+  }, [props.playerId]);
+  useEffect(() => {
+    if (getPlayer.id) {
+      load(getPlayer.id);
+    }
   }, []);
   return (
     <Draggable
@@ -69,8 +84,26 @@ export default function PlotBrowser(props: {
       onMouseDown={() => props.onFocus("plotBrowser")}
     >
       <Card style={{ width: 850, ...HideStyle(!props.isOpen) }}>
-        <WindowHeader title={"Plot Browser"} onClose={() => props.onClose()} />
-
+        <WindowHeader
+          title={
+            "Plot Browser of player: " +
+            (loadedPlayer?.display_name || getPlayer.display_name)
+          }
+          onClose={() => props.onClose()}
+        />
+        {getPlayer.id &&
+        loadedPlayer?.id &&
+        loadedPlayer.id !== getPlayer.id ? (
+          <Button
+            size="sm"
+            onClick={() => {
+              load(getPlayer!.id!);
+            }}
+            style={{ backgroundColor: "orange", borderColor: "orange" }}
+          >
+            View my plots instead
+          </Button>
+        ) : null}
         <Table hover striped style={HideStyle(hideContent)}>
           <th>#</th>
           <th>Buildings</th>

@@ -1,6 +1,6 @@
 import { useApolloClient } from "@apollo/client";
 import { gql } from "graphql-tag";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Card, Form, ListGroup, Table } from "react-bootstrap";
 import { emitCustomEvent, useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
@@ -12,6 +12,7 @@ import { InventoryItem, Item, Plot, PlotGrid } from "../utils/interfaces";
 import BuildingSelect from "./BuildingSelect";
 import WindowHeader from "./WindowHeader";
 import Map from "./Map";
+import { PlayerContext } from "../context/PlayerContext";
 export default function Inventory(props: {
   isOpen: boolean;
   onClose: Function;
@@ -19,12 +20,11 @@ export default function Inventory(props: {
   onFocus: (windowType: WindowTypes) => void;
   className: string;
 }) {
-  const [hideContent, setHideContent] = useState(false);
   const [electricityPrice, setElectricityPrice] = useState<number>(0);
   const [plot, setPlot] = useState<Plot>();
   const [highlightedTile, setHighlightedTile] = useState<PlotGrid>();
   const client = useApolloClient();
-
+  const getPlayer = useContext(PlayerContext);
   const fetchPlotData = async () => {
     if (!props.selectedPlotId) return;
     const query = gql`
@@ -32,6 +32,8 @@ export default function Inventory(props: {
         Plot(filter: { id: $id }) {
           id
           max_buildings
+          lastPrice
+          askedPrice
           buildings {
             id
             building {
@@ -91,6 +93,10 @@ export default function Inventory(props: {
               }
             }
           }
+          owner {
+            id
+            display_name
+          }
         }
         ServerShopPrices(playerId: 7, name: "Electricity") {
           name
@@ -121,7 +127,7 @@ export default function Inventory(props: {
   useEffect(() => {
     fetchPlotData();
   }, [props.selectedPlotId]);
-
+  const isOwner = getPlayer.id === plot?.owner?.id;
   return (
     <Draggable
       axis="both"
@@ -161,65 +167,71 @@ export default function Inventory(props: {
                 <Card style={{ width: "50%", flex: 1 }}>
                   {highlightedTile ? (
                     <Card.Body>
-                      <Card.Title>
-                        Tile inspection (x: {highlightedTile.x + 1}, y:
-                        {highlightedTile.y + 1})
-                      </Card.Title>
-                      <p>
-                        Resource:{" "}
-                        {highlightedTile.resource?.resource.name ||
-                          "No resource"}{" "}
-                        {highlightedTile.resource ? (
-                          <img
-                            height={20}
-                            src={`icons/${highlightedTile.resource?.resource.market_name}.png`}
-                            alt="(image not found)"
-                          />
-                        ) : null}
-                      </p>
-                      <p>Amount: {highlightedTile.resource?.amount || 0}</p>
-                      <p>
-                        Amount utilized:{" "}
-                        {highlightedTile.resource?.amountUsed || 0}
-                      </p>
-                      <p>
-                        Building:{" "}
-                        {highlightedTile.building?.building?.name ||
-                          "No building placed"}
-                      </p>
-                      {!highlightedTile.building ? (
-                        <BuildingSelect
-                          placedBuildingTypes={Array.from(
-                            new Set(plot?.buildings.map((b) => b.building.name))
+                      {isOwner ? (
+                        <>
+                          <Card.Title>
+                            Tile inspection (x: {highlightedTile.x + 1}, y:
+                            {highlightedTile.y + 1})
+                          </Card.Title>
+                          <p>
+                            Resource:{" "}
+                            {highlightedTile.resource?.resource.name ||
+                              "No resource"}{" "}
+                            {highlightedTile.resource ? (
+                              <img
+                                height={20}
+                                src={`icons/${highlightedTile.resource?.resource.market_name}.png`}
+                                alt="(image not found)"
+                              />
+                            ) : null}
+                          </p>
+                          <p>Amount: {highlightedTile.resource?.amount || 0}</p>
+                          <p>
+                            Amount utilized:{" "}
+                            {highlightedTile.resource?.amountUsed || 0}
+                          </p>
+                          <p>
+                            Building:{" "}
+                            {highlightedTile.building?.building?.name ||
+                              "No building placed"}
+                          </p>
+                          {!highlightedTile.building ? (
+                            <BuildingSelect
+                              placedBuildingTypes={Array.from(
+                                new Set(
+                                  plot?.buildings.map((b) => b.building.name)
+                                )
+                              )}
+                              onSelect={(buildingId) => {
+                                BuildingAddToPlot(
+                                  buildingId,
+                                  plot!.id!,
+                                  highlightedTile!.id
+                                );
+                              }}
+                            />
+                          ) : (
+                            <Button
+                              size="sm"
+                              style={{
+                                height: 22,
+                                margin: 0,
+                                padding: 0,
+                                width: "100%",
+                              }}
+                              onClick={() => {
+                                if (highlightedTile.building?.id) {
+                                  pickupBuilding(
+                                    highlightedTile.building?.id
+                                  ).then(() => fetchPlotData());
+                                }
+                              }}
+                            >
+                              Pickup building
+                            </Button>
                           )}
-                          onSelect={(buildingId) => {
-                            BuildingAddToPlot(
-                              buildingId,
-                              plot!.id!,
-                              highlightedTile!.id
-                            );
-                          }}
-                        />
-                      ) : (
-                        <Button
-                          size="sm"
-                          style={{
-                            height: 22,
-                            margin: 0,
-                            padding: 0,
-                            width: "100%",
-                          }}
-                          onClick={() => {
-                            if (highlightedTile.building?.id) {
-                              pickupBuilding(highlightedTile.building?.id).then(
-                                () => fetchPlotData()
-                              );
-                            }
-                          }}
-                        >
-                          Pickup building
-                        </Button>
-                      )}
+                        </>
+                      ) : null}
                     </Card.Body>
                   ) : null}
                 </Card>
@@ -230,21 +242,21 @@ export default function Inventory(props: {
             <Card.Body>
               <Card.Title>Overview</Card.Title>
               <Card.Text>Plot ID: #{plot?.id}</Card.Text>
+              <Card.Text>Owner: {plot?.owner?.display_name}</Card.Text>
               <Card.Text>
                 Buildings: {plot?.buildings?.length || 0} /{" "}
                 {plot?.max_buildings || 0}
               </Card.Text>
               <Card.Text>
-                Resources:{" "}
-                {plot?.resources
-                  .map((r) => r.amount)
-                  ?.reduce((previous, current) => previous + current) || 0}
+                Latest selling price:{" "}
+                {plot?.lastPrice ? "$" + plot.lastPrice : "No data"}
               </Card.Text>
-              <Card.Text style={{ fontStyle: "italic" }}>
-                Note: You can have a maximum of 2 building types (names) on one
-                plot. You do not need to place your buildings on top of
-                resources in order to utilize them.
-              </Card.Text>
+              {plot?.askedPrice ? (
+                <Card.Text>
+                  On market for:
+                  {"$" + plot.askedPrice}
+                </Card.Text>
+              ) : null}
             </Card.Body>
           </Card>
           <Card style={{ minWidth: "50%", flex: 1, minHeight: 180 }}>
@@ -332,6 +344,7 @@ export default function Inventory(props: {
                             padding: 0,
                             width: "100%",
                           }}
+                          disabled={!isOwner}
                           onClick={() => {
                             pickupBuilding(b.id).then(() => {
                               fetchPlotData();

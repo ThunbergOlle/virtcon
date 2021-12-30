@@ -53,6 +53,7 @@ export type Player = {
   inventory?: Maybe<Array<InventoryItem>>;
   plot?: Maybe<Array<Plot>>;
   awards?: PlayerAward[];
+  hasBlackMarketAccess?: boolean;
 };
 
 export type PlotGrid = {
@@ -133,6 +134,9 @@ export type Plot = {
   buildings: PlotBuildings[];
   resources: PlotResources[];
   grid: PlotGrid[];
+  lastPrice: number;
+  askedPrice: number;
+  owner?: Player;
 };
 
 export type PlotBuildings = {

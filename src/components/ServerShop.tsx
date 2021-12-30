@@ -121,9 +121,9 @@ export default function ServerShop(props: {
                   />
                 </td>
                 <td>{s.name}</td>
-                <td>{s.price}</td>
+                <td>${s.price}</td>
                 <td>
-                  {s.name === "Plot" ? (
+                  {s.name === "Plot" && (
                     <Button
                       size="sm"
                       style={{
@@ -136,8 +136,6 @@ export default function ServerShop(props: {
                     >
                       Buy
                     </Button>
-                  ) : (
-                    <em style={{ width: "100%" }}>Automatically buying</em>
                   )}
                 </td>
               </tr>

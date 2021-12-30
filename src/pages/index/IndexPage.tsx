@@ -25,6 +25,8 @@ import BuildingCrafter from "../../components/BuildingCrafter";
 import ProductionOverview from "../../components/ProductionOverview";
 import PlayerScoreboard from "../../components/PlayerScoreboard";
 import MyMarketListings from "../../components/MyMarketListings";
+import BlackMarket from "../../components/BlackMarket";
+import ProfileViewer from "../../components/ProfileViewer";
 
 interface IndexPageProps {
   player: Player;
@@ -43,6 +45,8 @@ export type WindowTypes =
   | "playerScoreboard"
   | "buildingCrafter"
   | "myMarketListings"
+  | "blackMarket"
+  | "profileViewer"
   | "statList";
 interface IndexPageState {
   player: Player;
@@ -54,7 +58,9 @@ interface IndexPageState {
   RecipeItemID?: number;
   windowStack: WindowStack;
   viewPlayerInventoryId: number | undefined;
+  viewPlayer: number | undefined;
   viewPlayerOverviewId: number | undefined;
+  browsePlayerPlots: number | undefined;
 }
 
 export default class IndexPage extends React.Component<
@@ -67,7 +73,9 @@ export default class IndexPage extends React.Component<
       player: this.props.player,
       openWindows: {
         itemBrowser: false,
+        profileViewer: false,
         serverShop: false,
+        blackMarket: false,
         playerScoreboard: false,
         productionOverview: false,
         plotBrowser: false,
@@ -85,6 +93,8 @@ export default class IndexPage extends React.Component<
       selectedMarketItem: undefined,
       viewPlayerInventoryId: undefined,
       viewPlayerOverviewId: undefined,
+      viewPlayer: undefined,
+      browsePlayerPlots: undefined,
     };
   }
   updatePlayer() {
@@ -206,6 +216,7 @@ export default class IndexPage extends React.Component<
                   this.state.windowStack.selectWindow("plotBrowser");
                   this.forceUpdate();
                 }}
+                playerId={this.state.browsePlayerPlots}
                 onClose={() =>
                   this.setState({
                     openWindows: {
@@ -259,6 +270,59 @@ export default class IndexPage extends React.Component<
               />
             </div>
             <div className="browser-container">
+              <BlackMarket
+                isOpen={this.state.openWindows.blackMarket}
+                onFocus={(p) => {
+                  this.state.windowStack.selectWindow(p);
+                  this.forceUpdate();
+                }}
+                onClose={() => this.closeWindow("blackMarket")}
+                className={this.state.windowStack.getClass("blackMarket")}
+              />
+            </div>
+            <div className="browser-container">
+              <ProfileViewer
+                isOpen={this.state.openWindows.profileViewer}
+                onFocus={(p) => {
+                  this.state.windowStack.selectWindow(p);
+                  this.forceUpdate();
+                }}
+                playerId={this.state.viewPlayer}
+                onClose={() => this.closeWindow("profileViewer")}
+                className={this.state.windowStack.getClass("profileViewer")}
+                onBrowsePlayerPlots={(playerId) => {
+                  this.state.windowStack.selectWindow("plotBrowser");
+                  this.setState({
+                    browsePlayerPlots: playerId,
+                    openWindows: {
+                      ...this.state.openWindows,
+                      plotBrowser: true,
+                    },
+                  });
+                }}
+                onViewPlayerInventory={(playerId) => {
+                  this.state.windowStack.selectWindow("inventory");
+                  this.setState({
+                    viewPlayerInventoryId: playerId,
+                    openWindows: {
+                      ...this.state.openWindows,
+                      inventory: true,
+                    },
+                  });
+                }}
+                onViewPlayerOverview={(playerId) => {
+                  this.state.windowStack.selectWindow("productionOverview");
+                  this.setState({
+                    viewPlayerOverviewId: playerId,
+                    openWindows: {
+                      ...this.state.openWindows,
+                      productionOverview: true,
+                    },
+                  });
+                }}
+              />
+            </div>
+            <div className="browser-container">
               <ItemRecipeBrowser
                 onClose={() => this.closeWindow("recipeBrowser")}
                 isOpen={this.state.openWindows.recipeBrowser}
@@ -306,23 +370,13 @@ export default class IndexPage extends React.Component<
                     },
                   })
                 }
-                onViewPlayerInventory={(playerId) => {
-                  this.state.windowStack.selectWindow("inventory");
+                onPlayerClicked={(playerId: number) => {
+                  this.state.windowStack.selectWindow("profileViewer");
                   this.setState({
-                    viewPlayerInventoryId: playerId,
+                    viewPlayer: playerId,
                     openWindows: {
                       ...this.state.openWindows,
-                      inventory: true,
-                    },
-                  });
-                }}
-                onViewPlayerOverview={(playerId) => {
-                  this.state.windowStack.selectWindow("productionOverview");
-                  this.setState({
-                    viewPlayerOverviewId: playerId,
-                    openWindows: {
-                      ...this.state.openWindows,
-                      productionOverview: true,
+                      profileViewer: true,
                     },
                   });
                 }}

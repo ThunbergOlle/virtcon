@@ -26,7 +26,7 @@ export default function ActionBar(props: {
             eventKey="2"
             onClick={() => props.onWindowOpened("serverShop")}
           >
-            Plot Shop
+            Server Shop
           </Dropdown.Item>
 
           <Dropdown.Item
@@ -34,6 +34,12 @@ export default function ActionBar(props: {
             onClick={() => props.onWindowOpened("playerScoreboard")}
           >
             Scoreboard
+          </Dropdown.Item>
+          <Dropdown.Item
+            eventKey="4"
+            onClick={() => props.onWindowOpened("blackMarket")}
+          >
+            Black Market
           </Dropdown.Item>
         </DropdownButton>
         <DropdownButton
@@ -57,7 +63,7 @@ export default function ActionBar(props: {
             eventKey="3"
             onClick={() => props.onWindowOpened("itemBrowser")}
           >
-            Building Crafter
+            Item Browser
           </Dropdown.Item>
         </DropdownButton>
         <DropdownButton title="Me" id="bg-vertical-dropdown-1" size="sm">

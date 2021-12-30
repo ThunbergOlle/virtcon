@@ -187,9 +187,11 @@ export default function MarketBrowser(props: {
       }, 3000);
   };
   useEffect(() => {
-    marketFetcher();
+    if (props.isOpen) {
+      marketFetcher();
+    }
     return () => clearInterval(timer);
-  }, []);
+  }, [props.isOpen]);
   useEffect(() => {
     if (props.selectedMarketItem) {
       onItemPressed(props.selectedMarketItem);
@@ -234,9 +236,7 @@ export default function MarketBrowser(props: {
         >
           <Card style={{ minWidth: "32%", flex: 1, minHeight: 500 }}>
             <Card.Body>
-              <Card.Title>
-                Items on the market {props.selectedMarketItem}
-              </Card.Title>
+              <Card.Title>Items on the market</Card.Title>
               <div className="marketItemContainer">
                 {items.map((i) => (
                   <div

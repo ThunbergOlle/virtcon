@@ -14,8 +14,7 @@ export default function PlayerScoreboard(props: {
   isOpen: boolean;
   onClose: Function;
   onFocus: (windowType: WindowTypes) => void;
-  onViewPlayerInventory: (playerId: number) => void;
-  onViewPlayerOverview: (playerId: number) => void;
+  onPlayerClicked: (playerId: number) => void;
   className: string;
 }) {
   const client = useApolloClient();
@@ -58,6 +57,13 @@ export default function PlayerScoreboard(props: {
   useEffect(() => {
     load();
   }, []);
+  const formatter = Intl.NumberFormat("en", {
+    notation: "compact",
+    style: "currency",
+    minimumSignificantDigits: 4,
+    maximumSignificantDigits: 4,
+    currency: "USD",
+  });
   return (
     <Draggable
       axis="both"
@@ -67,7 +73,7 @@ export default function PlayerScoreboard(props: {
       onMouseDown={() => props.onFocus("playerScoreboard")}
     >
       <Card
-        style={{ width: 800, ...HideStyle(!props.isOpen), display: "flex" }}
+        style={{ width: 500, ...HideStyle(!props.isOpen), display: "flex" }}
       >
         <WindowHeader title="Scoreboard" onClose={() => props.onClose()} />
         <div
@@ -95,12 +101,15 @@ export default function PlayerScoreboard(props: {
                 <thead>
                   <th>Player</th>
                   <th style={{ textAlign: "right" }}>Balance</th>
-                  <th style={{ textAlign: "right" }}>Actions</th>
                 </thead>
                 <tbody>
                   {players.map((p) => {
                     return (
-                      <tr key={p.id}>
+                      <tr
+                        key={p.id}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => props.onPlayerClicked(p.id)}
+                      >
                         <td>
                           {p.display_name}
                           <p
@@ -119,20 +128,14 @@ export default function PlayerScoreboard(props: {
                             />
                           </p>
                         </td>
-                        <td style={{ textAlign: "right" }}>{p.balance}</td>
-                        <td style={{ textAlign: "right" }}>
-                          <Button
-                            size="sm"
-                            onClick={() => props.onViewPlayerInventory(p.id)}
-                          >
-                            View Inventory
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => props.onViewPlayerOverview(p.id)}
-                          >
-                            View Production
-                          </Button>
+                        <td
+                          style={{
+                            textAlign: "right",
+                            fontFamily: "monospace",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {formatter.format(p.balance)}
                         </td>
                       </tr>
                     );
