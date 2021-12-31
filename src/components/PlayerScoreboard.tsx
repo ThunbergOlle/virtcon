@@ -9,6 +9,7 @@ import { Player } from "../utils/interfaces";
 import WindowHeader from "./WindowHeader";
 import { RiVipCrownFill } from "react-icons/ri";
 import AwardDisplayer from "./AwardDisplayer";
+import { MoneyFormatter } from "../utils/MoneyFormatter";
 
 export default function PlayerScoreboard(props: {
   isOpen: boolean;
@@ -57,13 +58,7 @@ export default function PlayerScoreboard(props: {
   useEffect(() => {
     load();
   }, []);
-  const formatter = Intl.NumberFormat("en", {
-    notation: "compact",
-    style: "currency",
-    minimumSignificantDigits: 4,
-    maximumSignificantDigits: 4,
-    currency: "USD",
-  });
+
   return (
     <Draggable
       axis="both"
@@ -135,7 +130,7 @@ export default function PlayerScoreboard(props: {
                             fontWeight: "bold",
                           }}
                         >
-                          {formatter.format(p.balance)}
+                          {MoneyFormatter.format(p.balance)}
                         </td>
                       </tr>
                     );

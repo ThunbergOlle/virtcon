@@ -54,6 +54,8 @@ export type Player = {
   plot?: Maybe<Array<Plot>>;
   awards?: PlayerAward[];
   hasBlackMarketAccess?: boolean;
+  sentTransactions: MoneyTransaction[];
+  receivedTransactions: MoneyTransaction[];
 };
 
 export type PlotGrid = {
@@ -138,7 +140,14 @@ export type Plot = {
   askedPrice: number;
   owner?: Player;
 };
+export type MoneyTransaction = {
+  id: number;
 
+  fromPlayer: Player;
+  toPlayer: Player;
+  amount: number;
+  timestamp: Date;
+};
 export type PlotBuildings = {
   __typename?: "PlotBuildings";
   id: Scalars["Int"];
