@@ -139,11 +139,11 @@ export default class IndexPage extends React.Component<
     });
     this.state.windowStack.selectWindow("marketBrowser");
   }
-  selectWindow(window: WindowTypes) {
+  selectWindow(window: WindowTypes, alwaysFocus?: boolean) {
     this.setState({
       openWindows: {
         ...this.state.openWindows,
-        [window]: !this.state.openWindows[window],
+        [window]: alwaysFocus || !this.state.openWindows[window],
       },
     });
     this.state.windowStack.selectWindow(window);
@@ -230,15 +230,12 @@ export default class IndexPage extends React.Component<
                 }
                 className={this.state.windowStack.getClass("plotBrowser")}
                 isOpen={this.state.openWindows.plotBrowser}
-                onPlotClicked={(p: Plot) =>
+                onPlotClicked={(p: Plot) => {
                   this.setState({
                     selectedPlot: p,
-                    openWindows: {
-                      ...this.state.openWindows,
-                      plotViewer: true,
-                    },
-                  })
-                }
+                  });
+                  this.selectWindow("plotViewer", true);
+                }}
               />
             </div>
             <div className="browser-container">
@@ -275,15 +272,12 @@ export default class IndexPage extends React.Component<
             <div className="browser-container">
               <PlotMarketBrowser
                 isOpen={this.state.openWindows.plotMarketBrowser}
-                onPlotClicked={(plot) =>
+                onPlotClicked={(plot) => {
                   this.setState({
                     selectedPlot: plot,
-                    openWindows: {
-                      ...this.state.openWindows,
-                      plotViewer: true,
-                    },
-                  })
-                }
+                  });
+                  this.selectWindow("plotViewer", true);
+                }}
                 onFocus={(p) => {
                   this.state.windowStack.selectWindow(p);
                   this.forceUpdate();

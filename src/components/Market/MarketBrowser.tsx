@@ -238,27 +238,33 @@ export default function MarketBrowser(props: {
             <Card.Body>
               <Card.Title>Items on the market</Card.Title>
               <div className="marketItemContainer">
-                {items.map((i) => (
-                  <div
-                    className="marketItemSmall"
-                    key={i.id}
-                    onClick={() => onItemPressed(i.id)}
-                    style={{
-                      backgroundColor:
-                        listedItem && i.id === listedItem?.item?.id
-                          ? "lightgrey"
-                          : "white",
-                    }}
-                  >
-                    <img
-                      src={"./icons/" + i.market_name + ".png"}
-                      height={22}
-                      width={22}
-                    />
-                    <p className="title">{i.name}</p>
-                    <p className={"price" + " change" + i.change}>{i.price}</p>
-                  </div>
-                ))}
+                {items.length > 0 ? (
+                  items.map((i) => (
+                    <div
+                      className="marketItemSmall"
+                      key={i.id}
+                      onClick={() => onItemPressed(i.id)}
+                      style={{
+                        backgroundColor:
+                          listedItem && i.id === listedItem?.item?.id
+                            ? "lightgrey"
+                            : "white",
+                      }}
+                    >
+                      <img
+                        src={"./icons/" + i.market_name + ".png"}
+                        height={22}
+                        width={22}
+                      />
+                      <p className="title">{i.name}</p>
+                      <p className={"price" + " change" + i.change}>
+                        {i.price}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <Card.Text>Connecting to market...</Card.Text>
+                )}
               </div>
             </Card.Body>
           </Card>
