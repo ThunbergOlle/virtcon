@@ -138,6 +138,7 @@ export type Plot = {
   grid: PlotGrid[];
   lastPrice: number;
   askedPrice: number;
+  isInteractive?: boolean;
   owner?: Player;
 };
 export type MoneyTransaction = {

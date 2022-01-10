@@ -27,6 +27,7 @@ import PlayerScoreboard from "../../components/PlayerScoreboard";
 import MyMarketListings from "../../components/MyMarketListings";
 import BlackMarket from "../../components/BlackMarket";
 import ProfileViewer from "../../components/ProfileViewer";
+import PlotMarketBrowser from "../../components/PlotMarketBrowser";
 
 interface IndexPageProps {
   player: Player;
@@ -37,6 +38,7 @@ export type WindowTypes =
   | "serverShop"
   | "plotBrowser"
   | "plotViewer"
+  | "plotMarketBrowser"
   | "buildingBrowser"
   | "inventory"
   | "recipeBrowser"
@@ -80,6 +82,7 @@ export default class IndexPage extends React.Component<
         productionOverview: false,
         plotBrowser: false,
         myMarketListings: false,
+        plotMarketBrowser: false,
         buildingBrowser: false,
         inventory: false,
         plotViewer: false,
@@ -267,6 +270,26 @@ export default class IndexPage extends React.Component<
                 }}
                 onClose={() => this.closeWindow("serverShop")}
                 className={this.state.windowStack.getClass("serverShop")}
+              />
+            </div>
+            <div className="browser-container">
+              <PlotMarketBrowser
+                isOpen={this.state.openWindows.plotMarketBrowser}
+                onPlotClicked={(plot) =>
+                  this.setState({
+                    selectedPlot: plot,
+                    openWindows: {
+                      ...this.state.openWindows,
+                      plotViewer: true,
+                    },
+                  })
+                }
+                onFocus={(p) => {
+                  this.state.windowStack.selectWindow(p);
+                  this.forceUpdate();
+                }}
+                onClose={() => this.closeWindow("plotMarketBrowser")}
+                className={this.state.windowStack.getClass("plotMarketBrowser")}
               />
             </div>
             <div className="browser-container">

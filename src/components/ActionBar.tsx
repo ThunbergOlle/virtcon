@@ -1,12 +1,4 @@
-import React from "react";
-import {
-  Button,
-  Container,
-  Dropdown,
-  DropdownButton,
-  Navbar,
-} from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Container, Dropdown, DropdownButton, Navbar } from "react-bootstrap";
 import { WindowTypes } from "../pages/index/IndexPage";
 
 export default function ActionBar(props: {
@@ -37,6 +29,12 @@ export default function ActionBar(props: {
           </Dropdown.Item>
           <Dropdown.Item
             eventKey="4"
+            onClick={() => props.onWindowOpened("plotMarketBrowser")}
+          >
+            Plot Market
+          </Dropdown.Item>
+          <Dropdown.Item
+            eventKey="5"
             onClick={() => props.onWindowOpened("blackMarket")}
           >
             Black Market

@@ -102,7 +102,7 @@ export default function ServerShop(props: {
       defaultPosition={{ x: 40, y: 10 }}
     >
       <Card style={{ width: 600, ...HideStyle(!props.isOpen) }}>
-        <WindowHeader title="Server shop" onClose={() => props.onClose()} />
+        <WindowHeader title="Server Shop" onClose={() => props.onClose()} />
 
         <Table hover striped style={HideStyle(hideContent)}>
           <thead>

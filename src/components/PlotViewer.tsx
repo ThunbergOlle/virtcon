@@ -13,6 +13,7 @@ import BuildingSelect from "./BuildingSelect";
 import WindowHeader from "./WindowHeader";
 import Map from "./Map";
 import { PlayerContext } from "../context/PlayerContext";
+import { toast } from "react-toastify";
 export default function Inventory(props: {
   isOpen: boolean;
   onClose: Function;
@@ -33,6 +34,7 @@ export default function Inventory(props: {
           id
           max_buildings
           lastPrice
+          isInteractive
           askedPrice
           buildings {
             id
@@ -120,6 +122,165 @@ export default function Inventory(props: {
     }
     setElectricityPrice(data.data.ServerShopPrices[0].price);
   };
+  const sellPlotPrompt = async (plotId: number) => {
+    const price = Number(
+      (await prompt(
+        "How much do you want to list the plot for ($)?\n\nNote: A listed plot on the market will not be interactable nor generate money or produce items",
+        "0"
+      )) || ""
+    );
+    if (!price) return;
+    // Lägg ut ploten på marknaden.
+    const buyToast = toast.loading("Sending buy order...", { autoClose: 5000 });
+    //do something else
+    const mutation = gql`
+      mutation SellPlotOnMarket($plotId: Int!, $price: Int!) {
+        SellPlotOnMarket(plotId: $plotId, price: $price) {
+          success
+          message
+        }
+      }
+    `;
+
+    client
+      .mutate({
+        mutation: mutation,
+        variables: { plotId: plotId, price: price },
+      })
+      .then((res) => {
+        if (res.data.SellPlotOnMarket?.success) {
+          toast.update(buyToast, {
+            render: "Listing successful",
+            type: "success",
+            isLoading: false,
+            autoClose: 5000,
+          });
+
+          fetchPlotData();
+          emitCustomEvent("plotMarketUpdate");
+        } else if (res.errors) {
+          toast.update(buyToast, {
+            render: "Buy order denied: " + res.errors[0].message,
+            type: "error",
+            isLoading: false,
+            autoClose: 5000,
+          });
+        } else {
+          toast.update(buyToast, {
+            render: "Buy order denied: " + res.data.SellPlotOnMarket.message,
+            type: "error",
+            isLoading: false,
+            autoClose: 5000,
+          });
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+  const buyPlot = (plotId: number) => {
+    const buyToast = toast.loading("Sending buy order...", { autoClose: 5000 });
+    //do something else
+    const mutation = gql`
+      mutation BuyPlotFromMarket($plotId: Int!) {
+        BuyPlotFromMarket(plotId: $plotId) {
+          success
+          balance_new
+          message
+        }
+      }
+    `;
+
+    client
+      .mutate({
+        mutation: mutation,
+        variables: { plotId: plotId },
+      })
+      .then((res) => {
+        if (res.data.BuyPlotFromMarket?.success) {
+          toast.update(buyToast, {
+            render:
+              "Purchase successful. New balance: " +
+              res.data.BuyPlotFromMarket.balance_new,
+            type: "success",
+            isLoading: false,
+            autoClose: 5000,
+          });
+
+          fetchPlotData();
+          emitCustomEvent("plotMarketUpdate");
+          emitCustomEvent("plotUpdate");
+        } else if (res.errors) {
+          toast.update(buyToast, {
+            render: "Buy order denied: " + res.errors[0].message,
+            type: "error",
+            isLoading: false,
+            autoClose: 5000,
+          });
+        } else {
+          toast.update(buyToast, {
+            render: "Buy order denied: " + res.data.BuyPlotFromMarket.message,
+            type: "error",
+            isLoading: false,
+            autoClose: 5000,
+          });
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+  const removePlotFromMarket = (plotId: number) => {
+    const buyToast = toast.loading("Trying to remove...", { autoClose: 5000 });
+    //do something else
+    const mutation = gql`
+      mutation RemovePlotFromMarket($plotId: Int!) {
+        RemovePlotFromMarket(plotId: $plotId) {
+          success
+          balance_new
+          message
+        }
+      }
+    `;
+
+    client
+      .mutate({
+        mutation: mutation,
+        variables: { plotId: plotId },
+      })
+      .then((res) => {
+        if (res.data.RemovePlotFromMarket?.success) {
+          toast.update(buyToast, {
+            render: "Successfully removed plot from market ",
+            type: "success",
+            isLoading: false,
+            autoClose: 5000,
+          });
+
+          fetchPlotData();
+          emitCustomEvent("plotMarketUpdate");
+        } else if (res.errors) {
+          toast.update(buyToast, {
+            render: "Could not remove market order: " + res.errors[0].message,
+            type: "error",
+            isLoading: false,
+            autoClose: 5000,
+          });
+        } else {
+          toast.update(buyToast, {
+            render:
+              "Could not remove market order: " +
+              res.data.RemovePlotFromMarket.message,
+            type: "error",
+            isLoading: false,
+            autoClose: 5000,
+          });
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
   useCustomEventListener("selectedPlotUpdate", async (data) => {
     // När inventoryt har uppdaterats så ska vi hämta datan igen
     fetchPlotData();
@@ -167,34 +328,34 @@ export default function Inventory(props: {
                 <Card style={{ width: "50%", flex: 1 }}>
                   {highlightedTile ? (
                     <Card.Body>
-                      {isOwner ? (
+                      <Card.Title>
+                        Tile inspection (x: {highlightedTile.x + 1}, y:
+                        {highlightedTile.y + 1})
+                      </Card.Title>
+                      <p>
+                        Resource:{" "}
+                        {highlightedTile.resource?.resource.name ||
+                          "No resource"}{" "}
+                        {highlightedTile.resource ? (
+                          <img
+                            height={20}
+                            src={`icons/${highlightedTile.resource?.resource.market_name}.png`}
+                            alt="(image not found)"
+                          />
+                        ) : null}
+                      </p>
+                      <p>Amount: {highlightedTile.resource?.amount || 0}</p>
+                      <p>
+                        Amount utilized:{" "}
+                        {highlightedTile.resource?.amountUsed || 0}
+                      </p>
+                      <p>
+                        Building:{" "}
+                        {highlightedTile.building?.building?.name ||
+                          "No building placed"}
+                      </p>
+                      {isOwner && plot?.isInteractive ? (
                         <>
-                          <Card.Title>
-                            Tile inspection (x: {highlightedTile.x + 1}, y:
-                            {highlightedTile.y + 1})
-                          </Card.Title>
-                          <p>
-                            Resource:{" "}
-                            {highlightedTile.resource?.resource.name ||
-                              "No resource"}{" "}
-                            {highlightedTile.resource ? (
-                              <img
-                                height={20}
-                                src={`icons/${highlightedTile.resource?.resource.market_name}.png`}
-                                alt="(image not found)"
-                              />
-                            ) : null}
-                          </p>
-                          <p>Amount: {highlightedTile.resource?.amount || 0}</p>
-                          <p>
-                            Amount utilized:{" "}
-                            {highlightedTile.resource?.amountUsed || 0}
-                          </p>
-                          <p>
-                            Building:{" "}
-                            {highlightedTile.building?.building?.name ||
-                              "No building placed"}
-                          </p>
                           {!highlightedTile.building ? (
                             <BuildingSelect
                               placedBuildingTypes={Array.from(
@@ -254,9 +415,33 @@ export default function Inventory(props: {
               {plot?.askedPrice ? (
                 <Card.Text>
                   On market for:
-                  {"$" + plot.askedPrice}
+                  {" $" + plot.askedPrice}
                 </Card.Text>
               ) : null}
+              {plot?.askedPrice && plot?.owner?.id !== getPlayer.id ? (
+                <>
+                  <Button size="sm" onClick={() => buyPlot(plot.id)}>
+                    Buy now for{" $" + plot.askedPrice}
+                  </Button>
+                  <Card.Text className="text-muted">
+                    An additional fee of ${Math.floor(plot.askedPrice * 0.05)}{" "}
+                    (5%) will be charged when purchasing this plot.
+                  </Card.Text>
+                </>
+              ) : null}
+              {plot?.owner?.id === getPlayer.id && plot?.isInteractive && (
+                <Button size="sm" onClick={() => sellPlotPrompt(plot!.id!)}>
+                  Sell this plot
+                </Button>
+              )}
+              {plot?.owner?.id === getPlayer.id && !plot?.isInteractive && (
+                <Button
+                  size="sm"
+                  onClick={() => removePlotFromMarket(plot!.id!)}
+                >
+                  Remove market listing
+                </Button>
+              )}
             </Card.Body>
           </Card>
           <Card style={{ minWidth: "50%", flex: 1, minHeight: 180 }}>
@@ -344,7 +529,7 @@ export default function Inventory(props: {
                             padding: 0,
                             width: "100%",
                           }}
-                          disabled={!isOwner}
+                          disabled={!isOwner || !plot?.isInteractive}
                           onClick={() => {
                             pickupBuilding(b.id).then(() => {
                               fetchPlotData();
