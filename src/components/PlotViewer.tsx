@@ -75,6 +75,7 @@ export default function Inventory(props: {
             x
             y
             id
+            height
             resource {
               resource {
                 name

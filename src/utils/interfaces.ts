@@ -65,6 +65,8 @@ export type PlotGrid = {
 
   x: number;
 
+  height: number;
+
   y: number;
 
   building?: PlotBuildings;

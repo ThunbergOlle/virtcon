@@ -1,4 +1,10 @@
-import { Container, Dropdown, DropdownButton, Navbar } from "react-bootstrap";
+import {
+  Button,
+  Container,
+  Dropdown,
+  DropdownButton,
+  Navbar,
+} from "react-bootstrap";
 import { WindowTypes } from "../pages/index/IndexPage";
 
 export default function ActionBar(props: {
@@ -84,6 +90,9 @@ export default function ActionBar(props: {
             Current listings
           </Dropdown.Item>
         </DropdownButton>
+        <Button size="sm" onClick={() => props.onWindowOpened("chat")}>
+          Chat
+        </Button>
       </Container>
     </Navbar>
   );

@@ -28,6 +28,7 @@ import MyMarketListings from "../../components/MyMarketListings";
 import BlackMarket from "../../components/BlackMarket";
 import ProfileViewer from "../../components/ProfileViewer";
 import PlotMarketBrowser from "../../components/PlotMarketBrowser";
+import Chat from "../../components/Chat";
 
 interface IndexPageProps {
   player: Player;
@@ -48,6 +49,7 @@ export type WindowTypes =
   | "buildingCrafter"
   | "myMarketListings"
   | "blackMarket"
+  | "chat"
   | "profileViewer"
   | "statList";
 interface IndexPageState {
@@ -84,6 +86,7 @@ export default class IndexPage extends React.Component<
         myMarketListings: false,
         plotMarketBrowser: false,
         buildingBrowser: false,
+        chat: false,
         inventory: false,
         plotViewer: false,
         marketBrowser: false,
@@ -413,6 +416,17 @@ export default class IndexPage extends React.Component<
                   this.forceUpdate();
                 }}
                 className={this.state.windowStack.getClass("myMarketListings")}
+              />{" "}
+            </div>
+            <div className="browser-container">
+              <Chat
+                isOpen={this.state.openWindows.chat}
+                onClose={() => this.closeWindow("chat")}
+                onFocus={() => {
+                  this.state.windowStack.selectWindow("chat");
+                  this.forceUpdate();
+                }}
+                className={this.state.windowStack.getClass("chat")}
               />{" "}
             </div>
           </div>
