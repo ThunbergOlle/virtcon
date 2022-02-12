@@ -29,6 +29,7 @@ import BlackMarket from "../../components/BlackMarket";
 import ProfileViewer from "../../components/ProfileViewer";
 import PlotMarketBrowser from "../../components/PlotMarketBrowser";
 import Chat from "../../components/Chat";
+import PlotOverviewBackground from "../../components/PlotOverviewBackground";
 
 interface IndexPageProps {
   player: Player;
@@ -429,6 +430,14 @@ export default class IndexPage extends React.Component<
                 className={this.state.windowStack.getClass("chat")}
               />{" "}
             </div>
+            <PlotOverviewBackground
+              onSelectedPlot={(plotId) => {
+                this.setState({
+                  selectedPlot: { id: plotId } as Plot,
+                });
+                this.selectWindow("plotViewer", true);
+              }}
+            />
           </div>
         </PlayerContext.Provider>
       </>

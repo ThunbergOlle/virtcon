@@ -1,35 +1,21 @@
 import React, { useEffect, useState } from "react";
+import GetTileInfoFromHeight from "../functions/GetTileInfoFromHeight";
 import { PlotGrid } from "../utils/interfaces";
 
-function GetBackgroundColorOfTile(height: number): string {
-  if (height < -0.8) {
-    return "#005c99";
-  } else if (height < -0.5) {
-    return "#0099ff";
-  } else if (height < -0) {
-    return "#ffff00";
-  } else if (height < 0.2) {
-    return "#00ff00";
-  } else if (height < 0.6) {
-    return "#00cc00";
-  } else if (height < 0.9) {
-    return "#595959";
-  } else {
-    return "#999999";
-  }
-}
 export default function Map(props: {
   width: number;
   rowSize: number;
   grid: PlotGrid[];
   height?: number;
-  onTileClicked: (tile: PlotGrid) => void;
+  plotId?: number;
+  onTileClicked?: (tile: PlotGrid) => void;
+  onMapClicked?: (plotId: number) => void;
 }) {
   const [rendableGrid, setRendableGrid] = useState<JSX.Element[]>([]);
   const [highlightedTile, setHiglightedTile] = useState<PlotGrid>();
   const onTileClicked = (tile: PlotGrid) => {
     setHiglightedTile(tile);
-    props.onTileClicked(tile);
+    props.onTileClicked!(tile);
     load(tile);
   };
   const load = (highlightedTile?: PlotGrid) => {
@@ -38,11 +24,13 @@ export default function Map(props: {
       const currentBuilding = props.grid[i].building?.building;
       _rendableGrid.push(
         <div
-          onClick={() => onTileClicked(props.grid[i])}
+          onClick={() => {
+            if (props.onTileClicked) onTileClicked(props.grid[i]);
+          }}
           style={{
             backgroundColor: props.grid[i].building
               ? "gray"
-              : GetBackgroundColorOfTile(props.grid[i].height),
+              : GetTileInfoFromHeight(props.grid[i].height).color,
             flex: `1 0 ${
               props.rowSize ? 100 / (props.rowSize + 1) + 1 : 21 // Algoritm för att räkna ut hur stor flex jag behöver ha. https://stackoverflow.com/a/45384426
             }%`,
@@ -63,6 +51,7 @@ export default function Map(props: {
             borderColor:
               highlightedTile === props.grid[i] ? "lightblue" : "darkgrey",
             cursor: "pointer",
+            position: "relative",
           }}
         ></div>
       );
@@ -78,9 +67,12 @@ export default function Map(props: {
         display: "flex",
         flexWrap: "wrap",
         flexDirection: "row",
-        maxWidth: props.width * props.rowSize,
-        maxHeight: (props.height || props.width) * props.rowSize,
+        width: props.width * props.rowSize,
+        height: (props.height || props.width) * props.rowSize,
       }}
+      onClick={() =>
+        props.onMapClicked ? props.onMapClicked(props.plotId!) : undefined
+      }
     >
       {rendableGrid}
     </div>

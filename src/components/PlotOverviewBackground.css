@@ -1,0 +1,9 @@
+.map-container {
+  margin: 0px;
+  padding: 0px;
+}
+.map-container:hover {
+  outline: 10px solid lightblue !important;
+  z-index: 1;
+  cursor: pointer;
+}

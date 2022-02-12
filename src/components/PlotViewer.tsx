@@ -14,7 +14,7 @@ import WindowHeader from "./WindowHeader";
 import Map from "./Map";
 import { PlayerContext } from "../context/PlayerContext";
 import { toast } from "react-toastify";
-export default function Inventory(props: {
+export default function Plotviewer(props: {
   isOpen: boolean;
   onClose: Function;
   selectedPlotId?: number;
@@ -431,8 +431,12 @@ export default function Inventory(props: {
                 </>
               ) : null}
               {plot?.owner?.id === getPlayer.id && plot?.isInteractive && (
-                <Button size="sm" onClick={() => sellPlotPrompt(plot!.id!)}>
-                  Sell this plot
+                <Button
+                  size="sm"
+                  onClick={() => sellPlotPrompt(plot!.id!)}
+                  disabled
+                >
+                  Sell this plot - Disabled for now
                 </Button>
               )}
               {plot?.owner?.id === getPlayer.id && !plot?.isInteractive && (
