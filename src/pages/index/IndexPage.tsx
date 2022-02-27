@@ -26,10 +26,11 @@ import ProductionOverview from "../../components/ProductionOverview";
 import PlayerScoreboard from "../../components/PlayerScoreboard";
 import MyMarketListings from "../../components/MyMarketListings";
 import BlackMarket from "../../components/BlackMarket";
-import ProfileViewer from "../../components/ProfileViewer";
+import ProfileViewer from "../../components/ProfileViewer/ProfileViewer";
 import PlotMarketBrowser from "../../components/PlotMarketBrowser";
 import Chat from "../../components/Chat";
 import PlotOverviewBackground from "../../components/PlotOverviewBackground";
+import ChartViewer from "../../components/ChartViewer";
 
 interface IndexPageProps {
   player: Player;
@@ -52,7 +53,8 @@ export type WindowTypes =
   | "blackMarket"
   | "chat"
   | "profileViewer"
-  | "statList";
+  | "statList"
+  | "chartViewer";
 interface IndexPageState {
   player: Player;
   openWindows: {
@@ -65,6 +67,7 @@ interface IndexPageState {
   viewPlayerInventoryId: number | undefined;
   viewPlayer: number | undefined;
   viewPlayerOverviewId: number | undefined;
+  viewPlayerChartId: number | undefined;
   browsePlayerPlots: number | undefined;
 }
 
@@ -89,6 +92,7 @@ export default class IndexPage extends React.Component<
         buildingBrowser: false,
         chat: false,
         inventory: false,
+        chartViewer: false,
         plotViewer: false,
         marketBrowser: false,
         recipeBrowser: false,
@@ -99,6 +103,7 @@ export default class IndexPage extends React.Component<
       selectedPlot: undefined,
       selectedMarketItem: undefined,
       viewPlayerInventoryId: undefined,
+      viewPlayerChartId: undefined,
       viewPlayerOverviewId: undefined,
       viewPlayer: undefined,
       browsePlayerPlots: undefined,
@@ -264,7 +269,6 @@ export default class IndexPage extends React.Component<
             <div className="browser-container">
               <ServerShop
                 isOpen={this.state.openWindows.serverShop}
-                onPurchase={() => emitCustomEvent("plotUpdate")}
                 onFocus={(p) => {
                   this.state.windowStack.selectWindow(p);
                   this.forceUpdate();
@@ -318,6 +322,16 @@ export default class IndexPage extends React.Component<
                     openWindows: {
                       ...this.state.openWindows,
                       plotBrowser: true,
+                    },
+                  });
+                }}
+                onViewPlayerChart={(playerId) => {
+                  this.state.windowStack.selectWindow("chartViewer");
+                  this.setState({
+                    viewPlayerChartId: playerId,
+                    openWindows: {
+                      ...this.state.openWindows,
+                      chartViewer: true,
                     },
                   });
                 }}
@@ -428,6 +442,18 @@ export default class IndexPage extends React.Component<
                   this.forceUpdate();
                 }}
                 className={this.state.windowStack.getClass("chat")}
+              />{" "}
+            </div>
+            <div className="browser-container">
+              <ChartViewer
+                isOpen={this.state.openWindows.chartViewer}
+                onClose={() => this.closeWindow("chartViewer")}
+                onFocus={() => {
+                  this.state.windowStack.selectWindow("chartViewer");
+                  this.forceUpdate();
+                }}
+                playerId={this.state.viewPlayerChartId}
+                className={this.state.windowStack.getClass("chartViewer")}
               />{" "}
             </div>
             <PlotOverviewBackground

@@ -5,6 +5,17 @@ import { Button, Card, ListGroup, Table } from "react-bootstrap";
 import { useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
 import { toast } from "react-toastify";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { PlayerContext } from "../context/PlayerContext";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
@@ -13,6 +24,7 @@ import {
   Player,
   ProductionOverviewItem,
 } from "../utils/interfaces";
+import { Theme } from "../utils/Theme";
 
 import WindowHeader from "./WindowHeader";
 export default function ProductionOverview(props: {
@@ -159,6 +171,58 @@ export default function ProductionOverview(props: {
         </p>
         {electricalOverview && (
           <>
+            <h3 style={{ textAlign: "center" }}>
+              Electricity Consumtion Overview
+            </h3>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <ResponsiveContainer height={250} width="100%">
+                <BarChart
+                  width={400}
+                  height={250}
+                  data={[
+                    {
+                      name: "Electricity Produced",
+                      value: electricalOverview.producing,
+                    },
+                    {
+                      name: "Electricity Consumed",
+                      value: electricalOverview.consuming,
+                    },
+                    {
+                      name: "Result",
+                      value:
+                        electricalOverview.producing -
+                        electricalOverview.consuming,
+                    },
+                  ]}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Legend />
+
+                  <Bar
+                    isAnimationActive={false}
+                    dataKey="value"
+                    label={(entry) => entry.name}
+                  >
+                    <Cell fill={Theme.success} />
+                    <Cell fill={"darkred"} />
+                    <Cell
+                      fill={
+                        electricalOverview.producing -
+                          electricalOverview.consuming >
+                        0
+                          ? Theme.success
+                          : "darkred"
+                      }
+                    />
+                  </Bar>
+                  <Tooltip />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
             <p style={{ marginLeft: 10, color: "darkgreen" }}>
               Electricity produced: {electricalOverview.producing} MW ($
               {electricalOverview.producing * electricalOverview.price})
@@ -179,7 +243,7 @@ export default function ProductionOverview(props: {
                     : "darkred",
               }}
             >
-              Net electricity bill: ($
+              Net electricity: ($
               {(electricalOverview.producing - electricalOverview.consuming) *
                 electricalOverview.price}
               )

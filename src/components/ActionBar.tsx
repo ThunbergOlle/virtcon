@@ -35,11 +35,13 @@ export default function ActionBar(props: {
           </Dropdown.Item>
           <Dropdown.Item
             eventKey="4"
+            disabled
             onClick={() => props.onWindowOpened("plotMarketBrowser")}
           >
             Plot Market
           </Dropdown.Item>
           <Dropdown.Item
+            disabled
             eventKey="5"
             onClick={() => props.onWindowOpened("blackMarket")}
           >

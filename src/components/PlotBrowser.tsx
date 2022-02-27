@@ -27,7 +27,7 @@ export default function PlotBrowser(props: {
   const load = async (playerId: number) => {
     // Send PlotGRAPHQL Request
     const query = gql`
-      query main($playerId: Int!) {
+      query loadPlotBrowser($playerId: Int!) {
         Plot(filter: { owner: $playerId }) {
           id
           max_buildings

@@ -1,11 +1,10 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { Button, Card } from "react-bootstrap";
-import { emitCustomEvent } from "react-custom-events";
 import Draggable from "react-draggable";
 import { SocketContext } from "../context/SocketContext";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
-import { Award, MarketListing, PlayerAward } from "../utils/interfaces";
+import { PlayerAward } from "../utils/interfaces";
 import AwardDisplayer from "./AwardDisplayer";
 import WindowHeader from "./WindowHeader";
 interface Message {
@@ -15,6 +14,7 @@ interface Message {
     awards: PlayerAward[];
   };
   color?: string;
+  bold?: boolean;
   message: string;
   timestamp: Date;
 }
@@ -59,6 +59,7 @@ export default function Chat(props: {
         message: string;
         color: string;
         awards: PlayerAward[];
+        bold: boolean;
       }) => {
         console.log("New chat: " + data.message);
         const formattedObject: Message = {
@@ -69,6 +70,7 @@ export default function Chat(props: {
           },
           message: data.message,
           color: data.color,
+          bold: data.bold,
           timestamp: new Date(),
         };
         messageHistory.push(formattedObject);
@@ -115,6 +117,7 @@ export default function Chat(props: {
                   color: i.color || "gray",
                   display: "inline-block",
                   marginRight: 10,
+                  fontWeight: i.bold ? "bold" : "normal",
                 }}
               >
                 {i.sender.display_name}{" "}

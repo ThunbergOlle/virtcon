@@ -42,6 +42,14 @@ export type PlayerAward = {
   award: Award;
   player: Player;
 };
+export type PlayerStocks = {
+  id: Scalars["Int"];
+  amount: Scalars["Int"];
+  timestamp: Date;
+  pricePerStock: Scalars["Int"];
+  owner: Player;
+  stocksOf: Player;
+};
 export type Player = {
   __typename?: "Player";
   id: Scalars["Int"];
@@ -56,6 +64,8 @@ export type Player = {
   hasBlackMarketAccess?: boolean;
   sentTransactions: MoneyTransaction[];
   receivedTransactions: MoneyTransaction[];
+  ownedStocks: PlayerStocks[];
+  soldStocks: PlayerStocks[];
 };
 
 export type PlotGrid = {
@@ -103,6 +113,16 @@ export type BuildingRecipe = {
   item: Item;
   amount: number;
 };
+export interface PlayerNetWorth {
+  balance: number;
+  inventoryWorth: number;
+  netWorth: number;
+  stockPrice: number;
+  netWorthInTypes: {
+    type: string;
+    value: number;
+  }[];
+}
 export type Building = {
   __typename?: "Building";
   id: Scalars["Int"];

@@ -14,6 +14,7 @@ import WindowHeader from "./WindowHeader";
 import Map from "./Map";
 import { PlayerContext } from "../context/PlayerContext";
 import { toast } from "react-toastify";
+import { MoneyFormatter } from "../utils/MoneyFormatter";
 export default function Plotviewer(props: {
   isOpen: boolean;
   onClose: Function;
@@ -29,7 +30,7 @@ export default function Plotviewer(props: {
   const fetchPlotData = async () => {
     if (!props.selectedPlotId) return;
     const query = gql`
-      query main($id: Int) {
+      query fetchPlotData($id: Int) {
         Plot(filter: { id: $id }) {
           id
           max_buildings
@@ -411,7 +412,9 @@ export default function Plotviewer(props: {
               </Card.Text>
               <Card.Text>
                 Latest selling price:{" "}
-                {plot?.lastPrice ? "$" + plot.lastPrice : "No data"}
+                {plot?.lastPrice
+                  ? MoneyFormatter.format(plot.lastPrice)
+                  : "No data"}
               </Card.Text>
               {plot?.askedPrice ? (
                 <Card.Text>
@@ -539,6 +542,7 @@ export default function Plotviewer(props: {
                             pickupBuilding(b.id).then(() => {
                               fetchPlotData();
                               emitCustomEvent("productionOverviewUpdate");
+                              emitCustomEvent("backgroundUpdate");
                             });
                           }}
                         >

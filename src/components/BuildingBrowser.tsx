@@ -19,7 +19,7 @@ export default function BuildingBrowser(props: {
   const fetchBuildingData = async () => {
     // Send PlotGRAPHQL Request
     const query = gql`
-      query main($filter: PlotBuildingsFilter) {
+      query fetchBuildingData($filter: PlotBuildingsFilter) {
         PlotBuildings(filter: $filter) {
           id
           building {

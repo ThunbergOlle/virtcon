@@ -23,7 +23,7 @@ export default function PlayerScoreboard(props: {
   const [searchPlayerValue, setSearchPlayerValue] = useState<string>("");
   const load = async () => {
     const query = gql`
-      query main($display_name: String) {
+      query loadPlayerScoreboard($display_name: String) {
         Players(
           filter: {
             order_by: balance

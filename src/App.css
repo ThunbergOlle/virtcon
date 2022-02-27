@@ -109,6 +109,18 @@
 .z16 {
   z-index: 17;
 }
+.z17 {
+  z-index: 18;
+}
+.z18 {
+  z-index: 19;
+}
+.z19 {
+  z-index: 20;
+}
+.z20 {
+  z-index: 21;
+}
 
 .browser-container {
   position: absolute;

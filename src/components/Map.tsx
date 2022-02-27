@@ -29,7 +29,7 @@ export default function Map(props: {
           }}
           style={{
             backgroundColor: props.grid[i].building
-              ? "gray"
+              ? "silver"
               : GetTileInfoFromHeight(props.grid[i].height).color,
             flex: `1 0 ${
               props.rowSize ? 100 / (props.rowSize + 1) + 1 : 21 // Algoritm för att räkna ut hur stor flex jag behöver ha. https://stackoverflow.com/a/45384426

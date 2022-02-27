@@ -28,7 +28,7 @@ export default function Login(props: { onLogin: Function }) {
         return;
       }
       const mutation = gql`
-        mutation main($options: PlayerNewInput!) {
+        mutation signup($options: PlayerNewInput!) {
           PlayerNew(options: $options) {
             balance
           }
@@ -59,7 +59,7 @@ export default function Login(props: { onLogin: Function }) {
   const checkConfirmationCode = async () => {
     try {
       const mutation = gql`
-        mutation main($email: String!, $code: String!) {
+        mutation checkConfirmationCode($email: String!, $code: String!) {
           PlayerConfirmCode(email: $email, code: $code)
         }
       `;
@@ -88,7 +88,7 @@ export default function Login(props: { onLogin: Function }) {
     // Skicka http request;
     try {
       const loginQuery = gql`
-        mutation main($email: String!, $password: String!) {
+        mutation login($email: String!, $password: String!) {
           PlayerLogin(options: { email: $email, password: $password }) {
             token
             success

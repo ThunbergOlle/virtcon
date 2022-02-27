@@ -1,30 +1,49 @@
 import { useApolloClient } from "@apollo/client";
 import { gql } from "graphql-tag";
 import { useContext, useEffect, useState } from "react";
-import { Button, Card, Form, InputGroup, Table } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Form,
+  InputGroup,
+  Table,
+  Tooltip,
+} from "react-bootstrap";
 import Draggable from "react-draggable";
-import { WindowTypes } from "../pages/index/IndexPage";
-import { HideStyle } from "../utils/HideStyle";
-import { Player } from "../utils/interfaces";
+import { WindowTypes } from "../../pages/index/IndexPage";
+import { HideStyle } from "../../utils/HideStyle";
+import { Player, PlayerNetWorth } from "../../utils/interfaces";
 import { format } from "date-fns";
-import WindowHeader from "./WindowHeader";
-import AwardDisplayer from "./AwardDisplayer";
-import { PlayerContext } from "../context/PlayerContext";
-import { MoneyFormatter } from "../utils/MoneyFormatter";
+import WindowHeader from "../WindowHeader";
+import AwardDisplayer from "../AwardDisplayer";
+import { PlayerContext } from "../../context/PlayerContext";
+import { MoneyFormatter } from "../../utils/MoneyFormatter";
 import { toast } from "react-toastify";
 import { emitCustomEvent } from "react-custom-events";
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  PieLabelRenderProps,
+  Cell,
+} from "recharts";
+import "./ProfileViewer.css";
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+
 export default function ProfileViewer(props: {
   isOpen: boolean;
   className: string;
   playerId?: number;
   onViewPlayerInventory: (playerId: number) => void;
   onViewPlayerOverview: (playerId: number) => void;
+  onViewPlayerChart: (playerId: number) => void;
   onBrowsePlayerPlots: (playerId: number) => void;
   onClose: () => void;
   onFocus: (windowType: WindowTypes) => void;
 }) {
   const client = useApolloClient();
   const [player, setPlayer] = useState<Player>();
+  const [playerNetWorth, setPlayerNetWorth] = useState<PlayerNetWorth>();
   const getPlayer = useContext(PlayerContext);
   const [transactionAmount, setTransactionAmount] = useState<string>();
   const makeTransaction = (playerId: number, amount: number) => {
@@ -32,7 +51,7 @@ export default function ProfileViewer(props: {
     const buyToast = toast.loading("Sending money...", { autoClose: 5000 });
 
     const mutation = gql`
-      mutation main($playerId: Int!, $amount: Int!) {
+      mutation makeTransaction($playerId: Int!, $amount: Int!) {
         MoneyTransaction(playerId: $playerId, amount: $amount) {
           success
           message
@@ -78,7 +97,7 @@ export default function ProfileViewer(props: {
   };
   const load = () => {
     const query = gql`
-      query main($playerId: Int!) {
+      query loadProfileViewer($playerId: Int!) {
         Players(filter: { id: $playerId }) {
           id
           display_name
@@ -100,6 +119,17 @@ export default function ProfileViewer(props: {
             }
             amount
             timestamp
+          }
+          soldStocks {
+            pricePerStock
+            amount
+            id
+            owner {
+              display_name
+            }
+          }
+          plot {
+            id
           }
           sentTransactions {
             id
@@ -124,6 +154,10 @@ export default function ProfileViewer(props: {
             timestamp
           }
         }
+        PlayerNetWorth(playerId: $playerId) {
+          netWorth
+          stockPrice
+        }
       }
     `;
     client
@@ -132,7 +166,10 @@ export default function ProfileViewer(props: {
         variables: { playerId: props.playerId },
       })
       .then((res) => {
-        setPlayer(res.data.Players[0]);
+        // Calculate the stocks that are not yet purchased from the company and give them to the currently displayed player
+        let player: Player = res.data.Players[0];
+        setPlayerNetWorth(res.data.PlayerNetWorth);
+        setPlayer(player);
       })
       .catch((e) => {
         console.log(e);
@@ -140,7 +177,7 @@ export default function ProfileViewer(props: {
   };
   useEffect(() => {
     if (props.playerId) load();
-  }, [props.playerId]);
+  }, [props.playerId, props.isOpen]);
   return (
     <Draggable
       axis="both"
@@ -163,7 +200,16 @@ export default function ProfileViewer(props: {
             <Card style={{ minWidth: "50%", flex: 1, minHeight: 300 }}>
               <Card.Body>
                 <Card.Title>Overview of {player?.display_name}</Card.Title>
-                <p>Balance: ${player?.balance}</p>
+                <p>Balance: {MoneyFormatter.format(player?.balance)}</p>
+                <p>
+                  Net Worth:{" "}
+                  {MoneyFormatter.format(playerNetWorth?.netWorth || 0)}
+                </p>
+                <p>
+                  Stock price:{" "}
+                  {MoneyFormatter.format(playerNetWorth?.stockPrice || 0)}
+                </p>
+                <p>Level (Plots): {player?.plot?.length}</p>
                 <p>
                   Black Market Access: {String(player?.hasBlackMarketAccess)}
                 </p>
@@ -198,30 +244,24 @@ export default function ProfileViewer(props: {
                 </p>
               </Card.Body>
             </Card>
+
             <Card style={{ minWidth: "50%", flex: 1, minHeight: 300 }}>
-              <Card.Body>
+              <Card.Body className="in-depth-analysis">
                 <Card.Title>In-depth analysis</Card.Title>
-                <Button
-                  style={{ marginBottom: 10 }}
-                  onClick={() => props.onViewPlayerInventory(player.id)}
-                >
+                <Button onClick={() => props.onViewPlayerInventory(player.id)}>
                   View Inventory
                 </Button>
-                <Button
-                  style={{ marginBottom: 10 }}
-                  onClick={() => props.onViewPlayerOverview(player.id)}
-                >
+                <Button onClick={() => props.onViewPlayerOverview(player.id)}>
                   View Production Overview
                 </Button>
-                <Button
-                  style={{ marginBottom: 10 }}
-                  onClick={() => props.onBrowsePlayerPlots(player.id)}
-                >
+                <Button onClick={() => props.onBrowsePlayerPlots(player.id)}>
                   View Plots
+                </Button>
+                <Button onClick={() => props.onViewPlayerChart(player.id)}>
+                  📊 View Charts
                 </Button>
               </Card.Body>
             </Card>
-
             <Card
               style={{
                 minWidth: "100%",
@@ -287,6 +327,7 @@ export default function ProfileViewer(props: {
                 </Table>
               </Card.Body>
             </Card>
+
             <Card style={{ minWidth: "100%", flex: 1, minHeight: 200 }}>
               <Card.Body>
                 <Card.Title>New Transaction</Card.Title>

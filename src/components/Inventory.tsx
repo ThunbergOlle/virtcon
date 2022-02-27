@@ -30,7 +30,7 @@ export default function Inventory(props: {
 
   const fetchInventoryData = async (playerId: number) => {
     const query = gql`
-      query main($playerId: Int) {
+      query fetchInventoryData($playerId: Int) {
         Players(filter: { id: $playerId }) {
           display_name
           id

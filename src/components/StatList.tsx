@@ -1,16 +1,12 @@
-import {
-  ApolloClient,
-  gql,
-  NormalizedCacheObject,
-  useApolloClient,
-} from "@apollo/client";
-import React, { useEffect, useState } from "react";
-import { Button, Card, ListGroup, Table } from "react-bootstrap";
+import { gql, useApolloClient } from "@apollo/client";
+import { useEffect, useState } from "react";
+import { Button, Card, Table } from "react-bootstrap";
 import { useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
 import { Player } from "../utils/interfaces";
+import { MoneyFormatter, MoneyFormatterLong } from "../utils/MoneyFormatter";
 import WindowHeader from "./WindowHeader";
 export default function StatList(props: {
   onClose: () => void;
@@ -28,13 +24,13 @@ export default function StatList(props: {
   const saveUserData = async () => {
     setLoading(true);
     const mutation = gql`
-      mutation main($url: String!) {
+      mutation saveUserData($url: String!) {
         PlayerUpdateBackground(url: $url) {
           success
         }
       }
     `;
-    let data = await client.mutate({
+    await client.mutate({
       mutation: mutation,
       variables: { url: backgroundURL },
     });
@@ -95,7 +91,9 @@ export default function StatList(props: {
             <tbody>
               <tr>
                 <td>Balance</td>
-                <td style={{ textAlign: "right" }}>{user?.balance}</td>
+                <td style={{ textAlign: "right" }}>
+                  {MoneyFormatterLong.format(user?.balance || 0)}
+                </td>
               </tr>
               <tr>
                 <td>Plots</td>

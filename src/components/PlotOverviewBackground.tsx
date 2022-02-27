@@ -5,6 +5,9 @@ import { Plot } from "../utils/interfaces";
 import { PlayerContext } from "../context/PlayerContext";
 import Map from "./Map";
 import "./PlotOverviewBackground.css";
+import { useCustomEventListener } from "react-custom-events";
+import { Spinner } from "react-bootstrap";
+import { Theme } from "../utils/Theme";
 export default function PlotOverviewBackground(props: {
   onSelectedPlot: (plotId: number) => void;
 }) {
@@ -13,7 +16,7 @@ export default function PlotOverviewBackground(props: {
   const getPlayer = useContext(PlayerContext);
   const fetchPlotData = async () => {
     const query = gql`
-      query main($owner: Int) {
+      query fetchPlotData($owner: Int) {
         Plot(filter: { owner: $owner }) {
           id
           grid {
@@ -52,6 +55,7 @@ export default function PlotOverviewBackground(props: {
     console.dir(data);
     setPlots(data.data.Plot);
   };
+  useCustomEventListener("backgroundUpdate", fetchPlotData);
   useEffect(() => {
     fetchPlotData();
   }, [getPlayer.id]);
@@ -65,17 +69,28 @@ export default function PlotOverviewBackground(props: {
         width: "100%",
       }}
     >
-      {plots.map((p) => (
-        <div className="map-container">
-          <Map
-            plotId={p.id}
-            width={(0.2 / 8) * window.innerWidth - 1}
-            rowSize={8}
-            grid={p.grid || []}
-            onMapClicked={props.onSelectedPlot}
+      {plots.length > 0 ? (
+        plots.map((p) => (
+          <div className="map-container">
+            <Map
+              plotId={p.id}
+              width={(0.2 / 8) * window.innerWidth - 1}
+              rowSize={8}
+              grid={p.grid || []}
+              onMapClicked={props.onSelectedPlot}
+            />
+          </div>
+        ))
+      ) : (
+        <div style={{ textAlign: "center", margin: "auto", flex: 1 }}>
+          <Spinner
+            color={Theme.primary}
+            style={{ height: 100, width: 100 }}
+            animation={"border"}
           />
+          <p style={{ fontWeight: "bold" }}>Loading plots... 😴</p>
         </div>
-      ))}
+      )}
     </div>
   );
 }

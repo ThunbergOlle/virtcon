@@ -4,7 +4,7 @@ import { client } from "../App";
 
 export const pickupBuilding = async (buildingId: number) => {
   const query = gql`
-    mutation main($buildingId: Int!) {
+    mutation pickupBuilding($buildingId: Int!) {
       PlotBuildingPickup(PlotBuildingId: $buildingId) {
         id
       }

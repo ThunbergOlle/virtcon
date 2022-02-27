@@ -2,17 +2,18 @@ import { useApolloClient } from "@apollo/client";
 import { gql } from "graphql-tag";
 import React, { useEffect, useState } from "react";
 import { Button, Card, ListGroup, Table } from "react-bootstrap";
+import { emitCustomEvent } from "react-custom-events";
 import Draggable from "react-draggable";
 import { toast } from "react-toastify";
 import { PlayerContext } from "../context/PlayerContext";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
 import { ServerShopPrices } from "../utils/interfaces";
+import { MoneyFormatter } from "../utils/MoneyFormatter";
 
 import WindowHeader from "./WindowHeader";
 export default function ServerShop(props: {
   isOpen: boolean;
-  onPurchase: Function;
   className: string;
   onClose: () => void;
   onFocus: (windowType: WindowTypes) => void;
@@ -48,7 +49,8 @@ export default function ServerShop(props: {
             autoClose: 5000,
           });
           load();
-          props.onPurchase();
+          emitCustomEvent("plotUpdate");
+          emitCustomEvent("backgroundUpdate");
         } else if (res.errors) {
           toast.update(buyToast, {
             render: "Buy order denied: " + res.errors[0].message,
@@ -121,7 +123,7 @@ export default function ServerShop(props: {
                   />
                 </td>
                 <td>{s.name}</td>
-                <td>${s.price}</td>
+                <td>{MoneyFormatter.format(s.price)}</td>
                 <td>
                   {s.name === "Plot" && (
                     <Button

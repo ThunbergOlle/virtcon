@@ -73,7 +73,7 @@ export default function MarketBrowser(props: {
 
     //Skicka en order till marknaden.
     const query = gql`
-      mutation main($data: NewMarketListingInput!) {
+      mutation sendOrderPressed($data: NewMarketListingInput!) {
         NewListing(data: $data) {
           success
           message
@@ -114,7 +114,10 @@ export default function MarketBrowser(props: {
     // Hämta inventory data om vad vi har för sak
     // Vi vill joina ett rum med den item:en i.
     const query = gql`
-      query main($inventoryFilter: InventoryFilter, $itemFilter: ItemFilter) {
+      query itemPressed(
+        $inventoryFilter: InventoryFilter
+        $itemFilter: ItemFilter
+      ) {
         Inventory(filter: $inventoryFilter) {
           amount
         }
@@ -153,8 +156,8 @@ export default function MarketBrowser(props: {
   };
   const marketFetcher = () => {
     let prevItems: ExtendedItemPriceUpdate[] = [];
-    if (!timer)
-      timer = setInterval(() => {
+    if (!timer) {
+      const marketPolling = () => {
         const query = gql`
           query {
             Item {
@@ -184,7 +187,10 @@ export default function MarketBrowser(props: {
           .catch((e) => {
             console.log(e);
           });
-      }, 3000);
+      };
+      marketPolling();
+      timer = setInterval(marketPolling, 3000);
+    }
   };
   useEffect(() => {
     if (props.isOpen) {

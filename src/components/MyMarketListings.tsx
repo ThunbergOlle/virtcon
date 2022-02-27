@@ -24,7 +24,7 @@ export default function MyMarketListings(props: {
   const removeMarketListing = (listingId: number) => {
     console.log("removing market listing");
     const mutation = gql`
-      mutation main($listingId: Int!) {
+      mutation removeMarketListing($listingId: Int!) {
         RemoveMarketListing(listingId: $listingId) {
           balance_new
           message
@@ -59,7 +59,7 @@ export default function MyMarketListings(props: {
   });
   const load = () => {
     const query = gql`
-      query main($playerId: Int) {
+      query loadMyMarketListings($playerId: Int) {
         MarketListing(filter: { playerId: $playerId }) {
           id
           executed

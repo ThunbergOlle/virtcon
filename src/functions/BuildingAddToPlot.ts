@@ -10,7 +10,11 @@ export const BuildingAddToPlot = async (
 ) => {
   try {
     const query = gql`
-      mutation main($buildingId: Int!, $plotId: Int!, $tileId: Int!) {
+      mutation BuildingAddToPlot(
+        $buildingId: Int!
+        $plotId: Int!
+        $tileId: Int!
+      ) {
         BuildingAddToPlot(
           InventoryBuildingId: $buildingId
           PlotId: $plotId
@@ -20,7 +24,7 @@ export const BuildingAddToPlot = async (
         }
       }
     `;
-    let data = await client.query({
+    await client.query({
       query: query,
       variables: { buildingId: buildingId, plotId: plotId, tileId: tileId },
     });
@@ -29,6 +33,7 @@ export const BuildingAddToPlot = async (
     emitCustomEvent("plotUpdate");
     emitCustomEvent("selectedPlotUpdate");
     emitCustomEvent("productionOverviewUpdate");
+    emitCustomEvent("backgroundUpdate");
   } catch (e: any) {
     toast.error(String(e.message), { autoClose: 3000 });
   }

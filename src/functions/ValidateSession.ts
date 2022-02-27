@@ -14,6 +14,9 @@ export const ValidateSession = async (
         balance
         backgroundURL
         hasBlackMarketAccess
+        plot {
+          id
+        }
       }
     }
   `;

@@ -30,7 +30,7 @@ export default function BuildingCrafter(props: {
     // Hämta inventory data om vad vi har för sak
     // Vi vill joina ett rum med den item:en i.
     const mutation = gql`
-      mutation main($Building: Int!) {
+      mutation craftItem($Building: Int!) {
         CraftBuilding(data: { Building: $Building }) {
           id
           amount
@@ -64,7 +64,7 @@ export default function BuildingCrafter(props: {
 
   const load = async (outputItemId?: number) => {
     const query = gql`
-      query main($outputItemId: Int) {
+      query loadBuildingCrafter($outputItemId: Int) {
         Building(filter: { outputItem: $outputItemId }) {
           id
           outputItem {
