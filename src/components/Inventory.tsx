@@ -8,6 +8,7 @@ import { PlayerContext } from "../context/PlayerContext";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
 import { InventoryItem, Item } from "../utils/interfaces";
+import { MoneyFormatter } from "../utils/MoneyFormatter";
 import WindowHeader from "./WindowHeader";
 export default function Inventory(props: {
   isOpen: boolean;
@@ -146,7 +147,7 @@ export default function Inventory(props: {
                     <td>{i.item.rarity}</td>
                     <td style={{ textAlign: "right" }}>{i.amount}</td>
                     <td style={{ textAlign: "right" }}>
-                      ${i.item.price * i.amount}
+                      {MoneyFormatter.format(i.item.price * i.amount)}
                     </td>
                     <td>
                       <Button

@@ -34,6 +34,7 @@ export default function ChartViewer(props: {
             id
             owner {
               display_name
+              id
             }
           }
           plot {
@@ -83,6 +84,61 @@ export default function ChartViewer(props: {
         setPlayerNetWorth(res.data.PlayerNetWorth);
         setPlayerSoldStocks(soldStocks);
         setPlayer(res.data.Players[0]);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+  const playerAcquirePrompt = async () => {
+    const isConfirmed = window.confirm(
+      "Are you sure you want to acquire this player?\n\nThis will remove the player from the market and tranfer all it's assets to your account.\n\nThis action is irreversible and will force the player start over."
+    );
+    if (!isConfirmed) return;
+    // Lägg ut ploten på marknaden.
+    const buyToast = toast.loading(
+      "Sending request to transfer ownership of assets...",
+      { autoClose: 5000 }
+    );
+    //do something else
+    const mutation = gql`
+      mutation playerAcquirePrompt($playerId: Int!) {
+        PlayerAcquire(playerId: $playerId) {
+          success
+        }
+      }
+    `;
+
+    client
+      .mutate({
+        mutation: mutation,
+        variables: { playerId: props.playerId },
+      })
+      .then((res) => {
+        if (res.data.PlayerAcquire) {
+          toast.update(buyToast, {
+            render:
+              "Successfully acquired player and transferred it's assets to your account!",
+            type: "success",
+            isLoading: false,
+            autoClose: 5000,
+          });
+
+          props.onClose();
+        } else if (res.errors) {
+          toast.update(buyToast, {
+            render: "Acquisition denied: " + res.errors[0].message,
+            type: "error",
+            isLoading: false,
+            autoClose: 5000,
+          });
+        } else {
+          toast.update(buyToast, {
+            render: "Acquisition denied",
+            type: "error",
+            isLoading: false,
+            autoClose: 5000,
+          });
+        }
       })
       .catch((e) => {
         console.log(e);
@@ -238,7 +294,11 @@ export default function ChartViewer(props: {
             </p>
             <p style={{ textAlign: "center" }} className="text-muted">
               *You can only buy stock from players that are in the same level or
-              a higher level than you are in.*
+              a higher level than you are in. You have a purchasing limit of{" "}
+              {MoneyFormatter.format(
+                (getPlayer.balance || 0) - (getPlayer.giftedBalance || 0)
+              )}{" "}
+              based off your transaction history*
             </p>
             <Button
               onClick={buyStockPrompt}
@@ -248,6 +308,16 @@ export default function ChartViewer(props: {
               }
             >
               Buy stock of this player
+            </Button>
+            <Button
+              onClick={playerAcquirePrompt}
+              disabled={
+                (player?.soldStocks.filter(
+                  (stock) => stock.owner.id === getPlayer.id
+                )[0]?.amount || 0) < 50
+              }
+            >
+              Buy out this player (Requires more than 50% equity)
             </Button>
           </Card>
         ) : null}

@@ -6,6 +6,7 @@ import {
   Card,
   Form,
   InputGroup,
+  Spinner,
   Table,
   Tooltip,
 } from "react-bootstrap";
@@ -18,7 +19,7 @@ import WindowHeader from "../WindowHeader";
 import AwardDisplayer from "../AwardDisplayer";
 import { PlayerContext } from "../../context/PlayerContext";
 import { MoneyFormatter } from "../../utils/MoneyFormatter";
-import { toast } from "react-toastify";
+import { Theme, toast } from "react-toastify";
 import { emitCustomEvent } from "react-custom-events";
 import {
   ResponsiveContainer,
@@ -43,6 +44,7 @@ export default function ProfileViewer(props: {
 }) {
   const client = useApolloClient();
   const [player, setPlayer] = useState<Player>();
+  const [loading, setLoading] = useState<boolean>(false);
   const [playerNetWorth, setPlayerNetWorth] = useState<PlayerNetWorth>();
   const getPlayer = useContext(PlayerContext);
   const [transactionAmount, setTransactionAmount] = useState<string>();
@@ -96,6 +98,7 @@ export default function ProfileViewer(props: {
       });
   };
   const load = () => {
+    setLoading(true);
     const query = gql`
       query loadProfileViewer($playerId: Int!) {
         Players(filter: { id: $playerId }) {
@@ -170,9 +173,11 @@ export default function ProfileViewer(props: {
         let player: Player = res.data.Players[0];
         setPlayerNetWorth(res.data.PlayerNetWorth);
         setPlayer(player);
+        setLoading(false);
       })
       .catch((e) => {
         console.log(e);
+        setLoading(false);
       });
   };
   useEffect(() => {
@@ -188,7 +193,7 @@ export default function ProfileViewer(props: {
     >
       <Card style={{ width: 600, ...HideStyle(!props.isOpen) }}>
         <WindowHeader title="Profile Viewer" onClose={() => props.onClose()} />
-        {player ? (
+        {player && !loading ? (
           <div
             style={{
               width: "100%",
@@ -370,7 +375,16 @@ export default function ProfileViewer(props: {
               </Card.Body>
             </Card>
           </div>
-        ) : null}
+        ) : (
+          <div style={{ textAlign: "center", margin: "auto", flex: 1 }}>
+            <Spinner
+              color={"darkgreen"}
+              style={{ height: 100, width: 100 }}
+              animation={"border"}
+            />
+            <p style={{ fontWeight: "bold" }}>Loading player profile... ⏳</p>
+          </div>
+        )}
       </Card>
     </Draggable>
   );

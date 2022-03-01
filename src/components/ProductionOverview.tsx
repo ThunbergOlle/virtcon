@@ -186,7 +186,7 @@ export default function ProductionOverview(props: {
                     },
                     {
                       name: "Electricity Consumed",
-                      value: electricalOverview.consuming,
+                      value: -electricalOverview.consuming,
                     },
                     {
                       name: "Result",

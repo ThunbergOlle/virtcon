@@ -58,6 +58,7 @@ export type Player = {
   email: Scalars["String"];
   last_login?: Maybe<Scalars["DateTime"]>;
   balance: Scalars["Int"];
+  giftedBalance: Scalars["Int"];
   inventory?: Maybe<Array<InventoryItem>>;
   plot?: Maybe<Array<Plot>>;
   awards?: PlayerAward[];
