@@ -64,7 +64,10 @@ export default function BuildingCrafter(props: {
 
   const load = async (outputItemId?: number) => {
     const query = gql`
-      query loadBuildingCrafter($outputItemId: Int) {
+      query loadBuildingCrafter(
+        $outputItemId: Int
+        $PlayerLoggedInRelations: [String!]
+      ) {
         Building(filter: { outputItem: $outputItemId }) {
           id
           outputItem {
@@ -103,7 +106,7 @@ export default function BuildingCrafter(props: {
           id
           rarity
         }
-        PlayerLoggedIn {
+        PlayerLoggedIn(relations: $PlayerLoggedInRelations) {
           inventory {
             id
             amount
@@ -122,7 +125,10 @@ export default function BuildingCrafter(props: {
 
     let data = await client.query({
       query: query,
-      variables: { outputItemId: outputItemId },
+      variables: {
+        outputItemId: outputItemId,
+        PlayerLoggedInRelations: ["inventory", "inventory.item"],
+      },
     });
     setBuildings(data.data.Building);
     setInventory(data.data.PlayerLoggedIn.inventory);

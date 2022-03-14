@@ -23,8 +23,9 @@ export default function PlayerScoreboard(props: {
   const [searchPlayerValue, setSearchPlayerValue] = useState<string>("");
   const load = async () => {
     const query = gql`
-      query loadPlayerScoreboard($display_name: String) {
+      query loadPlayerScoreboard($display_name: String, $relations: [String!]) {
         Players(
+          relations: $relations
           filter: {
             order_by: balance
             descOrAsc: desc
@@ -49,7 +50,10 @@ export default function PlayerScoreboard(props: {
 
     let data = await client.query({
       query: query,
-      variables: { display_name: searchPlayerValue },
+      variables: {
+        display_name: searchPlayerValue,
+        relations: ["awards", "awards.award"],
+      },
     });
     setPlayer(data.data.Players);
     console.dir(data);

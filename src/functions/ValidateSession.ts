@@ -6,8 +6,8 @@ export const ValidateSession = async (
   client: ApolloClient<NormalizedCacheObject>
 ) => {
   const query = gql`
-    query {
-      PlayerLoggedIn {
+    query ValidateSession($relations: [String!]) {
+      PlayerLoggedIn(relations: $relations) {
         id
         email
         display_name
@@ -23,6 +23,7 @@ export const ValidateSession = async (
   `;
   let data = await client.query({
     query: query,
+    variables: { relations: ["plot"] },
   });
   console.log(data.data.PlayerLoggedIn);
   return data.data.PlayerLoggedIn;

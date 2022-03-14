@@ -31,8 +31,8 @@ export default function Inventory(props: {
 
   const fetchInventoryData = async (playerId: number) => {
     const query = gql`
-      query fetchInventoryData($playerId: Int) {
-        Players(filter: { id: $playerId }) {
+      query fetchInventoryData($playerId: Int, $relations: [String!]) {
+        Players(filter: { id: $playerId }, relations: $relations) {
           display_name
           id
           inventory {
@@ -57,7 +57,10 @@ export default function Inventory(props: {
 
     let data = await client.query({
       query: query,
-      variables: { playerId: playerId },
+      variables: {
+        playerId: playerId,
+        relations: ["inventory", "inventory.item", "inventory.building"],
+      },
     });
     console.dir(data);
     setInventory(data.data.Players[0].inventory);

@@ -25,8 +25,8 @@ export default function ChartViewer(props: {
   const [player, setPlayer] = useState<Player>();
   const load = () => {
     const query = gql`
-      query loadChartViewer($playerId: Int!) {
-        Players(filter: { id: $playerId }) {
+      query loadChartViewer($playerId: Int!, $relations: [String!]) {
+        Players(filter: { id: $playerId }, relations: $relations) {
           display_name
           soldStocks {
             pricePerStock
@@ -56,7 +56,10 @@ export default function ChartViewer(props: {
     client
       .query({
         query: query,
-        variables: { playerId: props.playerId },
+        variables: {
+          playerId: props.playerId,
+          relations: ["soldStocks", "soldStocks.owner", "plot"],
+        },
       })
       .then((res) => {
         // Calculate the stocks that are not yet purchased from the company and give them to the currently displayed player

@@ -41,8 +41,8 @@ export default function StatList(props: {
   const UpdateStats = async () => {
     setLoading(true);
     const query = gql`
-      query {
-        PlayerLoggedIn {
+      query UpdateStats($relations: [String!]) {
+        PlayerLoggedIn(relations: $relations) {
           id
           email
           display_name
@@ -56,6 +56,7 @@ export default function StatList(props: {
     `;
     let data = await client.query({
       query: query,
+      variables: { relations: ["plot"] },
     });
     setUser(data.data.PlayerLoggedIn);
     setBackgroundURL(data.data.PlayerLoggedIn.backgroundURL);

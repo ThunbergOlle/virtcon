@@ -12,8 +12,8 @@ export default function BuildingSelect(props: {
   const [selected, setSelected] = useState<number>();
   const loadBuildings = async () => {
     const query = gql`
-      query {
-        PlayerLoggedIn {
+      query loadBuildings($relations: [String!]) {
+        PlayerLoggedIn(relations: $relations) {
           display_name
           inventory {
             id
@@ -29,6 +29,9 @@ export default function BuildingSelect(props: {
 
     let data = await client.query({
       query: query,
+      variables: {
+        relations: ["inventory", "inventory.building"],
+      },
     });
     setBuildings(data.data.PlayerLoggedIn.inventory);
   };

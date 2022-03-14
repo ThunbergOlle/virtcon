@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import { PlayerContext } from "../context/PlayerContext";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
-import { ServerShopPrices } from "../utils/interfaces";
 
 import WindowHeader from "./WindowHeader";
 export default function BlackMarket(props: {

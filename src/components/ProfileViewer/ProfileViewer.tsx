@@ -21,13 +21,6 @@ import { PlayerContext } from "../../context/PlayerContext";
 import { MoneyFormatter } from "../../utils/MoneyFormatter";
 import { Theme, toast } from "react-toastify";
 import { emitCustomEvent } from "react-custom-events";
-import {
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  PieLabelRenderProps,
-  Cell,
-} from "recharts";
 import "./ProfileViewer.css";
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -100,8 +93,8 @@ export default function ProfileViewer(props: {
   const load = () => {
     setLoading(true);
     const query = gql`
-      query loadProfileViewer($playerId: Int!) {
-        Players(filter: { id: $playerId }) {
+      query loadProfileViewer($playerId: Int!, $relations: [String!]) {
+        Players(filter: { id: $playerId }, relations: $relations) {
           id
           display_name
           last_login
@@ -166,7 +159,24 @@ export default function ProfileViewer(props: {
     client
       .query({
         query: query,
-        variables: { playerId: props.playerId },
+        variables: {
+          playerId: props.playerId,
+          relations: [
+            "listings",
+            "listings.item",
+            "awards",
+            "awards.award",
+            "soldStocks",
+            "soldStocks.owner",
+            "plot",
+            "sentTransactions",
+            "sentTransactions.fromPlayer",
+            "sentTransactions.toPlayer",
+            "receivedTransactions",
+            "receivedTransactions.fromPlayer",
+            "receivedTransactions.toPlayer",
+          ],
+        },
       })
       .then((res) => {
         // Calculate the stocks that are not yet purchased from the company and give them to the currently displayed player

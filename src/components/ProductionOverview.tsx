@@ -165,7 +165,7 @@ export default function ProductionOverview(props: {
         <p style={{ marginLeft: 10 }}>
           Money generation from structures: $
           {overview
-            .filter((i) => i.item === null)
+            ?.filter((i) => i.item === null)
             .map((i) => i.producing)
             .reduce((p, c) => p + c, 0)}
         </p>
