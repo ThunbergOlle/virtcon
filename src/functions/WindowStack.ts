@@ -1,17 +1,4 @@
 import { WindowTypes } from "../pages/index/IndexPage";
-
-const availableZClassnames = [
-  "z1",
-  "z2",
-  "z3",
-  "z4",
-  "z5",
-  "z6",
-  "z7",
-  "z8",
-  "z9",
-  "z10",
-];
 export class WindowStack {
   stack: { stackIndex: number; type: WindowTypes }[];
   constructor() {
