@@ -1,6 +1,6 @@
 import { useApolloClient } from "@apollo/client";
 import { gql } from "graphql-tag";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -10,7 +10,6 @@ import {
   Table,
 } from "react-bootstrap";
 import Draggable from "react-draggable";
-import socketIOClient, { Socket } from "socket.io-client";
 
 import {
   CartesianGrid,
@@ -369,8 +368,13 @@ export default function MarketBrowser(props: {
                           </FormGroup>
                           <FormGroup>
                             <FormLabel>
-                              Amount - you have:{" "}
-                              {listedItem.maxAmountSellable || "?"}
+                              Amount{" "}
+                              {newMarketListing.isSellOrder ? (
+                                <>
+                                  | In your inventory:{" "}
+                                  {listedItem.maxAmountSellable || "?"}
+                                </>
+                              ) : null}
                             </FormLabel>
                             <Form.Control
                               as="input"

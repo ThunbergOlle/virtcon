@@ -99,14 +99,6 @@ export default function ProfileViewer(props: {
           display_name
           last_login
           balance
-          listings {
-            id
-            item {
-              market_name
-              name
-            }
-            isSellOrder
-          }
           hasBlackMarketAccess
           awards {
             award {
@@ -115,14 +107,6 @@ export default function ProfileViewer(props: {
             }
             amount
             timestamp
-          }
-          soldStocks {
-            pricePerStock
-            amount
-            id
-            owner {
-              display_name
-            }
           }
           plot {
             id
@@ -162,12 +146,8 @@ export default function ProfileViewer(props: {
         variables: {
           playerId: props.playerId,
           relations: [
-            "listings",
-            "listings.item",
             "awards",
             "awards.award",
-            "soldStocks",
-            "soldStocks.owner",
             "plot",
             "sentTransactions",
             "sentTransactions.fromPlayer",

@@ -44,7 +44,6 @@ export default function StatList(props: {
       query UpdateStats($relations: [String!]) {
         PlayerLoggedIn(relations: $relations) {
           id
-          email
           display_name
           balance
           backgroundURL

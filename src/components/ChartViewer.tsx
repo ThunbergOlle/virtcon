@@ -25,22 +25,7 @@ export default function ChartViewer(props: {
   const [player, setPlayer] = useState<Player>();
   const load = () => {
     const query = gql`
-      query loadChartViewer($playerId: Int!, $relations: [String!]) {
-        Players(filter: { id: $playerId }, relations: $relations) {
-          display_name
-          soldStocks {
-            pricePerStock
-            amount
-            id
-            owner {
-              display_name
-              id
-            }
-          }
-          plot {
-            id
-          }
-        }
+      query loadChartViewer($playerId: Int!) {
         PlayerNetWorth(playerId: $playerId) {
           netWorth
           inventoryWorth
@@ -58,7 +43,7 @@ export default function ChartViewer(props: {
         query: query,
         variables: {
           playerId: props.playerId,
-          relations: ["soldStocks", "soldStocks.owner", "plot"],
+          // relations: ["soldStocks", "soldStocks.owner", "plot"],
         },
       })
       .then((res) => {
@@ -311,16 +296,6 @@ export default function ChartViewer(props: {
               }
             >
               Buy stock of this player
-            </Button>
-            <Button
-              onClick={playerAcquirePrompt}
-              disabled={
-                (player?.soldStocks.filter(
-                  (stock) => stock.owner.id === getPlayer.id
-                )[0]?.amount || 0) < 50
-              }
-            >
-              Buy out this player (Requires more than 50% equity)
             </Button>
           </Card>
         ) : null}

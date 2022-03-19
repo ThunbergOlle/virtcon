@@ -55,7 +55,6 @@ export type Player = {
   id: Scalars["Int"];
   display_name: Scalars["String"];
   backgroundURL: Scalars["String"];
-  email: Scalars["String"];
   last_login?: Maybe<Scalars["DateTime"]>;
   balance: Scalars["Int"];
   giftedBalance: Scalars["Int"];
@@ -229,7 +228,6 @@ export type LoginPlayerToken = {
   __typename?: "LoginPlayerToken";
   id: Scalars["Int"];
   display_name: Scalars["String"];
-  email: Scalars["String"];
   last_login?: Maybe<Scalars["DateTime"]>;
   balance: Scalars["Int"];
   inventory?: Maybe<Array<InventoryItem>>;

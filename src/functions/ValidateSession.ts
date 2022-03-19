@@ -1,6 +1,4 @@
 import { ApolloClient, gql, NormalizedCacheObject } from "@apollo/client";
-import { Config } from "../utils/Config";
-import { Player } from "../utils/interfaces";
 
 export const ValidateSession = async (
   client: ApolloClient<NormalizedCacheObject>
@@ -9,7 +7,6 @@ export const ValidateSession = async (
     query ValidateSession($relations: [String!]) {
       PlayerLoggedIn(relations: $relations) {
         id
-        email
         display_name
         balance
         backgroundURL
