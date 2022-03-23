@@ -96,6 +96,7 @@ export default function BlackMarket(props: {
     <Draggable
       axis="both"
       handle=".handle"
+      bounds={{ top: 0 }}
       defaultClassName={props.className}
       onMouseDown={() => props.onFocus("blackMarket")}
       defaultPosition={{ x: 40, y: 10 }}

@@ -78,6 +78,7 @@ export default function StatList(props: {
     <Draggable
       axis="both"
       handle=".handle"
+      bounds={{ top: 0 }}
       defaultPosition={{ x: window.innerWidth - 250, y: 10 }}
       defaultClassName={props.className}
       onMouseDown={() => props.onFocus("statList")}

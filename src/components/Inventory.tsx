@@ -85,6 +85,7 @@ export default function Inventory(props: {
     <Draggable
       axis="both"
       handle=".handle"
+      bounds={{ top: 0 }}
       defaultPosition={{ x: 40, y: 10 }}
       defaultClassName={props.className}
       onMouseDown={() => props.onFocus("inventory")}

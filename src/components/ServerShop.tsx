@@ -101,6 +101,7 @@ export default function ServerShop(props: {
     <Draggable
       axis="both"
       handle=".handle"
+      bounds={{ top: 0 }}
       defaultClassName={props.className}
       onMouseDown={() => props.onFocus("serverShop")}
       defaultPosition={{ x: 40, y: 10 }}

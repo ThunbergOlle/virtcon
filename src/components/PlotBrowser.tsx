@@ -79,6 +79,7 @@ export default function PlotBrowser(props: {
     <Draggable
       axis="both"
       handle=".handle"
+      bounds={{ top: 0 }}
       defaultPosition={{ x: 100, y: 10 }}
       defaultClassName={props.className}
       onMouseDown={() => props.onFocus("plotBrowser")}

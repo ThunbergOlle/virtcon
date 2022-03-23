@@ -177,6 +177,7 @@ export default function ProfileViewer(props: {
     <Draggable
       axis="both"
       handle=".handle"
+      bounds={{ top: 0 }}
       defaultClassName={props.className}
       onMouseDown={() => props.onFocus("profileViewer")}
       defaultPosition={{ x: 40, y: 10 }}

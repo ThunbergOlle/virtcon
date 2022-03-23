@@ -104,6 +104,7 @@ export default function ProductionOverview(props: {
     <Draggable
       axis="both"
       handle=".handle"
+      bounds={{ top: 0 }}
       defaultClassName={props.className}
       onMouseDown={() => props.onFocus("productionOverview")}
       defaultPosition={{ x: 40, y: 10 }}
