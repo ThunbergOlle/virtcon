@@ -60,8 +60,10 @@ export default function PlayerScoreboard(props: {
   };
 
   useEffect(() => {
-    load();
-  }, []);
+    if (props.isOpen) {
+      load();
+    }
+  }, [props.isOpen]);
 
   return (
     <Draggable
@@ -74,7 +76,11 @@ export default function PlayerScoreboard(props: {
       <Card
         style={{ width: 500, ...HideStyle(!props.isOpen), display: "flex" }}
       >
-        <WindowHeader title="Scoreboard" onClose={() => props.onClose()} />
+        <WindowHeader
+          title="Scoreboard"
+          onClose={() => props.onClose()}
+          onRefresh={() => load()}
+        />
         <div
           style={{
             width: "100%",

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Button, Card, ListGroup, Table } from "react-bootstrap";
-import Draggable from "react-draggable";
+import { useState } from "react";
+import { Button, Card } from "react-bootstrap";
 export default function WindowHeader(props: {
   title: string;
   onChange?: Function;
-  onClose?: Function;
+  onClose?: () => void;
+  onRefresh?: () => void;
 }) {
   const [hideContent, setHideContent] = useState(false);
   return (
@@ -12,6 +12,23 @@ export default function WindowHeader(props: {
       <div style={{ display: "flex" }}>
         <p style={{ flex: 1 }}>{props.title}</p>
         <div style={{ textAlign: "right" }}>
+          {props.onRefresh ? (
+            <Button
+              style={{
+                textAlign: "center",
+                fontSize: 12,
+                padding: 0,
+                marginInline: 10,
+                paddingInline: 5,
+              }}
+              variant="outline-secondary"
+              onClick={() => {
+                props.onRefresh!();
+              }}
+            >
+              Refresh
+            </Button>
+          ) : null}
           {props.onChange !== undefined ? (
             <Button
               size="sm"

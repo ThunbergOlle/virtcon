@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import {
   Button,
   Container,
@@ -5,11 +6,13 @@ import {
   DropdownButton,
   Navbar,
 } from "react-bootstrap";
+import { PlayerContext } from "../context/PlayerContext";
 import { WindowTypes } from "../pages/index/IndexPage";
 
 export default function ActionBar(props: {
-  onWindowOpened: (types: WindowTypes) => void;
+  onWindowOpened: (types: WindowTypes, id?: number) => void;
 }) {
+  const getPlayer = useContext(PlayerContext);
   return (
     <Navbar style={{ backgroundColor: "darkgray" }} variant="dark">
       <Container style={{ height: 25 }}>
@@ -55,7 +58,9 @@ export default function ActionBar(props: {
         >
           <Dropdown.Item
             eventKey="1"
-            onClick={() => props.onWindowOpened("productionOverview")}
+            onClick={() =>
+              props.onWindowOpened("productionOverview", getPlayer.id)
+            }
           >
             Production Overview
           </Dropdown.Item>
@@ -81,7 +86,7 @@ export default function ActionBar(props: {
           </Dropdown.Item>
           <Dropdown.Item
             eventKey="2"
-            onClick={() => props.onWindowOpened("inventory")}
+            onClick={() => props.onWindowOpened("inventory", getPlayer.id)}
           >
             Inventory
           </Dropdown.Item>

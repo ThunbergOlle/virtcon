@@ -96,10 +96,10 @@ export default function ProductionOverview(props: {
   }, [getPlayer]);
 
   useEffect(() => {
-    if (props.playerId !== undefined) {
+    if (props.playerId !== undefined && props.isOpen) {
       load(props.playerId);
     }
-  }, [props.playerId]);
+  }, [props.playerId, props.isOpen]);
   return (
     <Draggable
       axis="both"
@@ -111,6 +111,9 @@ export default function ProductionOverview(props: {
       <Card style={{ width: 600, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
           title={"Production Overview of " + currentPlayer?.display_name}
+          onRefresh={() => {
+            if (currentPlayer) load(currentPlayer.id);
+          }}
           onClose={() => props.onClose()}
         />
         {getPlayer.id && currentPlayer?.id !== getPlayer.id ? (

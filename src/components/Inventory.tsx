@@ -22,12 +22,8 @@ export default function Inventory(props: {
   const [nameFilter, setNameFilter] = useState("");
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const getPlayer = useContext(PlayerContext);
-  const [currentPlayerName, setCurrentPlayerName] = useState<string>(
-    getPlayer ? getPlayer.display_name! : ""
-  );
-  const [currentPlayerId, setCurrentPlayerId] = useState<number>(
-    getPlayer ? getPlayer.id! : 0
-  );
+  const [currentPlayerName, setCurrentPlayerName] = useState<string>("");
+  const [currentPlayerId, setCurrentPlayerId] = useState<number>(0);
   const client = useApolloClient();
 
   const fetchInventoryData = async (playerId: number) => {
@@ -97,6 +93,7 @@ export default function Inventory(props: {
         <WindowHeader
           title={"Inventory of " + currentPlayerName}
           onClose={() => props.onClose()}
+          onRefresh={() => fetchInventoryData(currentPlayerId)}
         />
         {getPlayer.id && currentPlayerId !== getPlayer.id ? (
           <Button

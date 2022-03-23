@@ -157,11 +157,30 @@ export default class IndexPage extends React.Component<
     });
     this.state.windowStack.selectWindow(window);
   }
+  onWindowOpenedFromMenu(window: WindowTypes, targetId?: number) {
+    if (targetId) {
+      if (window === "inventory") {
+        this.setState({
+          viewPlayerInventoryId: targetId,
+        });
+      } else if (window === "productionOverview") {
+        this.setState({
+          viewPlayerOverviewId: targetId,
+        });
+      }
+    }
+
+    this.selectWindow(window);
+  }
   render() {
     return (
       <>
         <PlayerContext.Provider value={this.state.player}>
-          <ActionBar onWindowOpened={(window) => this.selectWindow(window)} />
+          <ActionBar
+            onWindowOpened={(window, targetId) =>
+              this.onWindowOpenedFromMenu(window, targetId)
+            }
+          />
           <div
             style={{
               position: "relative",
