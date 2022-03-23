@@ -14,6 +14,7 @@ interface Message {
     display_name: string;
     id: number;
     awards: PlayerAward[];
+    canSendLinks: boolean;
   };
   color?: string;
   bold?: boolean;
@@ -63,6 +64,7 @@ export default function Chat(props: {
         color: string;
         awards: PlayerAward[];
         bold: boolean;
+        canSendLinks: boolean;
       }) => {
         console.log("New chat: " + data.message);
         const formattedObject: Message = {
@@ -70,6 +72,7 @@ export default function Chat(props: {
             display_name: data.display_name,
             id: data.id,
             awards: data.awards,
+            canSendLinks: data.canSendLinks,
           },
           message: data.message,
           color: data.color,
@@ -130,7 +133,14 @@ export default function Chat(props: {
           }}
         >
           {messageHistory.map((i) => (
-            <div style={{ marginInline: 10, marginBottom: 0, marginTop: 0 }}>
+            <div
+              style={{
+                marginInline: 10,
+                marginBottom: 0,
+                marginTop: 0,
+                maxWidth: 350,
+              }}
+            >
               <p
                 style={{
                   color: i.color || "gray",
@@ -150,9 +160,34 @@ export default function Chat(props: {
               </p>
               {i.message.split(";break;").map((message) => (
                 <p
-                  style={{ color: i.color || "black", display: "inline-block" }}
+                  style={{
+                    color: i.color || "black",
+                    display: "inline-block",
+                    maxWidth: 350,
+                  }}
                 >
-                  {message}
+                  {/* Check if the message includes http, if it does create a link for that section */}
+                  {message.includes("http") ? (
+                    <>
+                      {message.split(" ").map((word) => {
+                        if (word.includes("http")) {
+                          return (
+                            <a
+                              href={word}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {word}
+                            </a>
+                          );
+                        } else {
+                          return ` ${word} `;
+                        }
+                      })}
+                    </>
+                  ) : (
+                    message
+                  )}
                 </p>
               ))}
             </div>
