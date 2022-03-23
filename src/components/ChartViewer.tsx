@@ -47,6 +47,7 @@ export default function ChartViewer(props: {
         },
       })
       .then((res) => {
+        /*
         // Calculate the stocks that are not yet purchased from the company and give them to the currently displayed player
         let soldStocks: PlayerStocks[] = res.data.Players[0].soldStocks;
 
@@ -68,70 +69,16 @@ export default function ChartViewer(props: {
           pricePerStock: 0,
           stocksOf: currentPlayerSmall,
         });
-
+*/
         setPlayerNetWorth(res.data.PlayerNetWorth);
-        setPlayerSoldStocks(soldStocks);
+        //      setPlayerSoldStocks(soldStocks);
         setPlayer(res.data.Players[0]);
       })
       .catch((e) => {
         console.log(e);
       });
   };
-  const playerAcquirePrompt = async () => {
-    const isConfirmed = window.confirm(
-      "Are you sure you want to acquire this player?\n\nThis will remove the player from the market and tranfer all it's assets to your account.\n\nThis action is irreversible and will force the player start over."
-    );
-    if (!isConfirmed) return;
-    // Lägg ut ploten på marknaden.
-    const buyToast = toast.loading(
-      "Sending request to transfer ownership of assets...",
-      { autoClose: 5000 }
-    );
-    //do something else
-    const mutation = gql`
-      mutation playerAcquirePrompt($playerId: Int!) {
-        PlayerAcquire(playerId: $playerId) {
-          success
-        }
-      }
-    `;
 
-    client
-      .mutate({
-        mutation: mutation,
-        variables: { playerId: props.playerId },
-      })
-      .then((res) => {
-        if (res.data.PlayerAcquire) {
-          toast.update(buyToast, {
-            render:
-              "Successfully acquired player and transferred it's assets to your account!",
-            type: "success",
-            isLoading: false,
-            autoClose: 5000,
-          });
-
-          props.onClose();
-        } else if (res.errors) {
-          toast.update(buyToast, {
-            render: "Acquisition denied: " + res.errors[0].message,
-            type: "error",
-            isLoading: false,
-            autoClose: 5000,
-          });
-        } else {
-          toast.update(buyToast, {
-            render: "Acquisition denied",
-            type: "error",
-            isLoading: false,
-            autoClose: 5000,
-          });
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
   const buyStockPrompt = async () => {
     const quantity = parseInt(
       (await prompt("How many stocks would you like to buy?", "0")) || ""
