@@ -1,6 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import Draggable from "react-draggable";
+import { toast } from "react-toastify";
+import { PlayerContext } from "../context/PlayerContext";
 import { SocketContext } from "../context/SocketContext";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
@@ -28,6 +30,7 @@ export default function Chat(props: {
   const [messageHistory, setMessageHistory] = useState<Message[]>([]);
   const [online, setOnline] = useState<number>(0);
   const socket = useContext(SocketContext);
+  const player = useContext(PlayerContext);
   const messageRef: React.MutableRefObject<any> = useRef(null);
   useEffect(() => {
     if (messageRef.current) {
@@ -74,6 +77,21 @@ export default function Chat(props: {
           timestamp: new Date(),
         };
         messageHistory.push(formattedObject);
+        if (formattedObject.sender.id !== player.id)
+          toast(
+            `${formattedObject.sender.display_name}: ${formattedObject.message}`,
+            {
+              type: "default",
+              hideProgressBar: true,
+              pauseOnHover: false,
+              style: {
+                color: formattedObject.color,
+                fontWeight: formattedObject.bold ? "bold" : "normal",
+              },
+              autoClose: 2500,
+              position: "bottom-left",
+            }
+          );
         setMessageHistory([...messageHistory]);
       }
     );
