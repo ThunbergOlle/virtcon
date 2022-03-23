@@ -1,7 +1,7 @@
 import { useApolloClient } from "@apollo/client";
 import { gql } from "graphql-tag";
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Card, ListGroup, Table } from "react-bootstrap";
+import { Button, Card, Form, ListGroup, Table } from "react-bootstrap";
 import { useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
 import { PlayerContext } from "../context/PlayerContext";
@@ -19,6 +19,7 @@ export default function Inventory(props: {
   playerId?: number;
 }) {
   const [hideContent, setHideContent] = useState(false);
+  const [nameFilter, setNameFilter] = useState("");
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const getPlayer = useContext(PlayerContext);
   const [currentPlayerName, setCurrentPlayerName] = useState<string>(
@@ -108,6 +109,17 @@ export default function Inventory(props: {
             View my inventory instead
           </Button>
         ) : null}
+        <Form.Group style={{ marginLeft: 10 }}>
+          <Form.Label>Item name</Form.Label>
+          <Form.Control
+            size="sm"
+            type="text"
+            onChange={(e) => setNameFilter(e.target.value.toUpperCase())}
+          ></Form.Control>
+          <Form.Text className="text-muted">
+            Search for the item you want to checkout
+          </Form.Text>
+        </Form.Group>
         <Table hover striped style={HideStyle(hideContent)}>
           <thead>
             <th>Icon</th>
@@ -122,7 +134,10 @@ export default function Inventory(props: {
             {inventory?.map((i) => {
               //Avgör om det är en byggnad eller en sak.
 
-              if (i.building) {
+              if (
+                i.building &&
+                i.building.name.toUpperCase().includes(nameFilter)
+              ) {
                 return (
                   <tr id={String(i.id)} key={i.id}>
                     <td>
@@ -136,7 +151,10 @@ export default function Inventory(props: {
                     <td></td>
                   </tr>
                 );
-              } else if (i.item !== null) {
+              } else if (
+                i.item !== null &&
+                i.item.name.toUpperCase().includes(nameFilter)
+              ) {
                 return (
                   <tr id={String(i.id)} key={i.id}>
                     <td>
