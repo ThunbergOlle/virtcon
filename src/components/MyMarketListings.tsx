@@ -86,8 +86,10 @@ export default function MyMarketListings(props: {
       });
   };
   useEffect(() => {
-    load();
-  }, []);
+    if (props.isOpen) {
+      load();
+    }
+  }, [props.isOpen]);
 
   return (
     <Draggable
@@ -101,6 +103,7 @@ export default function MyMarketListings(props: {
         <WindowHeader
           title="My market listings"
           onClose={() => props.onClose("myMarketListings")}
+          onRefresh={() => load()}
         />
         <div
           style={{

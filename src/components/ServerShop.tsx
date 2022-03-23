@@ -93,8 +93,10 @@ export default function ServerShop(props: {
       });
   };
   useEffect(() => {
-    load();
-  }, []);
+    if (props.isOpen) {
+      load();
+    }
+  }, [props.isOpen]);
   return (
     <Draggable
       axis="both"
@@ -104,7 +106,11 @@ export default function ServerShop(props: {
       defaultPosition={{ x: 40, y: 10 }}
     >
       <Card style={{ width: 600, ...HideStyle(!props.isOpen) }}>
-        <WindowHeader title="Server Shop" onClose={() => props.onClose()} />
+        <WindowHeader
+          title="Server Shop"
+          onClose={() => props.onClose()}
+          onRefresh={() => load()}
+        />
 
         <Table hover striped style={HideStyle(hideContent)}>
           <thead>
