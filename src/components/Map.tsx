@@ -24,6 +24,7 @@ export default function Map(props: {
       const currentBuilding = props.grid[i].building?.building;
       _rendableGrid.push(
         <div
+          key={props.grid[i].x + "-" + props.grid[i].y}
           onClick={() => {
             if (props.onTileClicked) onTileClicked(props.grid[i]);
           }}

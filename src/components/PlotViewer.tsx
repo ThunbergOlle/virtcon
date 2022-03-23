@@ -232,6 +232,19 @@ export default function Plotviewer(props: {
         console.log(e);
       });
   };
+  const pickupAllBuildingsPrompt = async () => {
+    const isSure = window.confirm(
+      "Are you sure you want to pickup all buildings on this plot?"
+    );
+    if (isSure && plot) {
+      for (let i = 0; i < plot.buildings.length; i++) {
+        await pickupBuilding(plot.buildings[i].id);
+      }
+      fetchPlotData();
+      emitCustomEvent("productionOverviewUpdate");
+      emitCustomEvent("backgroundUpdate");
+    }
+  };
   const removePlotFromMarket = (plotId: number) => {
     const buyToast = toast.loading("Trying to remove...", { autoClose: 5000 });
     //do something else
@@ -433,15 +446,21 @@ export default function Plotviewer(props: {
                   </Card.Text>
                 </>
               ) : null}
-              {plot?.owner?.id === getPlayer.id && plot?.isInteractive && (
-                <Button
-                  size="sm"
-                  onClick={() => sellPlotPrompt(plot!.id!)}
-                  disabled
-                >
-                  Sell this plot - Disabled for now
+              {plot &&
+              plot.owner?.id === getPlayer.id &&
+              plot?.buildings.length > 0 ? (
+                <Button size="sm" onClick={() => pickupAllBuildingsPrompt()}>
+                  Pickup all buildings on plot
                 </Button>
-              )}
+              ) : null}
+
+              <p className="text-muted" style={{ fontStyle: "italic" }}>
+                Note: You don't have to place the buildings on the resources in
+                order to extract them,{" "}
+                <a href="https://docs.virtcongame.com/#plot-system">
+                  read the docs
+                </a>
+              </p>
               {plot?.owner?.id === getPlayer.id && !plot?.isInteractive && (
                 <Button
                   size="sm"

@@ -71,7 +71,7 @@ export default function PlotOverviewBackground(props: {
     >
       {plots.length > 0 ? (
         plots.map((p) => (
-          <div className="map-container">
+          <div className="map-container" key={p.id + "-map-container"}>
             <Map
               plotId={p.id}
               width={(0.2 / 8) * window.innerWidth - 1}
