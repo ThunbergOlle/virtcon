@@ -17,4 +17,5 @@ export const pickupBuilding = async (buildingId: number) => {
   // Reloada all data
   emitCustomEvent("inventoryUpdate");
   emitCustomEvent("plotUpdate");
+  emitCustomEvent("buildingOverviewUpdate");
 };

@@ -71,6 +71,14 @@ export default function ActionBar(props: {
             Building Crafter
           </Dropdown.Item>
           <Dropdown.Item
+            eventKey="5"
+            onClick={() =>
+              props.onWindowOpened("buildingOverview", getPlayer.id)
+            }
+          >
+            Building Overview
+          </Dropdown.Item>
+          <Dropdown.Item
             eventKey="3"
             onClick={() => props.onWindowOpened("itemBrowser")}
           >

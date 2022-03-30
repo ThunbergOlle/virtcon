@@ -32,6 +32,7 @@ export default function ProfileViewer(props: {
   onViewPlayerOverview: (playerId: number) => void;
   onViewPlayerChart: (playerId: number) => void;
   onBrowsePlayerPlots: (playerId: number) => void;
+  onViewPlayerBuilding: (playerId: number) => void;
   onClose: () => void;
   onFocus: (windowType: WindowTypes) => void;
 }) {
@@ -245,16 +246,19 @@ export default function ProfileViewer(props: {
               <Card.Body className="in-depth-analysis">
                 <Card.Title>In-depth analysis</Card.Title>
                 <Button onClick={() => props.onViewPlayerInventory(player.id)}>
-                  View Inventory
+                  🎒 Inventory
                 </Button>
                 <Button onClick={() => props.onViewPlayerOverview(player.id)}>
-                  View Production Overview
+                  🏭 Production Overview
+                </Button>
+                <Button onClick={() => props.onViewPlayerBuilding(player.id)}>
+                  🏢 Building Overview
                 </Button>
                 <Button onClick={() => props.onBrowsePlayerPlots(player.id)}>
-                  View Plots
+                  🏕 Plots
                 </Button>
                 <Button onClick={() => props.onViewPlayerChart(player.id)}>
-                  📊 View Charts
+                  📊 Holdings
                 </Button>
               </Card.Body>
             </Card>

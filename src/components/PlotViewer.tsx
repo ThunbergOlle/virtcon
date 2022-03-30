@@ -1,14 +1,14 @@
 import { useApolloClient } from "@apollo/client";
 import { gql } from "graphql-tag";
-import React, { useContext, useEffect, useState } from "react";
-import { Button, Card, Form, ListGroup, Table } from "react-bootstrap";
+import { useContext, useEffect, useState } from "react";
+import { Button, Card, Table } from "react-bootstrap";
 import { emitCustomEvent, useCustomEventListener } from "react-custom-events";
 import Draggable from "react-draggable";
 import { BuildingAddToPlot } from "../functions/BuildingAddToPlot";
 import { pickupBuilding } from "../functions/PickupBuilding";
 import { WindowTypes } from "../pages/index/IndexPage";
 import { HideStyle } from "../utils/HideStyle";
-import { InventoryItem, Item, Plot, PlotGrid } from "../utils/interfaces";
+import { Plot, PlotGrid } from "../utils/interfaces";
 import BuildingSelect from "./BuildingSelect";
 import WindowHeader from "./WindowHeader";
 import Map from "./Map";
@@ -243,6 +243,7 @@ export default function Plotviewer(props: {
       fetchPlotData();
       emitCustomEvent("productionOverviewUpdate");
       emitCustomEvent("backgroundUpdate");
+      emitCustomEvent("buildingOverviewUpdate");
     }
   };
   const removePlotFromMarket = (plotId: number) => {

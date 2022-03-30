@@ -34,6 +34,7 @@ export const BuildingAddToPlot = async (
     emitCustomEvent("selectedPlotUpdate");
     emitCustomEvent("productionOverviewUpdate");
     emitCustomEvent("backgroundUpdate");
+    emitCustomEvent("buildingOverviewUpdate");
   } catch (e: any) {
     toast.error(String(e.message), { autoClose: 3000 });
   }

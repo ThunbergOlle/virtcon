@@ -1,14 +1,7 @@
-import {
-  ApolloClient,
-  NormalizedCache,
-  NormalizedCacheObject,
-} from "@apollo/client";
+import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 import React from "react";
-import { emitCustomEvent } from "react-custom-events";
-import Draggable from "react-draggable";
 import { toast } from "react-toastify";
 import ActionBar from "../../components/ActionBar";
-import BuildingBrowser from "../../components/BuildingBrowser";
 import Inventory from "../../components/Inventory";
 import ItemBrowser from "../../components/ItemBrowser";
 import PlotViewer from "../../components/PlotViewer";
@@ -31,6 +24,7 @@ import PlotMarketBrowser from "../../components/PlotMarketBrowser";
 import Chat from "../../components/Chat";
 import PlotOverviewBackground from "../../components/PlotOverviewBackground";
 import ChartViewer from "../../components/ChartViewer";
+import BuildingOverview from "../../components/BuildingOverview/BuildingOverview";
 
 interface IndexPageProps {
   player: Player;
@@ -54,6 +48,7 @@ export type WindowTypes =
   | "chat"
   | "profileViewer"
   | "statList"
+  | "buildingOverview"
   | "chartViewer";
 interface IndexPageState {
   player: Player;
@@ -69,6 +64,7 @@ interface IndexPageState {
   viewPlayerOverviewId: number | undefined;
   viewPlayerChartId: number | undefined;
   browsePlayerPlots: number | undefined;
+  viewPlayerBuildingOverviewId: number | undefined;
 }
 
 export default class IndexPage extends React.Component<
@@ -93,6 +89,7 @@ export default class IndexPage extends React.Component<
         chat: false,
         inventory: false,
         chartViewer: false,
+        buildingOverview: false,
         plotViewer: false,
         marketBrowser: false,
         recipeBrowser: false,
@@ -105,6 +102,7 @@ export default class IndexPage extends React.Component<
       viewPlayerInventoryId: undefined,
       viewPlayerChartId: undefined,
       viewPlayerOverviewId: undefined,
+      viewPlayerBuildingOverviewId: undefined,
       viewPlayer: undefined,
       browsePlayerPlots: undefined,
     };
@@ -166,6 +164,10 @@ export default class IndexPage extends React.Component<
       } else if (window === "productionOverview") {
         this.setState({
           viewPlayerOverviewId: targetId,
+        });
+      } else if (window === "buildingOverview") {
+        this.setState({
+          viewPlayerBuildingOverviewId: targetId,
         });
       }
     }
@@ -354,6 +356,16 @@ export default class IndexPage extends React.Component<
                     },
                   });
                 }}
+                onViewPlayerBuilding={(playerId) => {
+                  this.state.windowStack.selectWindow("buildingOverview");
+                  this.setState({
+                    viewPlayerBuildingOverviewId: playerId,
+                    openWindows: {
+                      ...this.state.openWindows,
+                      buildingOverview: true,
+                    },
+                  });
+                }}
                 onViewPlayerInventory={(playerId) => {
                   this.state.windowStack.selectWindow("inventory");
                   this.setState({
@@ -463,16 +475,17 @@ export default class IndexPage extends React.Component<
                 className={this.state.windowStack.getClass("chat")}
               />{" "}
             </div>
+
             <div className="browser-container">
-              <ChartViewer
-                isOpen={this.state.openWindows.chartViewer}
-                onClose={() => this.closeWindow("chartViewer")}
+              <BuildingOverview
+                isOpen={this.state.openWindows.buildingOverview}
+                onClose={() => this.closeWindow("buildingOverview")}
                 onFocus={() => {
-                  this.state.windowStack.selectWindow("chartViewer");
+                  this.state.windowStack.selectWindow("buildingOverview");
                   this.forceUpdate();
                 }}
-                playerId={this.state.viewPlayerChartId}
-                className={this.state.windowStack.getClass("chartViewer")}
+                playerId={this.state.viewPlayerBuildingOverviewId}
+                className={this.state.windowStack.getClass("buildingOverview")}
               />{" "}
             </div>
             <PlotOverviewBackground

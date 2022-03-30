@@ -82,7 +82,9 @@ export default function Chat(props: {
         messageHistory.push(formattedObject);
         if (formattedObject.sender.id !== player.id)
           toast(
-            `${formattedObject.sender.display_name}: ${formattedObject.message}`,
+            `${
+              formattedObject.sender.display_name
+            }: ${formattedObject.message.replaceAll(";break;", "\n\n")}`,
             {
               type: "default",
               hideProgressBar: true,
