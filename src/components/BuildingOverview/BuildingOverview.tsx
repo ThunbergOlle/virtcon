@@ -101,7 +101,7 @@ export default function BuildingOverview(props: {
       onMouseDown={() => props.onFocus("buildingOverview")}
       defaultPosition={{ x: 40, y: 10 }}
     >
-      <Card style={{ width: 400, ...HideStyle(!props.isOpen) }}>
+      <Card style={{ width: 500, ...HideStyle(!props.isOpen) }}>
         <WindowHeader
           title={"Building overview of " + currentPlayer?.display_name}
           onRefresh={() => {
@@ -125,10 +125,10 @@ export default function BuildingOverview(props: {
             <>
               <thead>
                 <th>Building Name</th>
-                <th style={{ textAlign: "right" }}>Amount Placed</th>
+                <th style={{ textAlign: "right" }}>Amount</th>
                 {/* Check if we are the player */}
                 {getPlayer.id && currentPlayer?.id === getPlayer.id ? (
-                  <th style={{ textAlign: "right" }}>Pickup (ALL)</th>
+                  <th style={{ textAlign: "right" }}>All</th>
                 ) : null}
               </thead>
               <tbody>
