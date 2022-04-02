@@ -68,6 +68,14 @@ export type Player = {
   ownedStocks: PlayerStocks[];
   soldStocks: PlayerStocks[];
 };
+export type PlayerTransactionLog = {
+  id: number;
+  player: Player;
+  amount: number;
+  timestamp?: Date;
+  description?: string;
+  type?: string;
+};
 
 export type PlotGrid = {
   id: number;

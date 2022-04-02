@@ -25,6 +25,7 @@ import Chat from "../../components/Chat";
 import PlotOverviewBackground from "../../components/PlotOverviewBackground";
 import ChartViewer from "../../components/ChartViewer";
 import BuildingOverview from "../../components/BuildingOverview/BuildingOverview";
+import PlayerTransactionLog from "../../components/PlayerTransactionLog/PlayerTransactionLog";
 
 interface IndexPageProps {
   player: Player;
@@ -49,6 +50,7 @@ export type WindowTypes =
   | "profileViewer"
   | "statList"
   | "buildingOverview"
+  | "playerTransactionLog"
   | "chartViewer";
 interface IndexPageState {
   player: Player;
@@ -94,6 +96,7 @@ export default class IndexPage extends React.Component<
         marketBrowser: false,
         recipeBrowser: false,
         buildingCrafter: false,
+        playerTransactionLog: false,
         statList: false,
       },
       windowStack: new WindowStack(),
@@ -486,6 +489,19 @@ export default class IndexPage extends React.Component<
                 }}
                 playerId={this.state.viewPlayerBuildingOverviewId}
                 className={this.state.windowStack.getClass("buildingOverview")}
+              />{" "}
+            </div>
+            <div className="browser-container">
+              <PlayerTransactionLog
+                isOpen={this.state.openWindows.playerTransactionLog}
+                onClose={() => this.closeWindow("playerTransactionLog")}
+                onFocus={() => {
+                  this.state.windowStack.selectWindow("playerTransactionLog");
+                  this.forceUpdate();
+                }}
+                className={this.state.windowStack.getClass(
+                  "playerTransactionLog"
+                )}
               />{" "}
             </div>
             <PlotOverviewBackground

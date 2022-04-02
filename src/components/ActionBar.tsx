@@ -104,6 +104,12 @@ export default function ActionBar(props: {
           >
             Current listings
           </Dropdown.Item>
+          <Dropdown.Item
+            eventKey="4"
+            onClick={() => props.onWindowOpened("playerTransactionLog")}
+          >
+            Transaction Log
+          </Dropdown.Item>
         </DropdownButton>
         <Button size="sm" onClick={() => props.onWindowOpened("chat")}>
           Chat
