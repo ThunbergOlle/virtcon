@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "./LoginStyle.css";
-import { Config } from "../../utils/Config";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/client";
 import { toast } from "react-toastify";
@@ -16,6 +15,7 @@ export default function Login(props: { onLogin: Function }) {
   const [errorText, setErrorText] = useState("");
   const [awaitingCode, setAwaitingCode] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState("");
+  const [refferalCode, setRefferalCode] = useState("");
   const client = useApolloClient();
 
   function validateForm() {
@@ -30,7 +30,8 @@ export default function Login(props: { onLogin: Function }) {
       const mutation = gql`
         mutation signup($options: PlayerNewInput!) {
           PlayerNew(options: $options) {
-            balance
+            success
+            message
           }
         }
       `;
@@ -41,16 +42,21 @@ export default function Login(props: { onLogin: Function }) {
             email: email,
             password: password,
             display_name: displayName,
+            referralCode: refferalCode,
           },
         },
       });
       if (data.data && data.data.PlayerNew) {
-        toast.success("Email confirmation sent!", { autoClose: 5000 });
-        setAwaitingCode(true);
+        if (data.data.PlayerNew.success) {
+          toast.success("Email confirmation sent!", { autoClose: 5000 });
+          setAwaitingCode(true);
+        } else {
+          throw data.data.PlayerNew.message;
+        }
       } else if (data.errors) {
         console.log(data.errors);
         throw data.errors;
-      } else throw "Someone has already signed up with this email.";
+      } else throw "Unknown error";
     } catch (e) {
       console.log(e);
       setErrorText(String(e));
@@ -193,6 +199,17 @@ export default function Login(props: { onLogin: Function }) {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </Form.Group>
+            ) : null}
+            {/* Create a form input group for refferal codes */}
+            {mode === "signup" ? (
+              <Form.Group controlId="refferalCode">
+                <Form.Label>Refferal Code</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={refferalCode}
+                  onChange={(e) => setRefferalCode(e.target.value)}
                 />
               </Form.Group>
             ) : null}

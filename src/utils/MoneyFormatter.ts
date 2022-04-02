@@ -8,7 +8,7 @@ export const MoneyFormatter = Intl.NumberFormat("en", {
 export const MoneyFormatterLong = Intl.NumberFormat("en", {
   notation: "compact",
   style: "currency",
-  minimumSignificantDigits: 6,
+  minimumSignificantDigits: 2,
   maximumSignificantDigits: 6,
   currency: "USD",
 });

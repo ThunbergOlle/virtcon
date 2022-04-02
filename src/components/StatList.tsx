@@ -47,6 +47,7 @@ export default function StatList(props: {
           display_name
           balance
           backgroundURL
+          referralCode
           plot {
             id
           }
@@ -99,6 +100,10 @@ export default function StatList(props: {
               <tr>
                 <td>Plots</td>
                 <td style={{ textAlign: "right" }}>{user?.plot?.length}</td>
+              </tr>
+              <tr>
+                <td>Referral Code</td>
+                <td style={{ textAlign: "right" }}>{user?.referralCode}</td>
               </tr>
             </tbody>
           </Table>

@@ -55,6 +55,7 @@ export type Player = {
   id: Scalars["Int"];
   display_name: Scalars["String"];
   backgroundURL: Scalars["String"];
+  referralCode: Scalars["String"];
   last_login?: Maybe<Scalars["DateTime"]>;
   balance: Scalars["Int"];
   giftedBalance: Scalars["Int"];
